@@ -18,3 +18,49 @@
  password      nvarchar2(32) not null
  )
 * */
+
+module.exports = (sequelize, DataTypes) => {
+  var Bar = sequelize.define('Bar', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    logo: {
+      type: DataTypes.CHAR
+    },
+    name: {
+      type: DataTypes.CHAR
+    },
+    address: {
+      type: DataTypes.STRING
+    },
+    bussinesshours: {
+      type: DataTypes.CHAR
+    },
+    position: {
+      type: DataTypes.CHAR
+    },
+    score: {
+      type: DataTypes.INTEGER
+    },
+    photos: {
+      type: DataTypes.STRING
+    },
+    summary: {
+      type: DataTypes.STRING
+    },
+    city: {
+      type: DataTypes.CHAR
+    },
+    screenvalid: {
+      type: DataTypes.INTEGER
+    },
+    phonenumber: {
+      type: DataTypes.INTEGER
+    },
+    password: {
+      type: DataTypes.STRING
+    }
+  })
+}
