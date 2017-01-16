@@ -39,7 +39,7 @@ router.post('/login', (req, res, next) => {
     if (!result) {
       res.redirect('/login')
     } else {
-      next()
+
     }
   })
 })
