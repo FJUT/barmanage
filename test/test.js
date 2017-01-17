@@ -9,8 +9,8 @@ const Token = require('../lib/Token')
 
 
 
-setInterval(function() {
-  var decrypted = Token.decode('4e90b3bc7b28d545d318c253949490fb3b60c3870916f62a4be44f543bf1eb4d')
-
-  console.log(decrypted)
-}, 2000)
+// setInterval(function() {
+//   var decrypted = Token.decode('4e90b3bc7b28d545d318c253949490fb3b60c3870916f62a4be44f543bf1eb4d')
+//
+//   console.log(decrypted)
+// }, 2000)

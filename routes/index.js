@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models')
 const sha1 = require('../lib/sha1')
+const upload = require('../middlewares/upload')
 const auth = require('../middlewares/auth')
 const Token = require('../lib/Token')
 
@@ -63,12 +64,25 @@ router.post('/register', (req, res, next) => {
 
   password = sha1(password)
 
-  models.Bar.upsert({
-    phonenumber,
-    password
-  }).then(created => {
-    res.send(created)
-  })
+  models.Bar
+    .upsert({
+      phonenumber,
+      password
+    })
+    .then(created => {
+      res.send(created)
+    })
+})
+
+router.get('/form', (req, res, next) => {
+  res.render('form')
+})
+
+router.post('/upload', upload.single('logo'), (req, res, next) => {
+  console.log(req.body.address)
+  console.log(req.file)
+
+  res.send('upload ready')
 })
 
 module.exports = router;
