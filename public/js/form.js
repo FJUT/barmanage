@@ -11,7 +11,6 @@ var vm = new Vue({
       pIndex: 0,
       cIndex: 0,
       currProvince: provinces[0].name,
-      currCity: cities[0].name,
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -19,8 +18,11 @@ var vm = new Vue({
     };
   },
   computed: {
+    currCity: function() {
+
+    },
     cityList: function() {
-      return this.cities[this.currProvince]
+      return this.cities[this.pIndex]
     }
   },
   methods: {
