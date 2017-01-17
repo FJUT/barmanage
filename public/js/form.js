@@ -31,6 +31,23 @@ var vm = new Vue({
     },
     handleProvChange: function(data) {
       console.log(arguments)
+    },
+    handleChange: function(e) {
+      console.log(e.target.files)
+
+      var data = new FormData()
+      data.append('logo', e.target.files[0])
+
+      $.ajax({
+        url: '/upload',
+        type: 'POST',
+        data: data,
+        processData: false,
+        contentType: false,
+        success: function(response){
+          console.log(response)
+        }
+      })
     }
   },
   mounted: function() {

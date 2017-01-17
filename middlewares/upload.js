@@ -7,7 +7,7 @@ const path = require('path')
 var counter = 0
 
 const storage = multer.diskStorage({
-  destination: '/uploads',
+  destination: path.join(__dirname, '../uploads'),
   filename: function(req, file, cb) {
     // console.log('storage', file)
     let originalname = file.originalname

@@ -93,11 +93,17 @@ router.get('/form', (req, res, next) => {
   })
 })
 
-router.post('/upload', upload.single('logo'), (req, res, next) => {
+router.post('/upload', (req, res, next) => {
   console.log(req.body.address)
   console.log(req.file)
 
-  res.send('upload ready')
+  upload.single('logo')(req, res, function(err) {
+    console.log(err)
+    res.send('upload ready')
+
+    return
+  })
+
 })
 
 module.exports = router;
