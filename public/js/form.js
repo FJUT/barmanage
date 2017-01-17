@@ -5,9 +5,31 @@ var vm = new Vue({
   el: '#app',
   data: function() {
     return {
-      // value3: [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)]
-      timerange: []
+      timerange: [], /* [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)] */
+      provinces: provinces,
+      cities: cities,
+      pIndex: 0,
+      cIndex: 0,
+      currProvince: provinces[0].name,
+      currCity: cities[0].name,
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      }
     };
+  },
+  computed: {
+    cityList: function() {
+      return this.cities[this.currProvince]
+    }
+  },
+  methods: {
+    handleNodeClick: function(data) {
+      console.log(data)
+    },
+    handleProvChange: function(data) {
+      console.log(arguments)
+    }
   },
   mounted: function() {
     var map = new qq.maps.Map(document.getElementById('mapContainer'));

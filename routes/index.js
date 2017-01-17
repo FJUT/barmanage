@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const router = express.Router();
 const models = require('../models')
@@ -75,7 +76,21 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/form', (req, res, next) => {
-  res.render('form')
+  fs.readFile('./config/city-code.json', { encoding: 'utf8' }, (err, content) => {
+    content = JSON.parse(content)
+
+    let provinces = content.map(prov => ({
+      name: prov.name,
+      code: prov.code
+    }))
+
+    let cities = content.map(prov => prov.cities)
+
+    res.render('form', {
+      provinces: JSON.stringify(provinces),
+      cities: JSON.stringify(cities)
+    })
+  })
 })
 
 router.post('/upload', upload.single('logo'), (req, res, next) => {

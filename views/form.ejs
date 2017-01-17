@@ -32,6 +32,37 @@
           <div id="mapContainer"></div>
         </div>
         <div class="form-group">
+          <label for="inputEmail3" class="col-sm-2 control-label">图片</label>
+          <div class="col-sm-10">
+            <input type="file" name="photos">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-2 control-label">所在城市</label>
+          <div class="col-sm-10">
+            <el-select v-model="currProvince" placeholder="请选择" @change="handleProvChange">
+              <el-option
+                      v-for="item in provinces"
+                      :label="item.name"
+                      :value="item.code">
+              </el-option>
+            </el-select>
+            <el-select v-model="currCity" placeholder="请选择">
+              <el-option
+                      v-for="item in cityList"
+                      :label="item.name"
+                      :value="item.code">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-2 control-label">简介</label>
+          <div class="col-sm-10">
+            <textarea name="summary" class="form-control" id="inputEmail3" placeholder="简介"></textarea>
+          </div>
+        </div>
+        <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <button type="submit" class="btn btn-primary btn-lg">提交</button>
           </div>
@@ -39,6 +70,10 @@
       </form>
     </div>
   </div>
+  <script>
+    var provinces = <%-provinces%>
+    var cities = <%-cities%>
+  </script>
   <script src="http://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
   <script src="/js/form.js"></script>
 <%- include('common/footer.ejs') %>
