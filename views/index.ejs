@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
   <head>
     <title><%= title %></title>
     <meta charset="utf-8">
+      <link rel="stylesheet" href="/css/bootstrap.css">
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-    <script>
-        var bars = <%-JSON.stringify(bars)%>
-    </script>
+  <div class="container">
+    <%- include('header.ejs') %>
+    <div class="row">
+        <%- include('nav.ejs') %>
+    </div>
+  </div>
   </body>
 </html>

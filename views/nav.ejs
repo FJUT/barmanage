@@ -1,0 +1,9 @@
+<div class="col-md-2 menu">
+  <ul class="nav nav-pills nav-stacked">
+    <%navs.forEach(function(nav) {%>
+    <li class="<%=isActive(nav.path, active)%>">
+      <a href="/<%=nav.path%>"><%=nav.name%></a>
+    </li>
+    <%})%>
+  </ul>
+</div>

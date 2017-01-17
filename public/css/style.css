@@ -1,0 +1,9 @@
+.menu {
+    border-right:1px solid #EEEEEE;
+}
+
+#mapContainer {
+    width: 500px;
+    height: 300px;
+    left: 15px;
+}

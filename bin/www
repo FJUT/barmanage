@@ -7,7 +7,26 @@
 var app = require('../app');
 var debug = require('debug')('barmanage:server');
 var http = require('http');
-var models = require('../models')
+var models = require('../models');
+
+app.locals.navs = [
+  {
+    name: '酒吧信息',
+    path: 'form'
+  },
+  {
+    name: '霸屏设置',
+    path: 'occupy'
+  }
+];
+
+app.locals.isActive = function(path, active) {
+  if (path === active) {
+    return 'active'
+  }
+
+  return ''
+};
 
 /**
  * Get port from environment and store in Express.
