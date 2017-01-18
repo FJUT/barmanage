@@ -7,3 +7,28 @@
     height: 300px;
     left: 15px;
 }
+
+[v-cloak] {
+    display: none;
+}
+
+.form-group img {
+    width: 100px;
+    height: 60px;
+}
+
+.img-with-close-btn {
+    position: relative;
+    margin-right: 5px;
+}
+
+.img-with-close-btn button {
+    position: absolute;
+    right: 4px;
+    top: 0px;
+    display: none;
+}
+
+.img-with-close-btn:hover button {
+    display: block;
+}

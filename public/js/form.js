@@ -6,12 +6,13 @@ var vm = new Vue({
   data: function() {
     return {
       timerange: [], /* [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)] */
-    };
+      photos: [],
+      logo: ''
+    }
   },
   methods: {
-    handleChange: function(e) {
-      console.log(e.target.files)
-
+    handleLogoChange: function(e) {
+      var t = this
       var data = new FormData()
       data.append('logo', e.target.files[0])
 
@@ -22,13 +23,50 @@ var vm = new Vue({
         processData: false,
         contentType: false,
         success: function(response){
-          console.log(response)
+          t.logo = response.url
         }
       })
+    },
+    handlePhotosChange: function(e) {
+      var t = this
+      var data = new FormData()
+
+      for (var i = 0; i < e.target.files.length; i++) {
+        data.append('photos', e.target.files[i])
+      }
+
+      $.ajax({
+        url: '/uploadMulti',
+        type: 'POST',
+        data: data,
+        processData: false,
+        contentType: false,
+        success: function(response){
+          if (response.iRet == 0) {
+            t.photos = t.photos.concat(response.photos)
+          }
+        }
+      })
+    },
+    deletePhoto: function(url) {
+      this.photos = this.photos.filter(function(photo) {
+        return photo != url
+      })
+    },
+    save: function() {
+
     }
   },
   mounted: function() {
+    // 初始化地图选择
     var map = new qq.maps.Map(document.getElementById('mapContainer'));
-    map.panTo(new qq.maps.LatLng(39.916527,116.397128));
+    var $citySelect = $('#citySelect')
+
+    // 初始化城市选择
+    $citySelect.citySelect({
+      setName: false
+    }).on("citySelect", function(event, name, code) {
+      $citySelect.val(name)
+    })
   }
-});
+})

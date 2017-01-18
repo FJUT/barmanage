@@ -75,21 +75,37 @@ router.post('/register', (req, res, next) => {
     })
 })
 
-router.get('/form', (req, res, next) => {
+router.get('/form', auth, (req, res, next) => {
   res.render('form')
 })
 
-router.post('/upload', (req, res, next) => {
-  console.log(req.body.address)
-  console.log(req.file)
-
-  upload.single('logo')(req, res, function(err) {
-    console.log(err)
-    res.send('upload ready')
-
-    return
+router.post('/upload', upload.single('logo'), (req, res, next) => {
+  // console.log(req.body.address)
+  // console.log(req.file)
+  res.json({
+    iRet: 0,
+    url: req.file.filename,
+    message: 'upload ready'
   })
+})
 
+router.post('/uploadMulti', upload.array('photos'), (req, res, next) => {
+  // console.log(req.files)
+
+  res.json({
+    iRet: 0,
+    photos: req.files.map(file => file.filename),
+    message: 'upload ready'
+  })
+})
+
+router.post('/saveBarInfo', (req, res, next) => {
+
+})
+
+router.get('/logout', (req, res, next) => {
+  res.clearCookie('token')
+  res.redirect('/')
 })
 
 module.exports = router;

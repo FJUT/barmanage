@@ -17,6 +17,10 @@ app.locals.navs = [
   {
     name: '霸屏设置',
     path: 'occupy'
+  },
+  {
+    name: '退出登陆',
+    path: 'logout'
   }
 ];
 
