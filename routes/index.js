@@ -76,21 +76,7 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/form', (req, res, next) => {
-  fs.readFile('./config/city-code.json', { encoding: 'utf8' }, (err, content) => {
-    content = JSON.parse(content)
-
-    let provinces = content.map(prov => ({
-      name: prov.name,
-      code: prov.code
-    }))
-
-    let cities = content.map(prov => prov.cities)
-
-    res.render('form', {
-      provinces: JSON.stringify(provinces),
-      cities: JSON.stringify(cities)
-    })
-  })
+  res.render('form')
 })
 
 router.post('/upload', (req, res, next) => {

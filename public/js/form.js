@@ -6,32 +6,9 @@ var vm = new Vue({
   data: function() {
     return {
       timerange: [], /* [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)] */
-      provinces: provinces,
-      cities: cities,
-      pIndex: 0,
-      cIndex: 0,
-      currProvince: provinces[0].name,
-      defaultProps: {
-        children: 'children',
-        label: 'label'
-      }
     };
   },
-  computed: {
-    currCity: function() {
-
-    },
-    cityList: function() {
-      return this.cities[this.pIndex]
-    }
-  },
   methods: {
-    handleNodeClick: function(data) {
-      console.log(data)
-    },
-    handleProvChange: function(data) {
-      console.log(arguments)
-    },
     handleChange: function(e) {
       console.log(e.target.files)
 
