@@ -100,7 +100,7 @@ router.post('/uploadMulti', upload.array('photos'), (req, res, next) => {
 })
 
 router.post('/saveBarInfo', (req, res, next) => {
-
+  
 })
 
 router.get('/logout', (req, res, next) => {

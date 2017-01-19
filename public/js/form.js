@@ -59,7 +59,7 @@ var vm = new Vue({
   },
   mounted: function() {
     // 初始化地图选择
-    var map = new qq.maps.Map(document.getElementById('mapContainer'));
+    // var map = new qq.maps.Map(document.getElementById('mapContainer'));
     var $citySelect = $('#citySelect')
 
     // 初始化城市选择
