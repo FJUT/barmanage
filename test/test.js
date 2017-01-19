@@ -12,12 +12,12 @@
 //
 //   console.log(decrypted)
 // }, 2000)
-
+const co = require('co')
 const models = require('../models')
-
-models.Bar.findById(1).then(bar => {
-  console.log(bar.get({plain: true}))
-})
+//
+// models.Bar.findById(1).then(bar => {
+//   console.log(bar.get({plain: true}))
+// })
 
 // models.Bar.update({
 //   name: '都市酒吧',
@@ -32,3 +32,22 @@ models.Bar.findById(1).then(bar => {
 // }).then(affected => {
 //   console.log(affected)
 // })
+co(function*() {
+  // var created = yield models.BarPrice.create({
+  //   seconds: 30,
+  //   price: 10,
+  //   BarId: 1
+  // })
+  //
+  // console.log('create success', created.get({plain: true}))
+
+  var data = yield models.BarPrice.findAll({
+    where: {
+      BarId: 1
+    }
+  })
+
+  data = data.map(row => row.get({ plain: true }))
+
+  console.log(data)
+})

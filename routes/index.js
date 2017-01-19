@@ -83,7 +83,7 @@ router.get('/form', auth, (req, res, next) => {
 router.post('/saveForm', (req, res) => {
   var { barInfo } = req.body
 
-  console.log(barInfo)
+  // console.log(barInfo)
 
   models.Bar.update(Object.assign({}, barInfo), {
     where: {

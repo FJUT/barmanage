@@ -85,7 +85,7 @@ var vm = new Vue({
           }
         }
       }).done(function(response) {
-        alert('ok')
+        alert('修改成功')
       })
     }
   },
