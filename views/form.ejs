@@ -3,21 +3,20 @@
   <div class="row">
     <%- include('nav.ejs') %>
     <div class="col-md-10" id="app" v-cloak>
-      <form class="form-horizontal center-block" method="post" enctype="multipart/form-data" action="/upload">
+      <form class="form-horizontal center-block" method="post" enctype="multipart/form-data">
         <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">名称</label>
+          <label class="col-sm-2 control-label">名称</label>
           <div class="col-sm-10">
-            <input type="text" name="name" class="form-control" placeholder="名称">
+            <input type="text" name="name" class="form-control" placeholder="名称" v-model="name">
           </div>
         </div>
         <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">LOGO</label>
+          <label class="col-sm-2 control-label">LOGO</label>
           <div class="col-sm-2">
             <label class="btn btn-success btn-file">
               选择文件 <input type="file" class="hidden" name="logo" @change="handleLogoChange" accept="image/png, image/jpeg">
             </label>
           </div>
-          <input type="hidden" v-model="logo">
         </div>
         <div class="form-group" v-if="logo">
           <div class="col-sm-2"></div>
@@ -29,13 +28,12 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">照片</label>
+          <label class="col-sm-2 control-label">照片</label>
           <div class="col-sm-2">
             <label class="btn btn-success btn-file">
               选择文件 <input type="file" class="hidden" name="photos" @change="handlePhotosChange" multiple="multiple" accept="image/png, image/jpeg">
             </label>
           </div>
-          <input type="hidden" v-model="photos.join('|')">
         </div>
         <div class="form-group" v-if="photos.length > 0">
           <div class="col-sm-2"></div>
@@ -47,32 +45,36 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">营业时间</label>
+          <label class="col-sm-2 control-label">营业时间</label>
           <div class="col-sm-10">
-            <el-time-picker
-              is-range
-              v-model="timerange"
-              format="HH:mm"
-              placeholder="选择时间范围">
-            </el-time-picker>
+            <el-time-select
+              placeholder="起始时间"
+              v-model="startTime"
+              :picker-options="pickerOptions">
+            </el-time-select>
+            <el-time-select
+              placeholder="结束时间"
+              v-model="endTime"
+              :picker-options="pickerOptions">
+            </el-time-select>
           </div>
         </div>
         <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">所在城市</label>
+          <label class="col-sm-2 control-label">所在城市</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" id="citySelect" placeholder="选择城市">
+            <input class="form-control" type="text" id="citySelect" placeholder="选择城市" v-model="city">
           </div>
         </div>
         <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">详细地址</label>
+          <label class="col-sm-2 control-label">详细地址</label>
           <div class="col-sm-10">
-            <input class="form-control" type="text" name="address" placeholder="详细地址">
+            <input class="form-control" type="text" name="address" placeholder="详细地址" v-model="address">
           </div>
         </div>
         <div class="form-group">
-          <label for="inputEmail3" class="col-sm-2 control-label">简介</label>
+          <label class="col-sm-2 control-label">简介</label>
           <div class="col-sm-10">
-            <textarea name="summary" class="form-control" id="inputEmail3" placeholder="简介"></textarea>
+            <textarea name="summary" v-model="summary" class="form-control" placeholder="简介"></textarea>
           </div>
         </div>
         <div class="form-group">
@@ -83,7 +85,10 @@
       </form>
     </div>
   </div>
-  <script src="http://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
+  <script>
+  window.barInfo = <%-JSON.stringify(barInfo)%>
+  </script>
+  <!--<script src="http://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>-->
   <script src="/js/city-info.js"></script>
   <script src="/js/city-select.js"></script>
   <script src="/js/form.js"></script>

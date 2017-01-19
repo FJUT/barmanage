@@ -15,11 +15,9 @@ const auth = (req, res, next) => {
   }
 
   co(function*() {
-    console.log(token)
+    // console.log(token)
     let arr = Token.decode(token)
     let [ phonenumber, password ] = arr
-
-    console.log(phonenumber, password)
 
     password = sha1(password)
 
@@ -33,6 +31,7 @@ const auth = (req, res, next) => {
     if (!result) {
       res.redirect('/login')
     } else {
+      res.locals.barInfo = result.get({ plain: true })
       next()
     }
   }).catch(next)

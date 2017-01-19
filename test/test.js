@@ -18,3 +18,17 @@ const models = require('../models')
 models.Bar.findById(1).then(bar => {
   console.log(bar.get({plain: true}))
 })
+
+// models.Bar.update({
+//   name: '都市酒吧',
+//   bussinesshours: JSON.stringify(['00:00', '24:00']),
+//   city: '武汉',
+//   summary: '天天大保健',
+//   photos: JSON.stringify(['a.jpg', 'b.jpg'])
+// }, {
+//   where: {
+//     id: 1
+//   }
+// }).then(affected => {
+//   console.log(affected)
+// })

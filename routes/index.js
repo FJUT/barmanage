@@ -6,6 +6,7 @@ const sha1 = require('../lib/sha1')
 const upload = require('../middlewares/upload')
 const auth = require('../middlewares/auth')
 const Token = require('../lib/Token')
+const co = require('co')
 
 /* GET home page. */
 router.get('/', auth, function(req, res, next) {
@@ -76,7 +77,23 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/form', auth, (req, res, next) => {
-  res.render('form')
+  res.render('form', { barInfo: res.locals.barInfo })
+})
+
+router.post('/saveForm', (req, res) => {
+  var { barInfo } = req.body
+
+  console.log(barInfo)
+
+  models.Bar.update(Object.assign({}, barInfo), {
+    where: {
+      id: barInfo.id
+    }
+  }).then(affected => {
+    res.json({
+      iRet: 0
+    })
+  })
 })
 
 router.post('/upload', upload.single('logo'), (req, res, next) => {

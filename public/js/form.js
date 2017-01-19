@@ -3,15 +3,27 @@
  */
 var vm = new Vue({
   el: '#app',
-  data: function() {
-    return {
-      timerange: [], /* [new Date(2016, 9, 10, 8, 40), new Date(2016, 9, 10, 9, 40)] */
-      photos: [],
-      logo: ''
-    }
+  data: function () {
+    barInfo.photos = JSON.parse(barInfo.photos)
+
+    var range = JSON.parse(barInfo.bussinesshours)
+    var startTime = range[0]
+    var endTime = range[1]
+
+    var model = Object.assign({}, {
+      pickerOptions: {
+        start: '00:00',
+        step: '00:30',
+        end: '24:00'
+      },
+      startTime: startTime,
+      endTime: endTime
+    }, barInfo)
+
+    return model
   },
   methods: {
-    handleLogoChange: function(e) {
+    handleLogoChange: function (e) {
       var t = this
       var data = new FormData()
       data.append('logo', e.target.files[0])
@@ -22,12 +34,12 @@ var vm = new Vue({
         data: data,
         processData: false,
         contentType: false,
-        success: function(response){
+        success: function (response) {
           t.logo = response.url
         }
       })
     },
-    handlePhotosChange: function(e) {
+    handlePhotosChange: function (e) {
       var t = this
       var data = new FormData()
 
@@ -41,31 +53,51 @@ var vm = new Vue({
         data: data,
         processData: false,
         contentType: false,
-        success: function(response){
+        success: function (response) {
           if (response.iRet == 0) {
             t.photos = t.photos.concat(response.photos)
           }
         }
       })
     },
-    deletePhoto: function(url) {
-      this.photos = this.photos.filter(function(photo) {
+    deletePhoto: function (url) {
+      this.photos = this.photos.filter(function (photo) {
         return photo != url
       })
     },
-    save: function() {
+    save: function (e) {
+      e.preventDefault()
 
+      $.ajax({
+        url: '/saveForm',
+        type: 'post',
+        dataType: 'json',
+        data: {
+          barInfo: {
+            id: this.id,
+            name: this.name,
+            logo: this.logo,
+            photos: JSON.stringify(this.photos),
+            bussinesshours: JSON.stringify([this.startTime, this.endTime]),
+            city: this.city,
+            address: this.address,
+            summary: this.summary
+          }
+        }
+      }).done(function(response) {
+        alert('ok')
+      })
     }
   },
-  mounted: function() {
+  mounted: function () {
     // 初始化地图选择
     // var map = new qq.maps.Map(document.getElementById('mapContainer'));
-    var $citySelect = $('#citySelect')
-
     // 初始化城市选择
+    var $citySelect = $('#citySelect')
     $citySelect.citySelect({
       setName: false
-    }).on("citySelect", function(event, name, code) {
+    })
+    .on("citySelect", function (event, name, code) {
       $citySelect.val(name)
     })
   }
