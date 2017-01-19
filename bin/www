@@ -19,12 +19,12 @@ app.locals.navs = [
     path: 'occupy'
   },
   {
-    name: '退出登陆',
-    path: 'logout'
-  },
-  {
     name: '订单管理',
     path: 'orders'
+  },
+  {
+    name: '退出登陆',
+    path: 'logout'
   }
 ];
 

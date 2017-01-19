@@ -22,9 +22,7 @@ router.get('/register', (req, res, next) => {
     return
   }
 
-  res.render('register', {
-
-  })
+  res.render('register')
 })
 
 router.get('/login', (req, res, next) => {
@@ -37,7 +35,7 @@ router.get('/login', (req, res, next) => {
 })
 
 router.post('/login', (req, res, next) => {
-  let { phonenumber, password } = req.body
+  let { phonenumber, password, rememberme } = req.body
 
   models.Bar.findOne({
     where: {
@@ -45,12 +43,19 @@ router.post('/login', (req, res, next) => {
       password: sha1(password)
     }
   }).then(result => {
-    // 返回原始json的方法
+    /* 返回原始json的方法 */
     // res.send(result.get({ plain: true }))
     if (!result) {
       res.redirect('/login')
     } else {
-      res.cookie('token', Token.encode(phonenumber, password))
+      var expires = rememberme ? new Date(Date.now() + 86400) : 0
+
+      console.log(`expires${expires}`)
+
+      res.cookie('token', Token.encode(phonenumber, password), {
+        expires
+      })
+
       res.redirect('/')
     }
   })
