@@ -62,6 +62,11 @@ router.post('/login', (req, res, next) => {
 })
 
 router.post('/register', (req, res, next) => {
+  if (req.cookies.token) {
+    res.redirect('/')
+    return
+  }
+
   let { phonenumber, password } = req.body
 
   if (phonenumber === '' || password === '') {
@@ -77,7 +82,7 @@ router.post('/register', (req, res, next) => {
       password
     })
     .then(created => {
-      res.send(created)
+      res.redirect('/login')
     })
 })
 
