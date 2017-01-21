@@ -3,7 +3,7 @@
  */
 var path = require('path');
 var webpack = require('webpack');
-var node_modules_dir = path.resolve(__dirname, 'node_modules')
+var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin')
 
 module.exports = {
   entry: {
@@ -12,20 +12,21 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'release'),
-    filename: '[name].js'
+    filename: '[name].bundle.js',
+    chunkFilename: 'vendors.js'
   },
   module: {
     loaders: [{
       test: /\.js$/,
+      exclude: /node_modules/,
       loader: 'babel-loader',
-      query: {
-        presets: ['es2015']
-      },
-      include: path.join(__dirname, 'src')
+      query: { "presets": ["es2015"] }
     }]
   },
   target: 'web',
-  plugin: [
-    new webpack.optimize.CommonsChunkPlugin('vendors', 'vendors.js')
-  ]
+  resolve: {
+    alias: {
+      'vue$': 'vue/dist/vue.common.js'
+    }
+  }
 };

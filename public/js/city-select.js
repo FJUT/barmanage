@@ -11,6 +11,9 @@
  *
  */
 
+var cityInfo = require('./city-info')
+var jQuery = require('jquery')
+
 var search_api_url = "https://sijipiao.alitrip.com/ie/auto_complete.do?_ksTS=1467963682760_2060&_input_charset=utf-8&userInput=";
 
 (function($) {
@@ -301,3 +304,5 @@ var search_api_url = "https://sijipiao.alitrip.com/ie/auto_complete.do?_ksTS=146
     };
 
 })(jQuery);
+
+module.exports = {}

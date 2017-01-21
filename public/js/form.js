@@ -1,8 +1,11 @@
-require.ensure(['jquery', 'vue'], ($, Vue) => {
+require(['jquery', './city-select', 'vue', 'element-ui'], function($, citySelect, Vue, Element) {
+  var { TimeSelect } = Element
+
+  Vue.component(TimeSelect.name, TimeSelect)
 
   var vm = new Vue({
     el: '#app',
-    data: function () {
+    data () {
       if (!barInfo.photos) {
         barInfo.photos = []
       } else {
@@ -14,23 +17,23 @@ require.ensure(['jquery', 'vue'], ($, Vue) => {
       }
 
       var range = JSON.parse(barInfo.bussinesshours)
-      var startTime = range[0]
-      var endTime = range[1]
+      var [ startTime, endTime ] = range
 
-      var model = Object.assign({}, {
+      var model = {
         pickerOptions: {
           start: '00:00',
           step: '00:30',
           end: '24:00'
         },
         startTime: startTime,
-        endTime: endTime
-      }, barInfo)
+        endTime: endTime,
+        ...barInfo
+      }
 
       return model
     },
     methods: {
-      handleLogoChange: function (e) {
+      handleLogoChange(e) {
         var t = this
         var data = new FormData()
         data.append('logo', e.target.files[0])
@@ -46,7 +49,7 @@ require.ensure(['jquery', 'vue'], ($, Vue) => {
           }
         })
       },
-      handlePhotosChange: function (e) {
+      handlePhotosChange(e) {
         var t = this
         var data = new FormData()
 
@@ -60,19 +63,19 @@ require.ensure(['jquery', 'vue'], ($, Vue) => {
           data: data,
           processData: false,
           contentType: false,
-          success: function (response) {
+          success(response) {
             if (response.iRet == 0) {
               t.photos = t.photos.concat(response.photos)
             }
           }
         })
       },
-      deletePhoto: function (url) {
+      deletePhoto(url) {
         this.photos = this.photos.filter(function (photo) {
           return photo != url
         })
       },
-      save: function (e) {
+      save(e) {
         e.preventDefault()
 
         $.ajax({
@@ -91,20 +94,20 @@ require.ensure(['jquery', 'vue'], ($, Vue) => {
               summary: this.summary
             }
           }
-        }).done(function(response) {
+        }).done((response) => {
           alert('修改成功')
         })
       }
     },
-    mounted: function () {
+    mounted() {
       // 初始化地图选择
       // var map = new qq.maps.Map(document.getElementById('mapContainer'));
       // 初始化城市选择
       var $citySelect = $('#citySelect')
-      $citySelect.citySelect({
-        setName: false
-      })
-        .on("citySelect", function (event, name, code) {
+        $citySelect.citySelect({
+          setName: false
+        })
+        .on("citySelect", (event, name, code) => {
           $citySelect.val(name)
         })
     }
