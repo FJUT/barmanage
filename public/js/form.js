@@ -1,6 +1,12 @@
-require(['jquery', './city-select', 'vue', 'element-ui'], function($, citySelect, Vue, Element) {
-  var { TimeSelect } = Element
+require.ensure(['jquery', 'vue'], function() {
+  const $ = require('jquery')
+  const Vue = require('vue')
+  const Element = require('element-ui')
 
+  require('./city-select')
+
+  /* 注册需要使用的组件 */
+  var { TimeSelect } = Element
   Vue.component(TimeSelect.name, TimeSelect)
 
   var vm = new Vue({
@@ -104,12 +110,13 @@ require(['jquery', './city-select', 'vue', 'element-ui'], function($, citySelect
       // var map = new qq.maps.Map(document.getElementById('mapContainer'));
       // 初始化城市选择
       var $citySelect = $('#citySelect')
-        $citySelect.citySelect({
-          setName: false
-        })
+      $citySelect.citySelect({
+        setName: false
+      })
         .on("citySelect", (event, name, code) => {
           $citySelect.val(name)
         })
     }
   })
 })
+

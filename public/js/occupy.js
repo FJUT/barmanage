@@ -1,16 +1,16 @@
-/**
- * Created by 99171 on 2017/1/19.
- */
-$(function() {
+require.ensure(['jquery', 'vue'], function() {
+  var $ = require('jquery')
+  var Vue = require('vue')
+
   var vm = new Vue({
     el: '#app',
-    data: function() {
+    data() {
       return {
         rows: rows
       }
     },
     methods: {
-      deleteById: function(id) {
+      deleteById(id) {
         if (!confirm('确认删除')) {
           return
         }
@@ -29,7 +29,7 @@ $(function() {
           })
         })
       },
-      plusRow: function() {
+      plusRow() {
         var unsaved = this.rows.find(function(row) {
           return row.id === -1
         })
@@ -45,10 +45,10 @@ $(function() {
           BarId: barInfo.id
         })
       },
-      cancelPlus: function() {
+      cancelPlus() {
         this.rows.pop()
       },
-      doPlus: function() {
+      doPlus() {
         var last = this.rows[this.rows.length - 1]
         if (!last.price) return
         if (!last.seconds) return
@@ -61,7 +61,7 @@ $(function() {
             seconds: last.seconds,
             BarId: barInfo.id
           }
-        }).done(function(response) {
+        }).done((response) => {
           if (response.iRet == 0) {
             // vm.rows[vm.rows.length - 1] = response.created
 

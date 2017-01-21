@@ -8,7 +8,7 @@ var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin')
 module.exports = {
   entry: {
     form: './public/js/form.js',
-    vendors: ['vue', 'jquery', 'bootstrap']
+    occupy: './public/js/occupy.js'
   },
   output: {
     path: path.join(__dirname, 'release'),
