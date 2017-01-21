@@ -1,4 +1,7 @@
-var webpack = require('webpack');
+var webpack = require('webpack')
+var path = require('path')
+
+const outputPath = path.join(__dirname, 'release')
 
 module.exports = function(env) {
   return {
@@ -9,7 +12,8 @@ module.exports = function(env) {
     },
     output: {
       filename: '[name].bundle.js',
-      path: './release',
+      path: outputPath,
+      publicPath: '/assets',
       chunkFilename: '[id].chunk.js'
     },
     module: {
@@ -28,7 +32,7 @@ module.exports = function(env) {
     plugins: [
       /*
         处理多个入口文件中公共引用的代码，使用Commons中间件,
-        main和form两个入口文件里面公共引用的部分，会被合并到init.js里面
+        例如，main和form两个入口文件里面公共引用的部分，会被合并到init.js里面
       */
       new webpack.optimize.CommonsChunkPlugin('init.js')
     ]

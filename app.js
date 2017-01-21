@@ -10,6 +10,20 @@ var users = require('./routes/users');
 var occupy = require('./routes/occupy')
 var app = express();
 
+/* webpack-dev-middleware */
+const webpackConfig = require('./webpack.dev.config')
+const webpackDevMiddleware = require('webpack-dev-middleware')
+const webpack = require('webpack')
+
+var compiler = webpack(webpackConfig)
+
+console.log(webpackConfig.output.publicPath)
+
+app.use(webpackDevMiddleware(compiler, {
+  publicPath: webpackConfig.output.publicPath
+}))
+/* webpack-dev-middleware end */
+
 app.use(function(req, res, next) {
   app.locals.active = req.path.split('/')[1]
   next()
