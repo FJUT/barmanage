@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "dev": "NODE_ENV=development nodemon ./bin/www",
+    "start": "node ./bin/www",
+    "build": "webpack --config webpack.dev.config.js"
   },
   "dependencies": {
     "body-parser": "~1.15.1",

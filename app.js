@@ -24,6 +24,7 @@ app.use(webpackDevMiddleware(compiler, {
 }))
 /* webpack-dev-middleware end */
 
+app.use(require('./middlewares/helper'))
 app.use(function(req, res, next) {
   app.locals.active = req.path.split('/')[1]
   next()
