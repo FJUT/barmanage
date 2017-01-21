@@ -1,4 +1,5 @@
-require(['jquery', 'vue'], ($, Vue) => {
+require.ensure(['jquery', 'vue'], ($, Vue) => {
+
   var vm = new Vue({
     el: '#app',
     data: function () {
