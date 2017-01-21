@@ -56,3 +56,5 @@ var cityInfo = [
     }
 
 ]
+
+module.exports = cityInfo
