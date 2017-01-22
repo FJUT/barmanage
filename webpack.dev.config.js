@@ -17,12 +17,19 @@ module.exports = function(env) {
       chunkFilename: '[id].chunk.js'
     },
     module: {
-      loaders: [{
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        query: { "presets": ["es2015"] }
-      }]
+      loaders: [
+        {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+          query: { "presets": ["es2015"] }
+        },
+        {
+          test: /\.css$/,
+          exclude: /node_modules/,
+          loader: 'style-loader!css-loader'
+        }
+      ]
     },
     resolve: {
       alias: {
