@@ -30,6 +30,8 @@ var vm = new Vue({
       },
       startTime: startTime,
       endTime: endTime,
+      uploading: false,
+      uploadingMulti: false,
       ...barInfo
     }
 
@@ -49,14 +51,25 @@ var vm = new Vue({
         contentType: false,
         success: function (response) {
           t.logo = response.url
+          t.uploading = false
         }
       })
+
+      t.uploading = true
     },
     handlePhotosChange(e) {
       var t = this
       var data = new FormData()
 
-      for (var i = 0; i < e.target.files.length; i++) {
+      var currentPhotoCount = this.photos.length
+      var selectCount = e.target.files.length
+
+      if (currentPhotoCount + selectCount > 5) {
+        alert('最多上传5张图片，请返回重新选择或者删掉后再选')
+        return
+      }
+
+      for (var i = 0; i < selectCount; i++) {
         data.append('photos', e.target.files[i])
       }
 
@@ -70,8 +83,15 @@ var vm = new Vue({
           if (response.iRet == 0) {
             t.photos = t.photos.concat(response.photos)
           }
+
+          t.uploadingMulti = false
         }
       })
+
+      t.uploadingMulti = true
+    },
+    deleteLogo() {
+      this.logo = ''
     },
     deletePhoto(url) {
       this.photos = this.photos.filter(function (photo) {
@@ -80,6 +100,11 @@ var vm = new Vue({
     },
     save(e) {
       e.preventDefault()
+
+      if (this.uploading || this.uploadingMulti) {
+        alert('文件正在上传，请稍后再提交')
+        return false
+      }
 
       $.ajax({
         url: '/saveForm',

@@ -72,6 +72,7 @@ router.post('/saveForm', (req, res) => {
 router.post('/upload', upload.single('logo'), (req, res, next) => {
   // console.log(req.body.address)
   // console.log(req.file)
+
   res.json({
     iRet: 0,
     url: req.file.filename,
@@ -81,7 +82,6 @@ router.post('/upload', upload.single('logo'), (req, res, next) => {
 
 router.post('/uploadMulti', upload.array('photos'), (req, res, next) => {
   // console.log(req.files)
-
   res.json({
     iRet: 0,
     photos: req.files.map(file => file.filename),

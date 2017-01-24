@@ -13,9 +13,10 @@
         <div class="form-group">
           <label class="col-sm-2 control-label">LOGO</label>
           <div class="col-sm-2">
-            <label class="btn btn-success btn-file">
+            <label class="btn btn-success btn-file" v-show="!uploading">
               选择文件 <input type="file" class="hidden" name="logo" @change="handleLogoChange" accept="image/png, image/jpeg">
             </label>
+            <img src="/images/loading.gif" v-show="uploading"/>
           </div>
         </div>
         <div class="form-group" v-if="logo">
@@ -23,16 +24,17 @@
           <div class="col-sm-8">
             <div class="thumbnail pull-left img-with-close-btn">
               <img :src="logo" alt="酒吧图片" />
-              <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <button type="button" class="close" @click="deleteLogo"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
           </div>
         </div>
         <div class="form-group">
           <label class="col-sm-2 control-label">照片</label>
           <div class="col-sm-2">
-            <label class="btn btn-success btn-file">
+            <label class="btn btn-success btn-file" v-show="!uploadingMulti">
               选择文件 <input type="file" class="hidden" name="photos" @change="handlePhotosChange" multiple="multiple" accept="image/png, image/jpeg">
             </label>
+              <img src="/images/loading.gif" v-show="uploadingMulti"/>
           </div>
         </div>
         <div class="form-group" v-if="photos.length > 0">
