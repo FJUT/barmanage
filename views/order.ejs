@@ -2,6 +2,10 @@
 <%- include('header.ejs') %>
 <div class="row">
   <%- include('nav.ejs') %>
-  <div class="col-md-10"></div>
+  <div class="col-md-10">
+    <%if(rows.length <= 0) {%>
+    <p class="text-info">暂无订单</p>
+    <%}%>
+  </div>
 </div>
 <%- include('common/footer.ejs') %>

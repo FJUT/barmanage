@@ -6,16 +6,21 @@ require('../css/animate.css')
 var bool = false
 
 var temp1 = {
-  user: '/images/wyf.jpg',
+  avatar: '/images/wyf.jpg',
+  user: '吴亦凡',
   time: 10,
   message: '大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健',
 }
 
 var temp2 = {
-  user: '/images/zjl.jpg',
+  avatar: '/images/zjl.jpg',
+  user: '周杰伦',
   time: 20,
   image: '/images/dbj.jpg'
 }
+
+var list = [temp1, temp2]
+var index = 0
 
 const Vue = require('vue')
 const vm = new Vue({
@@ -30,17 +35,34 @@ const vm = new Vue({
       return this.curr.time
     }
   },
+  updated() {
+    if (this.curr && !this.ticker) {
+      this.startCount()
+    }
+  },
   methods: {
     startCount() {
-      var ticker = setInterval(() => {
+      this.ticker = setInterval(() => {
         this.curr = {
           ...this.curr,
           time: this.curr.time - 1
         }
 
         if (this.curr.time === 0) {
-          clearInterval(ticker)
+          clearInterval(this.ticker)
+          this.ticker = null
           this.curr = null
+
+          setTimeout(() => {
+            index = index + 1
+
+            if (index >= list.length) {
+              index = 0
+            }
+
+            this.curr = list[index]
+          }, 1000)
+
         }
       }, 1000)
     }
@@ -48,5 +70,5 @@ const vm = new Vue({
 })
 
 setTimeout(() => {
-  vm.curr = temp1
+  vm.curr = list[index]
 }, 17)

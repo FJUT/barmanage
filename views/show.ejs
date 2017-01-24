@@ -11,14 +11,10 @@
     }
     
     .time {
-      position: relative;
-      left: 50%;
-      top: 20px;
-      -webkit-transform: translate(0, -50%);
-      -moz-transform: translate(0, -50%);
-      -ms-transform: translate(0, -50%);
-      -o-transform: translate(0, -50%);
-      transform: translate(0, -50%);
+      font-size: 24px;
+      width: 100px;
+      box-sizing: border-box;
+      padding: 10px;
       color: #FFF;
     }
 
@@ -64,6 +60,7 @@
     .message {
       font-size: 60px;
       color: #f0703d;
+      flex: 1;
     }
 
     .picture {
@@ -74,15 +71,15 @@
 <body>
 <div class="container">
   <div id="app">
-    <h1 v-if="curr" class="time">{{time}}</h1>
     <transition enter-active-class="bounceInDown" leave-active-class="bounceOutDown">
-      <div v-if="curr" class="bubble animated">
-        <div class="avatar_wrap"><img :src="curr.user" class="avatar"/></div>
+      <div v-if="curr" class="bubble animated jello">
+        <div class="avatar_wrap"><img :src="curr.avatar" class="avatar"/></div>
         <div class="message_wrap">
-          <div class="user">吴亦凡</div>
+          <div class="user">{{curr.user}}</div>
           <div class="message" v-if="curr.message">{{curr.message}}</div>
           <div class="picture" v-if="curr.image"><img :src="curr.image"/></div>
         </div>
+        <div v-if="curr" class="time">{{time}}</div>
       </div>
     </transition>
   </div>

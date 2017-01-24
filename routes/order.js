@@ -9,7 +9,17 @@ const co = require('co')
 const router = express.Router()
 
 router.get('/', auth, (req, res, next) => {
-  res.render('order')
+  const { id } = res.locals.barInfo
+
+  models.LargeScreenInfo.findAll({
+    where: {
+      id: id
+    }
+  }).then(rows => {
+    res.render('order', {
+      rows: rows
+    })
+  })
 })
 
 module.exports = router
