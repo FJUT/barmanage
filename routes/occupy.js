@@ -9,9 +9,10 @@ const co = require('co')
 
 router.get('/', auth, (req, res, next) => {
   co(function*() {
+    var BarId = res.locals.barInfo.id
     var data = yield models.BarPrice.findAll({
       where: {
-        BarId: 1
+        BarId
       }
     })
 
@@ -49,11 +50,31 @@ router.post('/addRow', (req, res) => {
 
     var created = created.get({plain: true})
 
-    console.log('create success', created)
+    // console.log('create success', created)
 
     res.json({
       iRet: 0,
       created
+    })
+  })
+})
+
+router.post('/updateRow', (req, res) => {
+  const { seconds, price, id } = req.body
+
+  models.BarPrice.update({
+    seconds,
+    price
+  }, {
+    where: {
+      id: id
+    }
+  }).then(result => {
+    console.log(result)
+
+    res.json({
+      iRet: 0,
+      result
     })
   })
 })

@@ -3,8 +3,8 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var flash = require('connect-flash')
+// var session = require('express-session')
+// var flash = require('connect-flash')
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
@@ -15,13 +15,15 @@ var show = require('./routes/show')
 var app = express();
 
 /******************* webpack-dev-middleware *************************/
-const webpackConfig = require('./webpack.dev.config')
-const webpackDevMiddleware = require('webpack-dev-middleware')
-const webpack = require('webpack')
-const compiler = webpack(webpackConfig)
-app.use(webpackDevMiddleware(compiler, {
-  publicPath: webpackConfig.output.publicPath
-}))
+if (process.env.NODE_ENV != 'production') {
+  const webpackConfig = require('./webpack.dev.config')
+  const webpackDevMiddleware = require('webpack-dev-middleware')
+  const webpack = require('webpack')
+  const compiler = webpack(webpackConfig)
+  app.use(webpackDevMiddleware(compiler, {
+    publicPath: webpackConfig.output.publicPath
+  }))
+}
 /*********************** webpack-dev-middleware end ******************/
 
 app.use(require('./middlewares/helper'))
@@ -30,11 +32,11 @@ app.use(function(req, res, next) {
   next()
 })
 
-// session middleware
-app.use(session({
-  secret: 'wangshaojun'
-}))
-app.use(flash())
+// // session middleware
+// app.use(session({
+//   secret: 'wangshaojun'
+// }))
+// app.use(flash())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

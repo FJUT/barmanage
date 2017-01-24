@@ -103,14 +103,15 @@ body {
 
 /* 登录页面 */
 
+/* 表单页面 */
 #app {
     border-left: 1px solid #EEEEEE;
 }
 
-#mapContainer {
+#map-container {
     width: 500px;
     height: 300px;
-    left: 15px;
+    margin-top: 10px;
 }
 
 [v-cloak] {
