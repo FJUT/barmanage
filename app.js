@@ -7,22 +7,22 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var occupy = require('./routes/occupy')
+var occupy = require('./routes/occupy');
 var app = express();
 
-/* webpack-dev-middleware */
+/******************* webpack-dev-middleware *************************/
 const webpackConfig = require('./webpack.dev.config')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpack = require('webpack')
 
 var compiler = webpack(webpackConfig)
 
-console.log(webpackConfig.output.publicPath)
+// console.log(webpackConfig.output.publicPath)
 
 app.use(webpackDevMiddleware(compiler, {
   publicPath: webpackConfig.output.publicPath
 }))
-/* webpack-dev-middleware end */
+/*********************** webpack-dev-middleware end ******************/
 
 app.use(require('./middlewares/helper'))
 app.use(function(req, res, next) {
