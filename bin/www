@@ -23,10 +23,14 @@ app.locals.navs = [
     path: 'orders'
   },
   {
+    name: '大屏显示(demo)',
+    path: 'show'
+  },
+  {
     name: '退出登陆',
     path: 'logout'
   }
-];
+]
 
 app.locals.isActive = function(path, active) {
   if (path === active) {
@@ -34,7 +38,7 @@ app.locals.isActive = function(path, active) {
   }
 
   return ''
-};
+}
 
 /**
  * Get port from environment and store in Express.

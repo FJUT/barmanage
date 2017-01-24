@@ -1,6 +1,7 @@
 /**
  * Created by 99171 on 2017/1/19.
  */
+
 /*
  CREATE TABLE [ChatRecord](
  [id] [nvarchar](32) NOT NULL,

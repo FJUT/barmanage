@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>登陆</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
-    <link rel='stylesheet' href='/css/style.css'/>
-    <script src="/js/jquery.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>登陆</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+  <link rel='stylesheet' href='/css/style.css'/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 </head>
 <body class="jumbotron">
-  <div class="container">
+  <div class="container" id="app" v-cloak>
       <div class="row">
           <div class="col-md-6 col-md-offset-3">
               <div class="panel panel-login">
                   <div class="panel-heading">
                       <div class="row">
                           <div class="col-xs-6">
-                              <a href="#" class="active" id="login-form-link">登录</a>
+                              <a href="#login" :class="{ active: route === 'login'}" id="login-form-link" @click="changeRoute('login')">登录</a>
                           </div>
                           <div class="col-xs-6">
-                              <a href="#" id="register-form-link">注册</a>
+                              <a href="#register" :class="{ active: route === 'register'}" id="register-form-link" @click="changeRoute('register')">注册</a>
                           </div>
                       </div>
                       <hr>
@@ -27,16 +26,14 @@
                   <div class="panel-body">
                       <div class="row">
                           <div class="col-lg-12">
-                              <form id="login-form" action="/login" method="post" role="form" style="display: block;">
-                                  <%if(error_message != '') {%>
-                                  <div class="alert alert-danger" role="alert"><strong><%=error_message%></strong></div>
-                                  <%}%>
+                              <form id="login-form" action="/login" method="post" role="form" v-show="route == 'login'">
                                   <div class="form-group">
-                                      <input type="text" name="phonenumber" tabindex="1" class="form-control" placeholder="手机号码" value="">
+                                      <input type="text" name="phonenumber" tabindex="1" class="form-control" placeholder="手机号码" v-model="phonenumber">
                                   </div>
                                   <div class="form-group">
-                                      <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="密码">
+                                      <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="密码" v-model="pwd">
                                   </div>
+                                  <div class="alert alert-danger" role="alert" v-show="error_message"><strong>{{error_message}}</strong></div>
                                   <div class="form-group text-center">
                                       <input type="checkbox" tabindex="3" name="rememberme" id="remember">
                                       <label for="remember"> 记住我</label>
@@ -44,26 +41,26 @@
                                   <div class="form-group">
                                       <div class="row">
                                           <div class="col-sm-6 col-sm-offset-3">
-                                              <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="登录">
+                                            <button type="submit" class="form-control btn btn-login" @click="clickLogin">登录</button>
                                           </div>
                                       </div>
                                   </div>
                               </form>
-                              <form id="register-form" action="/register" method="post" role="form" style="display: none;">
+                              <form id="register-form" action="/register" method="post" role="form" v-show="route == 'register'">
                                   <div class="form-group">
-                                      <input type="text" name="phonenumber" id="username" tabindex="1" class="form-control js_phonenumber" placeholder="手机号码" value="">
+                                      <input type="text" name="phonenumber" id="username" v-model="r_phonenumber" tabindex="1" class="form-control js_phonenumber" placeholder="手机号码" value="">
                                   </div>
                                   <div class="form-group">
-                                      <input type="password" name="password" tabindex="2" class="form-control js_pwd" placeholder="密码">
+                                      <input type="password" name="password" v-model="r_pwd" tabindex="2" class="form-control js_pwd" placeholder="密码">
                                   </div>
                                   <div class="form-group">
-                                      <input type="password" name="confirm-password" tabindex="2" class="form-control js_pwd_re" placeholder="再次输入密码">
+                                      <input type="password" name="confirm-password" v-model="r_pwd_re" tabindex="2" class="form-control js_pwd_re" placeholder="再次输入密码">
                                   </div>
-                                  <div class="alert alert-danger" id="register-tip" role="alert" style="display: none"></div>
+                                  <div class="alert alert-danger" id="register-tip" role="alert" v-show="r_register_tip">{{r_register_tip}}</div>
                                   <div class="form-group">
                                       <div class="row">
                                           <div class="col-sm-6 col-sm-offset-3">
-                                              <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="马上注册">
+                                            <button class="form-control btn btn-register" @click="clickRegister" :disabled="disabled">{{r_btn_text}}</button>
                                           </div>
                                       </div>
                                   </div>
@@ -75,43 +72,10 @@
           </div>
       </div>
   </div>
-<script>
-$(function() {
-    $('#login-form-link').click(function(e) {
-        $("#login-form").delay(100).fadeIn(100);
-        $("#register-form").fadeOut(100);
-        $('#register-form-link').removeClass('active');
-        $(this).addClass('active');
-        e.preventDefault();
-    });
-    $('#register-form-link').click(function(e) {
-        $("#register-form").delay(100).fadeIn(100);
-        $("#login-form").fadeOut(100);
-        $('#login-form-link').removeClass('active');
-        $(this).addClass('active');
-        e.preventDefault();
-    });
-
-    $('#register-form').on('submit', function(e) {
-        var phonenumber = $('.js_phonenumber').val().trim()
-        var pwd = $('.js_pwd').val().trim()
-        var pwd_re = $('.js_pwd_re').val().trim()
-
-        if (phonenumber === '' || pwd === '' || pwd_re === '') {
-            $('#register-tip').html('请填写完整').show()
-            e.preventDefault()
-            return
-        }
-
-        if (pwd != pwd_re) {
-            $('#register-tip').html('两次密码不一致').show()
-            e.preventDefault()
-            return
-        }
-
-        return true
-    })
-});
-</script>
+  <script>
+    window.error_message = "<%=error_message%>"
+  </script>
+  <script src="<%=url('init.js')%>"></script>
+  <script src="<%=url('login.bundle.js')%>"></script>
 </body>
 </html>

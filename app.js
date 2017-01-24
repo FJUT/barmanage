@@ -10,6 +10,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var occupy = require('./routes/occupy')
 var login = require('./routes/login')
+var order = require('./routes/order')
+var show = require('./routes/show')
 var app = express();
 
 /******************* webpack-dev-middleware *************************/
@@ -49,11 +51,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'release')));
 app.use(express.static(path.join(__dirname, 'uploads')));
 
-app.use('/', routes);
-// app.use('/login', login);
-
+app.use('/', routes)
 app.use('/login', login)
-app.use('/occupy', occupy);
+app.use('/occupy', occupy)
+app.use('/order', order)
+app.use('/show', show)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

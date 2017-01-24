@@ -1,18 +1,16 @@
 /**
  * Created by shinan on 2017/1/23.
  */
-const fs = require('fs')
 const express = require('express')
 const models = require('../models')
 const sha1 = require('../lib/sha1')
-
 const Token = require('../lib/Token')
 const co = require('co')
-
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
   let token = req.cookies.token
+
   if (token) {
     res.redirect('/')
   } else {
@@ -36,15 +34,18 @@ router.post('/', (req, res, next) => {
     if (!result) {
       req.flash('error_message', '用户名或密码错误')
       res.redirect('/login')
-    } else {
-      var expires = rememberme ? new Date(Date.now() + 86400) : 0
-
-      res.cookie('token', Token.encode(phonenumber, password), {
-        expires
-      })
-
-      res.redirect('/')
+      return
     }
+
+    let expires = rememberme ? new Date(Date.now() + 86400) : 0
+
+    res.cookie(
+      'token',
+      Token.encode(phonenumber, password),
+      { expires }
+    )
+
+    res.redirect('/')
   })
 })
 

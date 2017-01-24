@@ -9,45 +9,46 @@ const Token = require('../lib/Token')
 const co = require('co')
 
 /* GET home page. */
-router.get('/', auth, function(req, res, next) {
-  res.render('index', {
-    title: 'Sequelize: Bars',
-    bars: Object.keys(models.Bar.rawAttributes)
-  })
-})
-
-router.get('/register', (req, res, next) => {
-  if (req.cookies.token) {
-    res.redirect('/')
-    return
-  }
-
-  res.render('register')
+router.get('/', (req, res, next) => {
+  res.redirect('/form')
 })
 
 router.post('/register', (req, res, next) => {
-  if (req.cookies.token) {
-    res.redirect('/')
+  if (!req.xhr) {
+    next(new Error('404'))
     return
   }
 
-  let { phonenumber, password } = req.body
-
-  if (phonenumber === '' || password === '') {
-    res.redirect('/register')
-    return
-  }
-
-  password = sha1(password)
-
-  models.Bar
-    .upsert({
-      phonenumber,
-      password
+  co(function*() {
+    let { phonenumber, password } = req.body
+    let Bar = models.Bar
+    let result = yield Bar.findAndCount({
+      where: {
+        phonenumber: phonenumber
+      }
     })
-    .then(created => {
-      res.redirect('/login')
+
+    if (result.count > 0) {
+      res.json({
+        iRet: -1,
+        message: '该手机号已经注册过'
+      })
+
+      return
+    }
+
+    let created = yield models.Bar.findOrCreate({
+      where: {
+        phonenumber,
+        password: sha1(password)
+      }
     })
+
+    res.json({
+      iRet: 0,
+      message: '注册成功'
+    })
+  }).catch(next)
 })
 
 router.get('/form', auth, (req, res, next) => {
@@ -56,8 +57,6 @@ router.get('/form', auth, (req, res, next) => {
 
 router.post('/saveForm', (req, res) => {
   var { barInfo } = req.body
-
-  // console.log(barInfo)
 
   models.Bar.update(Object.assign({}, barInfo), {
     where: {
@@ -88,10 +87,6 @@ router.post('/uploadMulti', upload.array('photos'), (req, res, next) => {
     photos: req.files.map(file => file.filename),
     message: 'upload ready'
   })
-})
-
-router.post('/saveBarInfo', (req, res, next) => {
-  
 })
 
 router.get('/logout', (req, res, next) => {
