@@ -3,11 +3,13 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var flash = require('connect-flash')
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
-var occupy = require('./routes/occupy');
+var occupy = require('./routes/occupy')
+var login = require('./routes/login')
 var app = express();
 
 /******************* webpack-dev-middleware *************************/
@@ -16,9 +18,6 @@ const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpack = require('webpack')
 
 var compiler = webpack(webpackConfig)
-
-// console.log(webpackConfig.output.publicPath)
-
 app.use(webpackDevMiddleware(compiler, {
   publicPath: webpackConfig.output.publicPath
 }))
@@ -29,6 +28,12 @@ app.use(function(req, res, next) {
   app.locals.active = req.path.split('/')[1]
   next()
 })
+
+// session middleware
+app.use(session({
+  secret: 'wangshaojun'
+}))
+app.use(flash())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -45,7 +50,9 @@ app.use(express.static(path.join(__dirname, 'release')));
 app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use('/', routes);
-app.use('/users', users);
+// app.use('/login', login);
+
+app.use('/login', login)
 app.use('/occupy', occupy);
 
 // catch 404 and forward to error handler
@@ -78,6 +85,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;
