@@ -1,6 +1,13 @@
 /*  登录页面  */
 body {
-    background-color: #eee;
+    font-size: 14px;
+    line-height: 1;
+    font-family: "Helvetica Neue", Helvetica, Arial, "pingfang sc", "Hiragino Sans GB", "Microsoft YaHei", 微软雅黑, STHeiti, SimSun, sans-serif;
+    color: rgb(51, 51, 51);
+}
+
+h1, a, span {
+    font-family: "Helvetica Neue", Helvetica, Arial, "pingfang sc", "Hiragino Sans GB", "Microsoft YaHei", 微软雅黑, STHeiti, SimSun, sans-serif !important;
 }
 
 .panel-login {
