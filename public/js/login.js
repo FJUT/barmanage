@@ -18,7 +18,7 @@ const vm = new Vue({
       route: 'login',
       phonenumber: '',
       pwd: '',
-      error_message: '',
+      error_message: window.error_message,
       r_phonenumber: '',
       r_pwd: '',
       r_pwd_re: '',

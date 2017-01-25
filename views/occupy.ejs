@@ -10,10 +10,24 @@
         <tbody>
           <tr v-for="(row, index) in rows">
             <template v-if="row.id > -1">
-              <th scope="row">{{index}}</th>
-              <td>{{row.seconds}}秒</td>
-              <td>{{row.price}}元</td>
-              <td><button type="button" class="close" @click="deleteById(row.id)"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button></td>
+                <template v-if="!row.edit">
+                  <th scope="row">{{index + 1}}</th>
+                  <td>{{row.seconds}}秒</td>
+                  <td>{{row.price}}元</td>
+                  <td>
+                      <button type="button" class="btn btn-sm btn-primary" @click="editById(row.id)">修改</button>
+                      <button type="button" class="btn btn-sm btn-danger" @click="deleteById(row.id)">删除</button>
+                  </td>
+                </template>
+                <template v-else>
+                <th scope="row">{{index}}</th>
+                <td><input type="text" v-model="row.seconds"></td>
+                <td><input type="text" v-model="row.price"></td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-default" @click="doUpdate(row.id)">更新</button>
+                    <button type="button" class="btn btn-sm btn-danger" @click="cancelUpdate(row.id)">取消</button>
+                </td>
+                </template>
             </template>
             <template v-else>
               <th scope="row">{{index}}</th>
@@ -34,6 +48,6 @@
 var rows = <%-JSON.stringify(rows)%>
 var barInfo = <%-JSON.stringify(barInfo)%>
 </script>
-<script src="/assets/init.js"></script>
-<script src="/assets/occupy.bundle.js"></script>
+<script src="<%=url('init.js')%>"></script>
+<script src="<%=url('occupy.bundle.js')%>"></script>
 <%- include('common/footer.ejs') %>

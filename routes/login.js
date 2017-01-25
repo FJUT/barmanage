@@ -14,8 +14,14 @@ router.get('/', (req, res, next) => {
   if (token) {
     res.redirect('/')
   } else {
+    const errorMessage = req.cookies.error_message
+
+    console.log(errorMessage)
+
+    res.clearCookie('error_message')
+
     res.render('login', {
-      error_message: req.flash('error_message')
+      error_message: errorMessage
     })
   }
 })
@@ -29,10 +35,8 @@ router.post('/', (req, res, next) => {
       password: sha1(password)
     }
   }).then(result => {
-    /* 返回原始json的方法 */
-    // res.send(result.get({ plain: true }))
     if (!result) {
-      req.flash('error_message', '用户名或密码错误')
+      res.cookie('error_message', '用户名或密码错误')
       res.redirect('/login')
       return
     }

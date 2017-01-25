@@ -2,27 +2,28 @@
  * Created by shinan on 2017/1/24.
  */
 require('../css/animate.css')
+const Vue = require('vue')
 
 var bool = false
 
 var temp1 = {
   avatar: '/images/wyf.jpg',
   user: '吴亦凡',
-  time: 10,
+  time: 5,
   message: '大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健大保健',
 }
 
 var temp2 = {
   avatar: '/images/zjl.jpg',
   user: '周杰伦',
-  time: 20,
+  time: 10,
   image: '/images/dbj.jpg'
 }
 
 var list = [temp1, temp2]
 var index = 0
 
-const Vue = require('vue')
+
 const vm = new Vue({
   el: '#app',
   data() {
