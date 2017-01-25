@@ -1,18 +1,19 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+var express = require('express')
+var path = require('path')
+var favicon = require('serve-favicon')
+var logger = require('morgan')
+var cookieParser = require('cookie-parser')
 // var session = require('express-session')
 // var flash = require('connect-flash')
-var bodyParser = require('body-parser');
+var bodyParser = require('body-parser')
 
-var routes = require('./routes/index');
+var routes = require('./routes/index')
 var occupy = require('./routes/occupy')
 var login = require('./routes/login')
 var order = require('./routes/order')
 var show = require('./routes/show')
-var app = express();
+var admin = require('./routes/admin')
+var app = express()
 
 /******************* webpack-dev-middleware *************************/
 if (process.env.NODE_ENV != 'production') {
@@ -57,6 +58,7 @@ app.use('/login', login)
 app.use('/occupy', occupy)
 app.use('/order', order)
 app.use('/show', show)
+app.use('/admin', admin)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
