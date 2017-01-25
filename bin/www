@@ -25,10 +25,6 @@ app.locals.navs = [
   {
     name: '大屏显示(demo)',
     path: 'show'
-  },
-  {
-    name: '退出登陆',
-    path: 'logout'
   }
 ]
 

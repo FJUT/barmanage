@@ -1,9 +1,11 @@
-<div class="col-md-2 menu">
-  <ul class="nav nav-pills nav-stacked">
-    <%navs.forEach(function(nav) {%>
-    <li class="<%=isActive(nav.path, active)%>">
-      <a href="/<%=nav.path%>"><%=nav.name%></a>
-    </li>
-    <%})%>
-  </ul>
-</div>
+<aside class="main-sidebar">
+  <section class="sidebar" style="height: auto;">
+    <ul class="sidebar-menu">
+      <%navs.forEach(function(nav) {%>
+      <li class="treeview <%=isActive(nav.path, active)%>">
+        <a href="/<%=nav.path%>"><%=nav.name%></a>
+      </li>
+      <%})%>
+    </ul>
+  </section>
+</aside>

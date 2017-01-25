@@ -1,49 +1,74 @@
 <%- include('common/header.ejs') %>
-  <%- include('header.ejs') %>
-  <div class="row">
-    <%- include('nav.ejs') %>
-    <div class="col-md-10" id="app">
-      <table class="table table-hover">
-        <thead>
-          <tr><th>#</th> <th>时长</th> <th>价格</th></tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, index) in rows">
-            <template v-if="row.id > -1">
-                <template v-if="!row.edit">
-                  <th scope="row">{{index + 1}}</th>
-                  <td>{{row.seconds}}秒</td>
-                  <td>{{row.price}}元</td>
-                  <td>
-                      <button type="button" class="btn btn-sm btn-primary" @click="editById(row.id)">修改</button>
-                      <button type="button" class="btn btn-sm btn-danger" @click="deleteById(row.id)">删除</button>
-                  </td>
-                </template>
-                <template v-else>
-                <th scope="row">{{index}}</th>
-                <td><input type="text" v-model="row.seconds"></td>
-                <td><input type="text" v-model="row.price"></td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-default" @click="doUpdate(row.id)">更新</button>
-                    <button type="button" class="btn btn-sm btn-danger" @click="cancelUpdate(row.id)">取消</button>
-                </td>
-                </template>
-            </template>
-            <template v-else>
-              <th scope="row">{{index}}</th>
-              <td><input type="text" v-model="row.seconds"></td>
-              <td><input type="text" v-model="row.price"></td>
-              <td>
-                <button type="button" class="btn btn-default" @click="doPlus">添加</button>
-                <button type="button" class="btn btn-danger" @click="cancelPlus">取消</button>
-              </td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
-      <button type="submit" class="btn btn-primary btn-lg" @click="plusRow">添加霸屏</button>
+<%- include('header.ejs') %>
+<%- include('nav.ejs') %>
+<div class="content-wrapper">
+  <section class="content-header">
+    <h1>设置霸屏时长和价格</h1>
+  </section>
+  <section class="content">
+    <div class="row">
+      <div class="col-md-10" id="app">
+        <div class="box box-primary">
+          <div class="box-header">
+            <ul class="pagination pagination-sm no-margin pull-right">
+              <li><a href="#">«</a></li>
+              <li><a href="#">1</a></li>
+              <li><a href="#">2</a></li>
+              <li><a href="#">3</a></li>
+              <li><a href="#">»</a></li>
+            </ul>
+          </div>
+          <div class="box-body">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th>#</th>
+                  <th>时长</th>
+                  <th>价格</th>
+                  <th>操作</th>
+                </tr>
+                <tr v-for="(row, index) in rows">
+                  <template v-if="row.id > -1">
+                    <template v-if="!row.edit">
+                      <th scope="row">{{index + 1}}</th>
+                      <td>{{row.seconds}}秒</td>
+                      <td>{{row.price}}元</td>
+                      <td>
+                        <button type="button" class="btn btn-sm btn-primary" @click="editById(row.id)">修改</button>
+                        <button type="button" class="btn btn-sm btn-danger" @click="deleteById(row.id)">删除</button>
+                      </td>
+                    </template>
+                    <template v-else>
+                      <th scope="row">{{index}}</th>
+                      <td><input type="text" v-model="row.seconds"></td>
+                      <td><input type="text" v-model="row.price"></td>
+                      <td>
+                        <button type="button" class="btn btn-sm btn-default" @click="doUpdate(row.id)">更新</button>
+                        <button type="button" class="btn btn-sm btn-danger" @click="cancelUpdate(row.id)">取消</button>
+                      </td>
+                    </template>
+                  </template>
+                  <template v-else>
+                    <th scope="row">{{index}}</th>
+                    <td><input type="text" v-model="row.seconds"></td>
+                    <td><input type="text" v-model="row.price"></td>
+                    <td>
+                      <button type="button" class="btn btn-default" @click="doPlus">添加</button>
+                      <button type="button" class="btn btn-danger" @click="cancelPlus">取消</button>
+                    </td>
+                  </template>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="box-footer">
+            <button type="submit" class="btn btn-primary btn-lg" @click="plusRow">添加霸屏</button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
+</div>
 <script>
 var rows = <%-JSON.stringify(rows)%>
 var barInfo = <%-JSON.stringify(barInfo)%>

@@ -1,3 +1,18 @@
-<div class="page-header">
-  <h1>我的后台</h1>
-</div>
+<header class="main-header">
+  <a href="index2.html" class="logo">
+    <span class="logo-lg">酒吧端</span>
+  </a>
+  <nav class="navbar navbar-static-top">
+    <div class="navbar-custom-menu">
+      <ul class="nav navbar-nav">
+        <!-- User Account: style can be found in dropdown.less -->
+        <li class="dropdown user user-menu open">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+            <img src="<%=barInfo.logo || '/images/default-50x50.gif'%>" class="user-image" alt="User Image">
+            <span class="hidden-xs"><%=barInfo.phonenumber%></span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
