@@ -41,7 +41,7 @@ router.post('/', (req, res, next) => {
       return
     }
 
-    let expires = rememberme ? new Date(Date.now() + 86400) : 0
+    let expires = rememberme ? new Date(Date.now() + 8640e4) : 0
 
     res.cookie(
       'token',

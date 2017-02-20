@@ -1,9 +1,7 @@
 const $ = require('jquery')
 const Vue = require('vue')
 const Element = require('element-ui')
-
-/* 注册需要使用的组件 */
-var { TimeSelect } = Element
+const { TimeSelect } = Element /* 注册需要使用的组件 */
 Vue.component(TimeSelect.name, TimeSelect)
 
 var vm = new Vue({
