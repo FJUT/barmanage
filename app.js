@@ -4,16 +4,8 @@ var favicon = require('serve-favicon')
 var logger = require('morgan')
 var cookieParser = require('cookie-parser')
 // var session = require('express-session')
-// var flash = require('connect-flash')
 var bodyParser = require('body-parser')
 
-var routes = require('./routes/index')
-var occupy = require('./routes/occupy')
-var login = require('./routes/login')
-var order = require('./routes/order')
-var show = require('./routes/show')
-var admin = require('./routes/admin')
-var wx = require('./routes/wx')
 var app = express()
 
 /******************* webpack-dev-middleware *************************/
@@ -54,13 +46,8 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 86400000 }));
 app.use(express.static(path.join(__dirname, 'release'), { maxAge: 86400000 }));
 app.use(express.static(path.join(__dirname, 'uploads'),{ maxAge: 86400000 }));
 
-app.use('/', routes)
-app.use('/login', login)
-app.use('/occupy', occupy)
-app.use('/order', order)
-app.use('/show', show)
-app.use('/admin', admin)
-app.use('/wx', wx)
+var initRouters = require('./routes/init')
+initRouters(app)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
