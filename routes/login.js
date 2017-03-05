@@ -16,8 +16,6 @@ router.get('/', (req, res, next) => {
   } else {
     const errorMessage = req.cookies.error_message
 
-    console.log(errorMessage)
-
     res.clearCookie('error_message')
 
     res.render('login', {
@@ -41,15 +39,15 @@ router.post('/', (req, res, next) => {
       return
     }
 
-    let expires = rememberme ? new Date(Date.now() + 8640e4) : 0
+    req.session.barInfo = result
 
     res.cookie(
       'token',
       Token.encode(phonenumber, password),
-      { expires }
+      { expires: rememberme ? new Date(Date.now() + 8640e4) : 0 }
     )
 
-    res.redirect('/')
+    res.redirect('/form')
   })
 })
 

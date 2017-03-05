@@ -1,9 +1,7 @@
 /**
  * Created by 99171 on 2017/1/16.
  */
-const co = require('co')
 const sha1 = require('../lib/sha1')
-const models = require('../models')
 const Token = require('../lib/Token')
 
 const auth = (req, res, next) => {
@@ -14,27 +12,19 @@ const auth = (req, res, next) => {
     return
   }
 
-  co(function*() {
-    // console.log(token)
-    let arr = Token.decode(token)
-    let [ phonenumber, password ] = arr
+  let arr = Token.decode(token)
+  let [ phonenumber, password ] = arr
 
-    password = sha1(password)
+  password = sha1(password)
 
-    let result = yield models.Bar.findOne({
-      where: {
-        phonenumber,
-        password,
-      }
-    })
+  let barInfo = req.session.barInfo
 
-    if (!result) {
-      res.redirect('/login')
-    } else {
-      res.locals.barInfo = result.get({ plain: true })
-      next()
-    }
-  }).catch(next)
+  if (barInfo.phonenumber == phonenumber && barInfo.password == password) {
+    res.locals.barInfo = barInfo
+    next()
+  } else {
+    res.redirect('/login')
+  }
 }
 
 module.exports = auth

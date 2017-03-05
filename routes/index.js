@@ -52,6 +52,9 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/form', auth, (req, res, next) => {
+
+  console.log(req.session)
+
   res.render('form', { barInfo: res.locals.barInfo })
 })
 

@@ -3,7 +3,8 @@ var path = require('path')
 var favicon = require('serve-favicon')
 var logger = require('morgan')
 var cookieParser = require('cookie-parser')
-// var session = require('express-session')
+var session = require('express-session')
+var RedisStore = require('connect-redis')(session)
 var bodyParser = require('body-parser')
 
 var app = express()
@@ -26,11 +27,17 @@ app.use(function(req, res, next) {
   next()
 })
 
-// // session middleware
-// app.use(session({
-//   secret: 'wangshaojun'
-// }))
-// app.use(flash())
+// 使用session中间件
+app.use(session({
+  store: new RedisStore({
+    host: 'localhost',
+    port: 6379,
+    logErrors: true
+  }),
+  saveUninitialized: true,
+  secret: 'weizhong_shinan_wangshaojun',
+  resave: false
+}))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
