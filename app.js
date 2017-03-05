@@ -13,6 +13,7 @@ var login = require('./routes/login')
 var order = require('./routes/order')
 var show = require('./routes/show')
 var admin = require('./routes/admin')
+var wx = require('./routes/wx')
 var app = express()
 
 /******************* webpack-dev-middleware *************************/
@@ -59,6 +60,7 @@ app.use('/occupy', occupy)
 app.use('/order', order)
 app.use('/show', show)
 app.use('/admin', admin)
+app.use('/wx', wx)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
