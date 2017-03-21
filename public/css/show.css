@@ -3,7 +3,8 @@ html, body, .container {
 }
 
 body {
-    background: #000000 url(../images/show-bg.jpg) no-repeat 0 0;
+    background: #000000 url(../images/show-bg.jpg);
+    background-size: cover;
 }
 
 #app {
