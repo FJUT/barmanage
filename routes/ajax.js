@@ -4,6 +4,7 @@
 var express = require('express')
 var router = express.Router()
 var models = require('../models')
+var { Bar, User, Message } = models
 var upload = require('../middlewares/upload')
 var co = require('co')
 
