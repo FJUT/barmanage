@@ -5,11 +5,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/show.css">
 </head>
 <body>
 <div class="container">
-  <div id="app"></div>
+  <div id="app">
+    <div class="chat"></div>
+    <div class="images">
+      <carousel-3d
+        :autoplay="true"
+        :border="0">
+        <slide v-for="(item, index) in images" :index="index"><img :src="item.message" alt=""></slide>
+      </carousel-3d>
+    </div>
+  </div>
 </div>
+<script>
+var messages = <%-JSON.stringify(messages)%>
+</script>
 <script src="<%=url('init.js')%>"></script>
 <script src="<%=url('show.bundle.js')%>"></script>
 </body>

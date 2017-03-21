@@ -36,7 +36,9 @@ router.get('/', auth, (req, res, next) => {
       message.user = usersHash[message.UserId]
     })
 
-    res.render('show')
+    res.render('show', {
+      messages: messages
+    })
   }).catch(next)
 })
 

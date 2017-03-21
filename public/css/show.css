@@ -1,0 +1,25 @@
+html, body, .container {
+    height: 100%;
+}
+
+body {
+    background: #000000 url(../images/show-bg.jpg) no-repeat 0 0;
+}
+
+#app {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.images {
+    width: 420px;
+}
+
+.chat {
+    flex: 1;
+    margin: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    height: 80%;
+}
