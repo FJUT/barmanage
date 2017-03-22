@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     msgVideo:{
       type:DataTypes.STRING
-    }
+    },
     msgTime: {
       type: DataTypes.DATE
     },

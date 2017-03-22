@@ -8,16 +8,31 @@ var { Bar, User, Message } = models
 var upload = require('../middlewares/upload')
 var co = require('co')
 
+var DataApi = require('../lib/DataApi')
+
 router.get('/getBarList', (req, res, next) => {
   var id = req.query.id
 
-  models.Bar.findAll()
-    .then(result => {
+  DataApi.getAllBars().then(bars => {
+    res.send(bars)
+  }).catch(err => {
+    console.log(err)
+  })
+})
 
-    })
-    .catch(err => {
+router.get('/getBarDetail', (req, res, next) => {
+  Bar.find({
+    where: {
+      id: req.query.id
+    }
+  }).then(bar => {
+    res.send(bar.get({plain: true}))
+  })
+})
 
-    })
+router.get('/getAllMessages', (req, res, next) => {
+  DataApi.getAllMessagesByBarId(req.query.id)
+    .then(messages => res.send(messages))
 })
 
 router.get('/getLatestMessage', (req, res, next) => {

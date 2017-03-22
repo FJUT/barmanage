@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     province:{
       type: DataTypes.STRING
-    }
+    },
     city:{
       type: DataTypes.STRING
     },
