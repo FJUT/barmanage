@@ -23,13 +23,13 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING
     },
+    nickname: {
+      type: DataTypes.STRING
+    },
     password: {
       type: DataTypes.STRING
     },
     avatar: {
-      type: DataTypes.STRING
-    },
-    openid: {
       type: DataTypes.STRING
     },
     level: {
@@ -37,6 +37,24 @@ module.exports = (sequelize, DataTypes) => {
     },
     score: {
       type: DataTypes.INTEGER
+    },
+    province:{
+      type: DataTypes.STRING
+    }
+    city:{
+      type: DataTypes.STRING
+    },
+    phonenumber:{
+      type: DataTypes.STRING
+    },
+    email:{
+      type:DataTypes.STRING
+    },
+    openid: {
+      type: DataTypes.STRING
+    },
+    wx: {
+      type: DataTypes.STRING
     }
   })
 

@@ -1,24 +1,6 @@
-/*
-*
-* — Create table
- create table
- (
- id            nvarchar2(32) not null,
- logo          nvarchar2(128),
- name          nvarchar2(32),
- address       nvarchar2(512),
- businesshours nvarchar2(64),
- position      nvarchar2(32),
- score         number,
- photos        nvarchar2(2048),
- summary       nvarchar2(1024),
- city          nvarchar2(32),
- screenvalid   number,
- phonenumber   number not null,
- password      nvarchar2(32) not null
- )
-* */
-
+/**
+ * Created by 99171 on 2017/1/19.
+ */
 module.exports = (sequelize, DataTypes) => {
   var Bar = sequelize.define('Bar', {
     id: {
@@ -51,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     city: {
-      type: DataTypes.CHAR
+      type: DataTypes.STRING
     },
     screenvalid: {
       type: DataTypes.INTEGER
@@ -60,6 +42,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     password: {
+      type: DataTypes.STRING
+    },
+    email: {
+      type: DataTypes.STRING
+    },
+    screenTitle: {
+      type: DataTypes.STRING
+    },
+    screenBackImage: {
       type: DataTypes.STRING
     }
   })

@@ -20,14 +20,23 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    message: {
+    msgText: {
       type: DataTypes.STRING
     },
-    photo: {
+    msgImage: {
       type: DataTypes.STRING
     },
-    time: {
+    msgVideo:{
+      type:DataTypes.STRING
+    }
+    msgTime: {
       type: DataTypes.DATE
+    },
+    msgType:{
+      type: DataTypes.INTEGER
+    },
+    seconds:{
+      type: DataTypes.INTEGER
     }
   }, {
     classMethods: {
