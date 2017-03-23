@@ -31,12 +31,16 @@ router.get('/getBarDetail', (req, res, next) => {
 })
 
 router.get('/getAllMessages', (req, res, next) => {
-  DataApi.getAllMessagesByBarId(req.query.id)
+  DataApi.getAllMessages(req.query.id)
     .then(messages => res.send(messages))
 })
 
-router.get('/getLatestMessage', (req, res, next) => {
-
+router.get('/getLatestMessages', (req, res, next) => {
+  var { barId, lastMessageId } = req.query
+  DataApi.getLatestMessages({
+    barId,
+    lastMessageId
+  }).then(messages => res.send(messages))
 })
 
 router.get('/uploadImage', (req, res, next) => {
@@ -44,7 +48,16 @@ router.get('/uploadImage', (req, res, next) => {
 })
 
 router.post('/sendMessage', (req, res, next) => {
+  var {BarId, msgText, UserId} = req.body
 
+  Message.create({
+    msgType: 0,
+    msgText: msgText,
+    BarId: BarId,
+    UserId: UserId
+  }).then(created => {
+    res.json(created.get({plain: true}))
+  })
 })
 
 router.post('/needBarPing', (req, res, next) => {

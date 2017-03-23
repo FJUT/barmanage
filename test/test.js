@@ -14,7 +14,7 @@
 // }, 2000)
 const co = require('co')
 const models = require('../models')
-//
+
 // models.Bar.findById(1).then(bar => {
 //   console.log(bar.get({plain: true}))
 // })
@@ -32,7 +32,7 @@ const models = require('../models')
 // }).then(affected => {
 //   console.log(affected)
 // })
-co(function*() {
+// co(function*() {
   // var created = yield models.BarPrice.create({
   //   seconds: 30,
   //   price: 10,
@@ -41,13 +41,22 @@ co(function*() {
   //
   // console.log('create success', created.get({plain: true}))
 
-  var data = yield models.BarPrice.findAll({
-    where: {
-      BarId: 1
-    }
-  })
+//   var data = yield models.BarPrice.findAll({
+//     where: {
+//       BarId: 1
+//     }
+//   })
+//
+//   data = data.map(row => row.get({ plain: true }))
+//
+//   console.log(data)
+// })
 
-  data = data.map(row => row.get({ plain: true }))
-
-  console.log(data)
-})
+// models.User.findCreateFind({
+//   where: {id: 1},
+//   defaults: {
+//     name: '呵呵'
+//   }
+// }).then((a, b) => {
+//   console.log(a[0].get({plain: true}))
+// })

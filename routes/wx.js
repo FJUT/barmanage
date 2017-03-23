@@ -42,7 +42,7 @@ router.get('/getOpenidAndSessionKey', (req, res) => {
     })
 })
 
-// 检查用户是否在数据库中，不在的话强行入库
+// 检查用户是否在数据库中，如不存在则强行入库
 router.post('/saveUserToDb', (req, res, next) => {
   var {encryptedData, iv, session_key} = req.body
   var pc = new WXBizDataCrypt(APP_ID, session_key)
@@ -58,11 +58,10 @@ router.post('/saveUserToDb', (req, res, next) => {
       name: data.nickName,
       wx: JSON.stringify(data)
     }
-  }).then(user => {
-    console.log(arguments)
-
+  }).then(ret => {
     res.json({
-      iRet: 0
+      iRet: 0,
+      userInfo: ret[0].get({plain: true})
     })
   }).catch(err => {
     res.json({
