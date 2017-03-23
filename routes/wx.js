@@ -12,6 +12,17 @@ const APP_SECRET = '70603dba83c47f0700b9107a630f49cb'
 const WX_SESSION_KEY_URL = 'https://api.weixin.qq.com/sns/jscode2session'
 const WXBizDataCrypt = require('../lib/WXBizDataCrypt')
 
+/*
+// 测试代码
+var encryptedData = "f0kJrEj3ZOMBfgkZpMEvwivkmxkMajzHs/NjYAjlFkLtyzhyUkr/A5x6+ScERd5fys8tBo6Le5AdOZgzPPFVaFez+nh8X9EiJ/FRM9q9F8Qevh03hDJXVIIEFTYBPdEWaNYMCZUplU0v55KsFe28miEpOV/su/nr6kb2C5oXh7Sujyc6oRjzIO01a0BMcFbqPAA+hLHsptFDjJpxqqInRDU2oTgwJIqNxPwDOq5Mvtl3KhVPhnX/mae8wGMP+tPoEqNPu8BpeV3yo6kw22a5JQDO5huo0HXCQPeVquTA30olgigl/XJ3u3qevFhdF0TTN+myzMQEd3HfgfRpwdq1TtYONW8izriGfYVsX38yHMuVvuFmi0goFTNcH1GZlHmSlJD4HpCMqejBu1IYaZ7cKemLPIgEzUuldmB9iP+ZktEufeE1+kxLZ4X6JEKp32gvCS4ReMWVNo+eekwsJjY2uw=="
+var iv = "eriZjuICImh+ilpWLCudEA=="
+var sessionKey = "XFLOa0vefTS2gX1wZLA/zQ=="
+var pc = new WXBizDataCrypt(APP_ID, sessionKey)
+var data = pc.decryptData(encryptedData, iv) // object
+console.log(data)
+*/
+
+// 通过code换取openid和session_key
 router.get('/getOpenidAndSessionKey', (req, res) => {
   var JSCODE = req.query.JSCODE
 
@@ -31,6 +42,7 @@ router.get('/getOpenidAndSessionKey', (req, res) => {
     })
 })
 
+// 检查用户是否在数据库中，不在的话强行入库
 router.post('/saveUserToDb', (req, res, next) => {
   var {encryptedData, iv, session_key} = req.body
   var pc = new WXBizDataCrypt(APP_ID, session_key)
@@ -58,13 +70,5 @@ router.post('/saveUserToDb', (req, res, next) => {
     })
   })
 })
-
-//var encryptedData = "f0kJrEj3ZOMBfgkZpMEvwivkmxkMajzHs/NjYAjlFkLtyzhyUkr/A5x6+ScERd5fys8tBo6Le5AdOZgzPPFVaFez+nh8X9EiJ/FRM9q9F8Qevh03hDJXVIIEFTYBPdEWaNYMCZUplU0v55KsFe28miEpOV/su/nr6kb2C5oXh7Sujyc6oRjzIO01a0BMcFbqPAA+hLHsptFDjJpxqqInRDU2oTgwJIqNxPwDOq5Mvtl3KhVPhnX/mae8wGMP+tPoEqNPu8BpeV3yo6kw22a5JQDO5huo0HXCQPeVquTA30olgigl/XJ3u3qevFhdF0TTN+myzMQEd3HfgfRpwdq1TtYONW8izriGfYVsX38yHMuVvuFmi0goFTNcH1GZlHmSlJD4HpCMqejBu1IYaZ7cKemLPIgEzUuldmB9iP+ZktEufeE1+kxLZ4X6JEKp32gvCS4ReMWVNo+eekwsJjY2uw=="
-//var iv = "eriZjuICImh+ilpWLCudEA=="
-//var sessionKey = "XFLOa0vefTS2gX1wZLA/zQ=="
-//var pc = new WXBizDataCrypt(APP_ID, sessionKey)
-//var data = pc.decryptData(encryptedData, iv) // object
-//
-//console.log(data)
 
 module.exports = router
