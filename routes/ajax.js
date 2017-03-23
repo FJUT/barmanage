@@ -43,10 +43,6 @@ router.get('/getLatestMessages', (req, res, next) => {
   }).then(messages => res.send(messages))
 })
 
-router.get('/uploadImage', (req, res, next) => {
-
-})
-
 router.post('/sendMessage', (req, res, next) => {
   var {BarId, msgText, UserId} = req.body
 
@@ -55,6 +51,19 @@ router.post('/sendMessage', (req, res, next) => {
     msgText: msgText,
     BarId: BarId,
     UserId: UserId
+  }).then(created => {
+    res.json(created.get({plain: true}))
+  })
+})
+
+router.post('/sendImage', upload.single('file'), (req, res, next) => {
+  var {BarId, UserId} = req.body
+
+  Message.create({
+    msgType: 1,
+    msgImage: req.file.filename,
+    BarId,
+    UserId
   }).then(created => {
     res.json(created.get({plain: true}))
   })
