@@ -5,7 +5,7 @@
 var co = require('co')
 var faker = require('faker/locale/zh_CN')
 var models = require('../models')
-var { User, Message, Bar } = models
+var {User, Message, Bar} = models
 
 const random = (min, max) => {
   return Math.floor(Math.random() * max) + min
@@ -30,11 +30,11 @@ async function createUsers() {
   var users = []
 
   for (var i = 0; i < 10; i++) {
-   users.push({
-     name: faker.name.findName(),
-     avatar: faker.image.avatar(),
-     openid: faker.random.uuid()
-   })
+    users.push({
+      name: faker.name.findName(),
+      avatar: faker.image.avatar(),
+      openid: faker.random.uuid()
+    })
   }
 
   return User.bulkCreate(users)
@@ -56,12 +56,15 @@ async function createMessages() {
   }
 }
 
-// async function createFakeData() {
-//   // await createBars()
-//   // await createUsers()
-//   await createMessages()
-// }
-//
-// models.sequelize.sync().then(function() {
+async function createFakeData() {
+  await createBars()
+  await createUsers()
+  await createMessages()
+}
+
+// models.sequelize.sync({force: true}).then(function () {
 //   createFakeData()
+//     .then()
 // })
+
+console.log('fake file fired')
