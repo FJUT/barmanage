@@ -56,20 +56,20 @@ async function createMessages() {
   }
 }
 
-// async function createBarPrice() {
-//   let data = []
-//   for (let i = 1; i < 4; i++) {
-//     let seconds = 10 * i
-//     let price = 20 * i
-//     let barId = i
-//     data.push({
-//       seconds,
-//       price
-//     })
-//   }
-//
-//   await BarPrice.bulkCreate(data)
-// }
+async function createBarPrice() {
+  let data = []
+  for (let i = 1; i < 4; i++) {
+    let seconds = 10 * i
+    let price = 20 * i
+    let barId = i
+    data.push({
+      seconds,
+      price
+    })
+  }
+
+  await BarPrice.bulkCreate(data)
+}
 
 // async function createFakeData() {
 //   await createBars()
@@ -82,8 +82,10 @@ async function createMessages() {
 //     .then()
 // })
 
-BarPrice.findAll({
-  where: {
-    BarId: 1
-  }
-}).then(result => console.log(result.map(o=>o.get({plain:true}))))
+// BarPrice.findAll({
+//   where: {
+//     BarId: 1
+//   }
+// }).then(result => console.log(result.map(o=>o.get({plain:true}))))
+
+createBarPrice()

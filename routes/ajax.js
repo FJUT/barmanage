@@ -69,14 +69,16 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
 })
 
 router.post('/sendBaping', upload.single('file'), (req, res, next) => {
-  var {BarId, UserId, msgText} = req.body
+  var {BarId, UserId, msgText, seconds} = req.body
 
   Message.create({
     msgType: 2,
     msgText: msgText,
     msgImage: req.file.filename,
     BarId,
-    UserId
+    UserId,
+    seconds,
+    isDisplay: false
   }).then(created => {
     res.json(created.get({plain: true}))
   })
