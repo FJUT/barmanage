@@ -68,6 +68,20 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
   })
 })
 
+router.post('/sendBaping', upload.single('file'), (req, res, next) => {
+  var {BarId, UserId, msgText} = req.body
+
+  Message.create({
+    msgType: 2,
+    msgText: msgText,
+    msgImage: req.file.filename,
+    BarId,
+    UserId
+  }).then(created => {
+    res.json(created.get({plain: true}))
+  })
+})
+
 router.get('/getPrices', (req, res, next) => {
   BarPrice.findAll({
     where: {
@@ -78,10 +92,6 @@ router.get('/getPrices', (req, res, next) => {
 
     res.json(result)
   })
-})
-
-router.post('/needBarPing', (req, res, next) => {
-
 })
 
 module.exports = router
