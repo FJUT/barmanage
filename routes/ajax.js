@@ -4,7 +4,7 @@
 var express = require('express')
 var router = express.Router()
 var models = require('../models')
-var { Bar, User, Message } = models
+var { Bar, User, Message, BarPrice } = models
 var upload = require('../middlewares/upload')
 var co = require('co')
 var DataApi = require('../lib/DataApi')
@@ -65,6 +65,18 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
     UserId
   }).then(created => {
     res.json(created.get({plain: true}))
+  })
+})
+
+router.get('/getPrices', (req, res, next) => {
+  BarPrice.findAll({
+    where: {
+      BarId: req.query.barId
+    }
+  }).then(result => {
+    result = result.map(o => o.get({plain: true}))
+
+    res.json(result)
   })
 })
 

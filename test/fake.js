@@ -5,7 +5,7 @@
 var co = require('co')
 var faker = require('faker/locale/zh_CN')
 var models = require('../models')
-var {User, Message, Bar} = models
+var {User, Message, Bar, BarPrice} = models
 
 const random = (min, max) => {
   return Math.floor(Math.random() * max) + min
@@ -56,15 +56,34 @@ async function createMessages() {
   }
 }
 
-async function createFakeData() {
-  await createBars()
-  await createUsers()
-  await createMessages()
-}
+// async function createBarPrice() {
+//   let data = []
+//   for (let i = 1; i < 4; i++) {
+//     let seconds = 10 * i
+//     let price = 20 * i
+//     let barId = i
+//     data.push({
+//       seconds,
+//       price
+//     })
+//   }
+//
+//   await BarPrice.bulkCreate(data)
+// }
+
+// async function createFakeData() {
+//   await createBars()
+//   await createUsers()
+//   await createMessages()
+// }
 
 // models.sequelize.sync({force: true}).then(function () {
 //   createFakeData()
 //     .then()
 // })
 
-console.log('fake file fired')
+BarPrice.findAll({
+  where: {
+    BarId: 1
+  }
+}).then(result => console.log(result.map(o=>o.get({plain:true}))))
