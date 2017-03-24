@@ -37,6 +37,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     seconds:{
       type: DataTypes.INTEGER
+    },
+    isDisplay: {
+      type: DataTypes.BOOLEAN
     }
   }, {
     classMethods: {
