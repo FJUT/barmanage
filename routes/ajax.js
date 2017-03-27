@@ -9,6 +9,7 @@ var upload = require('../middlewares/upload')
 var co = require('co')
 var DataApi = require('../lib/DataApi')
 
+// 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
   var id = req.query.id
 
@@ -19,6 +20,7 @@ router.get('/getBarList', (req, res, next) => {
   })
 })
 
+// 获取酒吧详情
 router.get('/getBarDetail', (req, res, next) => {
   Bar.find({
     where: {
@@ -29,11 +31,13 @@ router.get('/getBarDetail', (req, res, next) => {
   })
 })
 
+// 获取酒吧消息列表
 router.get('/getAllMessages', (req, res, next) => {
   DataApi.getAllMessages(req.query.id)
     .then(messages => res.send(messages))
 })
 
+// 获取最新消息
 router.get('/getLatestMessages', (req, res, next) => {
   var { barId, lastMessageId } = req.query
   DataApi.getLatestMessages({
@@ -42,6 +46,7 @@ router.get('/getLatestMessages', (req, res, next) => {
   }).then(messages => res.send(messages))
 })
 
+// 发送消息
 router.post('/sendMessage', (req, res, next) => {
   var {BarId, msgText, UserId} = req.body
 
@@ -55,6 +60,7 @@ router.post('/sendMessage', (req, res, next) => {
   })
 })
 
+// 发送图片
 router.post('/sendImage', upload.single('file'), (req, res, next) => {
   var {BarId, UserId} = req.body
 
@@ -68,6 +74,7 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
   })
 })
 
+// 发送霸屏
 router.post('/sendBaping', upload.single('file'), (req, res, next) => {
   var {BarId, UserId, msgText, seconds} = req.body
 
@@ -84,6 +91,7 @@ router.post('/sendBaping', upload.single('file'), (req, res, next) => {
   })
 })
 
+// 获取霸屏价格
 router.get('/getPrices', (req, res, next) => {
   BarPrice.findAll({
     where: {

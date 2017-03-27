@@ -52,9 +52,6 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/form', auth, (req, res, next) => {
-
-  console.log(req.session)
-
   res.render('form', { barInfo: res.locals.barInfo })
 })
 
@@ -65,7 +62,14 @@ router.post('/saveForm', (req, res) => {
     where: {
       id: barInfo.id
     }
-  }).then(affected => {
+  })
+    .then(count => {
+      return models.Bar.findOne({where: {id: barInfo.id}})
+    })
+    .then(row => {
+    // 更新session
+    req.session.barInfo = row.get({plain: true})
+
     res.json({
       iRet: 0
     })
