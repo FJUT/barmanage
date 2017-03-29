@@ -61,8 +61,8 @@ const models = require('../models')
 //   console.log(a[0].get({plain: true}))
 // })
 
-models.Message.find({
-	where: {
-		id: 1
-	}
-}).then(msg => console.log(msg.get({plain: true})))
+// models.Message.find({
+// 	where: {
+// 		id: 1
+// 	}
+// }).then(msg => console.log(msg.get({plain: true})))
