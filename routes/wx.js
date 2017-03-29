@@ -9,19 +9,20 @@ const {User} = models
 const querystring = require('querystring')
 const fetch = require('node-fetch')
 const APP_ID = 'wx06a1ff0e6eb6505a'
+const MCH_ID = '1454040702'
 const APP_SECRET = '70603dba83c47f0700b9107a630f49cb'
 const WX_SESSION_KEY_URL = 'https://api.weixin.qq.com/sns/jscode2session'
 const WXBizDataCrypt = require('../lib/WXBizDataCrypt')
 
 /*
-// 测试代码
-var encryptedData = "f0kJrEj3ZOMBfgkZpMEvwivkmxkMajzHs/NjYAjlFkLtyzhyUkr/A5x6+ScERd5fys8tBo6Le5AdOZgzPPFVaFez+nh8X9EiJ/FRM9q9F8Qevh03hDJXVIIEFTYBPdEWaNYMCZUplU0v55KsFe28miEpOV/su/nr6kb2C5oXh7Sujyc6oRjzIO01a0BMcFbqPAA+hLHsptFDjJpxqqInRDU2oTgwJIqNxPwDOq5Mvtl3KhVPhnX/mae8wGMP+tPoEqNPu8BpeV3yo6kw22a5JQDO5huo0HXCQPeVquTA30olgigl/XJ3u3qevFhdF0TTN+myzMQEd3HfgfRpwdq1TtYONW8izriGfYVsX38yHMuVvuFmi0goFTNcH1GZlHmSlJD4HpCMqejBu1IYaZ7cKemLPIgEzUuldmB9iP+ZktEufeE1+kxLZ4X6JEKp32gvCS4ReMWVNo+eekwsJjY2uw=="
-var iv = "eriZjuICImh+ilpWLCudEA=="
-var sessionKey = "XFLOa0vefTS2gX1wZLA/zQ=="
-var pc = new WXBizDataCrypt(APP_ID, sessionKey)
-var data = pc.decryptData(encryptedData, iv) // object
-console.log(data)
-*/
+ // 测试代码
+ var encryptedData = "f0kJrEj3ZOMBfgkZpMEvwivkmxkMajzHs/NjYAjlFkLtyzhyUkr/A5x6+ScERd5fys8tBo6Le5AdOZgzPPFVaFez+nh8X9EiJ/FRM9q9F8Qevh03hDJXVIIEFTYBPdEWaNYMCZUplU0v55KsFe28miEpOV/su/nr6kb2C5oXh7Sujyc6oRjzIO01a0BMcFbqPAA+hLHsptFDjJpxqqInRDU2oTgwJIqNxPwDOq5Mvtl3KhVPhnX/mae8wGMP+tPoEqNPu8BpeV3yo6kw22a5JQDO5huo0HXCQPeVquTA30olgigl/XJ3u3qevFhdF0TTN+myzMQEd3HfgfRpwdq1TtYONW8izriGfYVsX38yHMuVvuFmi0goFTNcH1GZlHmSlJD4HpCMqejBu1IYaZ7cKemLPIgEzUuldmB9iP+ZktEufeE1+kxLZ4X6JEKp32gvCS4ReMWVNo+eekwsJjY2uw=="
+ var iv = "eriZjuICImh+ilpWLCudEA=="
+ var sessionKey = "XFLOa0vefTS2gX1wZLA/zQ=="
+ var pc = new WXBizDataCrypt(APP_ID, sessionKey)
+ var data = pc.decryptData(encryptedData, iv) // object
+ console.log(data)
+ */
 
 // 通过code换取openid和session_key
 router.get('/getOpenidAndSessionKey', (req, res) => {
@@ -71,9 +72,32 @@ router.post('/saveUserToDb', (req, res, next) => {
   })
 })
 
+var { payment, middleware } = require('../lib/pay')
+
 // 微信支付
 router.get('/requestPayment', (req, res, next) => {
-  res.send('hahaha')
+  var order = {
+    body: '霸屏10秒',
+    out_trade_no: 'baping' + (+new Date),
+    total_fee: 1,
+    spbill_create_ip: '127.0.0.1',
+    openid: req.query.openid,
+    trade_type: 'JSAPI'
+  }
+
+  console.log(order)
+
+  payment.getBrandWCPayRequestParams(order, (err, payargs) => {
+    console.log(err)
+
+    res.json(payargs)
+  })
 })
+
+var notifyMiddleware = middleware.getNotify().done((message, req, res, next) => {
+  console.log(message)
+})
+
+router.use('/notify', notifyMiddleware)
 
 module.exports = router
