@@ -2,25 +2,106 @@ html, body, .container {
     height: 100%;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Microsoft YaHei';
+    word-break: break-all;
+}
+
+.container {
+    width: 96%;
+    margin: 0 auto;
+    zoom: 1.65391;
+}
+
 body {
     background: #000000 url(../images/show-bg.jpg);
     background-size: cover;
 }
 
+.page-head {
+    color: #fff;
+    text-align: center;
+    opacity: 0.8;
+    font-size: 36px;
+    line-height: 36px;
+    width: 100%;
+    padding: 20px 0;
+}
+
 #app {
-    display: flex;
-    flex-direction: row;
+    width: 96%;
+    margin: 0 auto;
+    position: relative;
+    height: 84%;
+}
+
+.msg-box-wrap {
+    width: 77%;
     height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: hidden;
 }
 
 .images {
-    width: 420px;
+    width: 22%;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
-.chat {
-    flex: 1;
-    margin: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 10px;
-    height: 80%;
+.msg-item {
+    min-height: 110px;
+    padding: 20px;
+    position: relative;
+    background: rgba(0, 0, 0, .7);
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.msg-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.msg-user-name {
+    font-size: 28px;
+    color: #FFF;
+    margin-top: 10px;
+}
+
+.msg-created {
+    position: absolute;
+    right: 10px;
+    color: #FFF;
+    opacity: 0.5;
+    font-size: 28px;
+}
+
+.msg-content {
+    margin: 0 0 0 120px;
+}
+
+.msg-text {
+    margin-top: 16px;
+    padding-right: 20px;
+}
+
+.msg-text p {
+    color: #8bd7ff;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-size: 38px;
+    line-height: 48px;
+}
+
+.msg-text img {
+
 }

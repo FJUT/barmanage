@@ -1,21 +1,35 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
-  <title>后台管理</title>
+  <title>大屏幕</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <link rel="stylesheet" href="/css/bootstrap.css">
   <link rel="stylesheet" href="/css/show.css">
 </head>
 <body>
 <div class="container">
-  <div id="app">
-    <div class="chat"></div>
+    <div class="page-head">欢迎光临</div>
+    <div id="app">
+    <div class="msg-box-wrap">
+        <div class="msg-box">
+            <div class="msg-item" v-for="(item, index) in messages">
+                <img class="msg-avatar" :src="item.user.avatar" alt="">
+                <div class="msg-content">
+                    <span class="msg-user-name">{{item.user.name}}</span>
+                    <span class="msg-created">{{item.createdAt}}</span>
+                    <div class="msg-text">
+                        <p wx:if="item.msgType == 0">{{item.msgText}}</p>
+                        <img wx:else :src="item.msgImage">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="images">
       <carousel-3d
         :autoplay="true"
         :border="0">
-        <slide v-for="(item, index) in images" :index="index"><img :src="item.message" alt=""></slide>
+        <slide v-for="(item, index) in images" :index="index"><img :src="item.msgImage" alt=""></slide>
       </carousel-3d>
     </div>
   </div>

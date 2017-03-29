@@ -2,7 +2,9 @@
   "apps" : [{
     "name"        : "bar",
     "script"      : "./bin/www",
-    "instances": "max",
+    "watch": ["routes"],
+    "ignore_watch" : ["node_modules"],
+    "instances": 0,
     "exec_mode": "cluster",
     "env": {
       "NODE_ENV": "development"

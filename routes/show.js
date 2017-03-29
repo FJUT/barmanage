@@ -8,6 +8,7 @@ const sha1 = require('../lib/sha1')
 const Token = require('../lib/Token')
 const auth = require('../middlewares/auth')
 const co = require('co')
+const moment = require('moment')
 const router = express.Router();
 const {Message, User} = models
 
@@ -15,7 +16,7 @@ router.get('/', auth, (req, res, next) => {
   co(function*() {
     var barId = req.session.barInfo.id
     var messages = yield Message.findAll({
-      where: {BarId: barId}
+      where: {BarId: 2}
     })
 
     var userIds = messages.map(message => message.UserId)
@@ -32,6 +33,8 @@ router.get('/', auth, (req, res, next) => {
 
     messages.forEach(function(message) {
       message = message.get({plain: true})
+
+      message.createdAt = moment(message.createdAt).format('MM-DD HH:mm')
 
       message.user = usersHash[message.UserId]
     })

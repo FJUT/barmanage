@@ -2,6 +2,7 @@
  * Created by shinan on 2017/2/26.
  */
 const express = require('express')
+const randomstring = require('randomstring')
 const router = express.Router()
 const models = require('../models')
 const {User} = models
@@ -68,6 +69,11 @@ router.post('/saveUserToDb', (req, res, next) => {
       iRet: -1
     })
   })
+})
+
+// 微信支付
+router.get('/requestPayment', (req, res, next) => {
+  res.send('hahaha')
 })
 
 module.exports = router
