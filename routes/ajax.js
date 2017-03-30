@@ -8,6 +8,7 @@ var { Bar, User, Message, BarPrice } = models
 var upload = require('../middlewares/upload')
 var co = require('co')
 var DataApi = require('../lib/DataApi')
+var { paymentInstance, notifyMiddleware } = require('../lib/pay')
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
@@ -18,6 +19,26 @@ router.get('/getBarList', (req, res, next) => {
   }).catch(err => {
     console.log(err)
   })
+})
+
+// 排行榜
+router.get('/getTopRankUsers', (req, res, next) => {
+  User
+    .findAll({
+      limit: 10
+    })
+    .then(users => {
+      res.json({
+        iRet: 0,
+        users: users.map(user => user.get({plain: true}))
+      })
+    })
+    .catch(err => {
+      res.json({
+        iRet: -1,
+        msg: err.message
+      })
+    })
 })
 
 // 获取酒吧详情
@@ -78,18 +99,86 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
 router.post('/sendBaping', upload.single('file'), (req, res, next) => {
   var {BarId, UserId, msgText, seconds} = req.body
 
-  Message.create({
-    msgType: 2,
-    msgText: msgText,
-    msgImage: req.file.filename,
-    BarId,
-    UserId,
-    seconds,
-    isDisplay: false
-  }).then(created => {
-    res.json(created.get({plain: true}))
+  co(function*() {
+    // 插入订单表
+    var createdOrder = yield Order.create({
+      amount: price
+    })
+
+    // 生成订单
+    var order = {
+      body: `霸屏${seconds}秒`,
+      attach: JSON.stringify({
+        msgType: 2,
+        msgText: msgText,
+        msgImage: req.file.filename,
+        BarId,
+        UserId,
+        seconds,
+        isDisplay: false
+      }), //保存到attach中方便后续插入
+      out_trade_no: 'baping_' + createdOrder.id, // 商户订单号后续更新用
+      total_fee: price * 100, // 微信单位是分，一分钱
+      spbill_create_ip: '127.0.0.1',
+      openid: req.query.openid,
+      trade_type: 'JSAPI'
+    }
+
+    // 请求微信服务支付
+    paymentInstance.getBrandWCPayRequestParams(order, (err, payargs) => {
+      if (err) {
+        res.json({
+          iRet: -1
+        })
+      } else {
+        res.json({
+          iRet: 0,
+          payargs: payargs
+        })
+      }
+    })
+  }).catch(err => {
+    res.json({
+      iRet: -1
+    })
   })
 })
+
+var midd = notifyMiddleware
+  .getNotify()
+  .done((message, req, res, next) => {
+    console.log('wx notify message:', message)
+
+    // 订单号
+    var orderId = message.out_trade_no.slice(7)
+    // 之前保存的消息记录
+    var attach = JSON.parse(message.attach)
+
+    // 插入消息表
+    Message.create(attach)
+      .then(created => {
+
+        // 此处更新订单表
+        return Order
+          .update({status: true}, {
+            where: {
+              id: orderId,
+              MessageId: created.id
+            }
+          })
+      })
+      .then(([affectedCount, affectedRows]) => {
+        // 给微信回包
+        res.reply('success')
+      })
+      .catch(err => {
+        console.log(err)
+        res.reply(new Error('update order failed.'))
+      })
+  })
+
+// 接受微信回调
+router.use('/notify', midd)
 
 // 获取霸屏价格
 router.get('/getPrices', (req, res, next) => {
