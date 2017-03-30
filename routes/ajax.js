@@ -21,6 +21,26 @@ router.get('/getBarList', (req, res, next) => {
   })
 })
 
+// 排行榜
+router.get('/getTopRankUsers', (req, res, next) => {
+  User
+    .findAll({
+      limit: 10
+    })
+    .then(users => {
+      res.json({
+        iRet: 0,
+        users: users.map(user => user.get({plain: true}))
+      })
+    })
+    .catch(err => {
+      res.json({
+        iRet: -1,
+        msg: err.message
+      })
+    })
+})
+
 // 获取酒吧详情
 router.get('/getBarDetail', (req, res, next) => {
   Bar.find({
