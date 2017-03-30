@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
 		},
+		status: {
+		  type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
 		wxOrder: {
 			type: DataTypes.STRING,
 			defaultValue: ''

@@ -8,6 +8,7 @@ var { Bar, User, Message, BarPrice } = models
 var upload = require('../middlewares/upload')
 var co = require('co')
 var DataApi = require('../lib/DataApi')
+var { payment } = require('../lib/pay')
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
@@ -78,18 +79,82 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
 router.post('/sendBaping', upload.single('file'), (req, res, next) => {
   var {BarId, UserId, msgText, seconds} = req.body
 
-  Message.create({
-    msgType: 2,
-    msgText: msgText,
-    msgImage: req.file.filename,
-    BarId,
-    UserId,
-    seconds,
-    isDisplay: false
-  }).then(created => {
-    res.json(created.get({plain: true}))
+  co(function*() {
+    // 插入消息表
+    var createdMsg = yield Message.create({
+      msgType: 2,
+      msgText: msgText,
+      msgImage: req.file.filename,
+      BarId,
+      UserId,
+      seconds,
+      isDisplay: false
+    })
+
+    // 插入订单表
+    var createdOrder = yield Order.create({
+      amount: price,
+      MessageId: createdMsg.id
+    })
+
+    // 生成订单
+    var order = {
+      body: `霸屏${seconds}秒`,
+      out_trade_no: 'baping_' + createdOrder.id,
+      total_fee: 1,
+      spbill_create_ip: '127.0.0.1',
+      openid: req.query.openid,
+      trade_type: 'JSAPI'
+    }
+
+    // 请求微信服务支付
+    payment.getBrandWCPayRequestParams(order, (err, payargs) => {
+      if (err) {
+        res.json({
+          iRet: -1
+        })
+      } else {
+        res.json({
+          iRet: 0,
+          payargs: payargs
+        })
+      }
+    })
+  }).catch(err => {
+    res.json({
+      iRet: -1
+    })
   })
 })
+
+var { middleware } = require('../lib/pay')
+
+var notifyMiddleware = middleware
+  .getNotify()
+  .done((message, req, res, next) => {
+    console.log('wx notify message:')
+    console.log(message)
+
+    var orderId = message.out_trade_no.slice(7)
+
+    // 此处更新订单表
+    Order
+      .update({status: true}, {
+        where: {
+          id: orderId
+        }
+      })
+      .then(([affectedCount, affectedRows]) => {
+
+      })
+      .catch()
+
+    // 给微信回包
+    res.reply('success')
+  })
+
+// 接受微信回调
+router.use('/notify', notifyMiddleware)
 
 // 获取霸屏价格
 router.get('/getPrices', (req, res, next) => {

@@ -72,32 +72,6 @@ router.post('/saveUserToDb', (req, res, next) => {
   })
 })
 
-var { payment, middleware } = require('../lib/pay')
 
-// 微信支付
-router.get('/requestPayment', (req, res, next) => {
-  var order = {
-    body: '霸屏10秒',
-    out_trade_no: 'baping' + (+new Date),
-    total_fee: 1,
-    spbill_create_ip: '127.0.0.1',
-    openid: req.query.openid,
-    trade_type: 'JSAPI'
-  }
-
-  console.log(order)
-
-  payment.getBrandWCPayRequestParams(order, (err, payargs) => {
-    console.log(err)
-
-    res.json(payargs)
-  })
-})
-
-var notifyMiddleware = middleware.getNotify().done((message, req, res, next) => {
-  console.log(message)
-})
-
-router.use('/notify', notifyMiddleware)
 
 module.exports = router
