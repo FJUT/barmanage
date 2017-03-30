@@ -8,7 +8,7 @@ var { Bar, User, Message, BarPrice } = models
 var upload = require('../middlewares/upload')
 var co = require('co')
 var DataApi = require('../lib/DataApi')
-var { payment } = require('../lib/pay')
+var { paymentInstance, notifyMiddleware } = require('../lib/pay')
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
@@ -108,7 +108,7 @@ router.post('/sendBaping', upload.single('file'), (req, res, next) => {
     }
 
     // 请求微信服务支付
-    payment.getBrandWCPayRequestParams(order, (err, payargs) => {
+    paymentInstance.getBrandWCPayRequestParams(order, (err, payargs) => {
       if (err) {
         res.json({
           iRet: -1
@@ -127,9 +127,7 @@ router.post('/sendBaping', upload.single('file'), (req, res, next) => {
   })
 })
 
-var { middleware } = require('../lib/pay')
-
-var notifyMiddleware = middleware
+var midd = notifyMiddleware
   .getNotify()
   .done((message, req, res, next) => {
     console.log('wx notify message:')
@@ -145,16 +143,17 @@ var notifyMiddleware = middleware
         }
       })
       .then(([affectedCount, affectedRows]) => {
-
+        // 给微信回包
+        res.reply('success')
       })
-      .catch()
-
-    // 给微信回包
-    res.reply('success')
+      .catch(err => {
+        console.log(err)
+        res.reply(new Error('update order failed.'))
+      })
   })
 
 // 接受微信回调
-router.use('/notify', notifyMiddleware)
+router.use('/notify', midd)
 
 // 获取霸屏价格
 router.get('/getPrices', (req, res, next) => {
