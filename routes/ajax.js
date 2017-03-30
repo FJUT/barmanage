@@ -80,28 +80,25 @@ router.post('/sendBaping', upload.single('file'), (req, res, next) => {
   var {BarId, UserId, msgText, seconds} = req.body
 
   co(function*() {
-    // 插入消息表
-    var createdMsg = yield Message.create({
-      msgType: 2,
-      msgText: msgText,
-      msgImage: req.file.filename,
-      BarId,
-      UserId,
-      seconds,
-      isDisplay: false
-    })
-
     // 插入订单表
     var createdOrder = yield Order.create({
-      amount: price,
-      MessageId: createdMsg.id
+      amount: price
     })
 
     // 生成订单
     var order = {
       body: `霸屏${seconds}秒`,
-      out_trade_no: 'baping_' + createdOrder.id,
-      total_fee: 1,
+      attach: JSON.stringify({
+        msgType: 2,
+        msgText: msgText,
+        msgImage: req.file.filename,
+        BarId,
+        UserId,
+        seconds,
+        isDisplay: false
+      }), //保存到attach中方便后续插入
+      out_trade_no: 'baping_' + createdOrder.id, // 商户订单号后续更新用
+      total_fee: price * 100, // 微信单位是分，一分钱
       spbill_create_ip: '127.0.0.1',
       openid: req.query.openid,
       trade_type: 'JSAPI'
@@ -130,17 +127,25 @@ router.post('/sendBaping', upload.single('file'), (req, res, next) => {
 var midd = notifyMiddleware
   .getNotify()
   .done((message, req, res, next) => {
-    console.log('wx notify message:')
-    console.log(message)
+    console.log('wx notify message:', message)
 
+    // 订单号
     var orderId = message.out_trade_no.slice(7)
+    // 之前保存的消息记录
+    var attach = JSON.parse(message.attach)
 
-    // 此处更新订单表
-    Order
-      .update({status: true}, {
-        where: {
-          id: orderId
-        }
+    // 插入消息表
+    Message.create(attach)
+      .then(created => {
+
+        // 此处更新订单表
+        return Order
+          .update({status: true}, {
+            where: {
+              id: orderId,
+              MessageId: created.id
+            }
+          })
       })
       .then(([affectedCount, affectedRows]) => {
         // 给微信回包

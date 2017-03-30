@@ -14,6 +14,7 @@
 // }, 2000)
 const co = require('co')
 const models = require('../models')
+const moment = require('moment')
 
 // models.Bar.findById(1).then(bar => {
 //   console.log(bar.get({plain: true}))
@@ -66,3 +67,13 @@ const models = require('../models')
 // 		id: 1
 // 	}
 // }).then(msg => console.log(msg.get({plain: true})))
+
+models.Message.find({
+  where: {
+    createdAt: {
+      $gt: moment().subtract(3, 'days')
+    }
+  }
+}).then(result => {
+  console.log(result)
+})
