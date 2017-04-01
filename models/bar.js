@@ -1,6 +1,9 @@
 /**
  * Created by 99171 on 2017/1/19.
  */
+const NAME_DEFAULT = '酒吧名称'
+const LOGO_DEFAULT = 'logo-default.png'
+
 module.exports = (sequelize, DataTypes) => {
   var Bar = sequelize.define('Bar', {
     id: {
@@ -9,13 +12,16 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     logo: {
-      type: DataTypes.CHAR
+      type: DataTypes.CHAR,
+      defaultValue: LOGO_DEFAULT
     },
     name: {
-      type: DataTypes.CHAR
+      type: DataTypes.CHAR,
+      defaultValue: NAME_DEFAULT
     },
     address: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      defaultValue: ''
     },
     bussinesshours: {
       type: DataTypes.CHAR
