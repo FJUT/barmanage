@@ -4,7 +4,7 @@
 var express = require('express')
 var router = express.Router()
 var models = require('../models')
-var { Bar, User, Message, BarPrice } = models
+var { Bar, User, Message, BarPrice, Order } = models
 var upload = require('../middlewares/upload')
 var co = require('co')
 var DataApi = require('../lib/DataApi')
@@ -95,38 +95,44 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
   })
 })
 
-// 发送霸屏
-router.post('/sendBaping', upload.single('file'), (req, res, next) => {
-  var {BarId, UserId, msgText, seconds} = req.body
+// 发送霸屏文字
+router.post('/sendBapingText', (req, res, next) => {
+  var {BarId, UserId, msgText, seconds, price, openid} = req.body
 
   co(function*() {
+    // 插入消息表
+    var createdMessage = yield Message.create({
+      msgType: 2,
+      msgText: msgText,
+      msgImage: '',
+      BarId,
+      UserId,
+      seconds,
+      isDisplay: false
+    })
+
     // 插入订单表
     var createdOrder = yield Order.create({
-      amount: price
+      amount: price,
+      MessageId: createdMessage.id
     })
 
     // 生成订单
     var order = {
       body: `霸屏${seconds}秒`,
-      attach: JSON.stringify({
-        msgType: 2,
-        msgText: msgText,
-        msgImage: req.file.filename,
-        BarId,
-        UserId,
-        seconds,
-        isDisplay: false
-      }), //保存到attach中方便后续插入
       out_trade_no: 'baping_' + createdOrder.id, // 商户订单号后续更新用
-      total_fee: price * 100, // 微信单位是分，一分钱
+      // total_fee: price * 100, // 微信单位是分，一分钱
+      total_fee: 1, // 测试用
       spbill_create_ip: '127.0.0.1',
-      openid: req.query.openid,
+      openid: openid,
       trade_type: 'JSAPI'
     }
 
     // 请求微信服务支付
     paymentInstance.getBrandWCPayRequestParams(order, (err, payargs) => {
+      console.log(typeof payargs)
       if (err) {
+        console.log('创建统一支付订单失败:', err)
         res.json({
           iRet: -1
         })
@@ -138,6 +144,66 @@ router.post('/sendBaping', upload.single('file'), (req, res, next) => {
       }
     })
   }).catch(err => {
+    console.log('baping error', err)
+    res.json({
+      iRet: -1
+    })
+  })
+})
+
+
+// 发送霸屏图片和文字
+router.post('/sendBaping', upload.single('file'), (req, res, next) => {
+  console.log('filename', req.file.filename)
+
+  var {BarId, UserId, msgText, seconds, price, openid} = req.body
+
+  co(function*() {
+    // 插入消息表
+    var createdMessage = yield Message.create({
+      msgType: 2,
+      msgText: msgText,
+      msgImage: req.file.filename ? req.file.filename: '',
+      BarId,
+      UserId,
+      seconds,
+      isDisplay: false
+    })
+
+    // 插入订单表
+    var createdOrder = yield Order.create({
+      amount: price,
+      MessageId: createdMessage.id
+    })
+
+    // 生成订单
+    var order = {
+      body: `霸屏${seconds}秒`,
+      out_trade_no: 'baping_' + createdOrder.id, // 商户订单号后续更新用
+      // total_fee: price * 100, // 微信单位是分，一分钱
+      total_fee: 1, // 测试用
+      spbill_create_ip: '127.0.0.1',
+      openid: openid,
+      trade_type: 'JSAPI'
+    }
+
+    // 请求微信服务支付
+    paymentInstance.getBrandWCPayRequestParams(order, (err, payargs) => {
+      console.log(typeof payargs)
+      if (err) {
+        console.log('创建统一支付订单失败:', err)
+        res.json({
+          iRet: -1
+        })
+      } else {
+        res.json({
+          iRet: 0,
+          payargs: payargs
+        })
+      }
+    })
+  }).catch(err => {
+    console.log('baping error', err)
     res.json({
       iRet: -1
     })
@@ -151,21 +217,13 @@ var midd = notifyMiddleware
 
     // 订单号
     var orderId = message.out_trade_no.slice(7)
-    // 之前保存的消息记录
-    var attach = JSON.parse(message.attach)
 
-    // 插入消息表
-    Message.create(attach)
-      .then(created => {
-
-        // 此处更新订单表
-        return Order
-          .update({status: true}, {
-            where: {
-              id: orderId,
-              MessageId: created.id
-            }
-          })
+    Order
+      .update({status: true}, {
+        where: {
+          id: orderId,
+          MessageId: created.id
+        }
       })
       .then(([affectedCount, affectedRows]) => {
         // 给微信回包
