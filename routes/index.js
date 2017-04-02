@@ -98,6 +98,7 @@ router.post('/uploadMulti', upload.array('photos'), (req, res, next) => {
 
 router.get('/logout', (req, res, next) => {
   res.clearCookie('token')
+  delete req.session.barInfo
   res.redirect('/')
 })
 

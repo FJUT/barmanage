@@ -81,6 +81,21 @@ router.post('/sendMessage', (req, res, next) => {
   })
 })
 
+// 获取最新霸屏列表
+router.get('/newBapingMessage', (req, res, next) => {
+  const {BarId} = req.query
+  Message.findAll({
+    where: {
+      BarId,
+      isDisplay: false,
+      isPayed: true
+    }
+  })
+  .then(messages => {
+    return messages.map(msg => msg.get({plain: true}))
+  })
+})
+
 // 发送图片
 router.post('/sendImage', upload.single('file'), (req, res, next) => {
   var {BarId, UserId} = req.body
@@ -92,6 +107,19 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
     UserId
   }).then(created => {
     res.json(created.get({plain: true}))
+  })
+})
+
+// 获取霸屏价格
+router.get('/getPrices', (req, res, next) => {
+  BarPrice.findAll({
+    where: {
+      BarId: req.query.barId
+    }
+  }).then(result => {
+    result = result.map(o => o.get({plain: true}))
+
+    res.json(result)
   })
 })
 
@@ -237,18 +265,5 @@ var midd = notifyMiddleware
 
 // 接受微信回调
 router.use('/notify', midd)
-
-// 获取霸屏价格
-router.get('/getPrices', (req, res, next) => {
-  BarPrice.findAll({
-    where: {
-      BarId: req.query.barId
-    }
-  }).then(result => {
-    result = result.map(o => o.get({plain: true}))
-
-    res.json(result)
-  })
-})
 
 module.exports = router

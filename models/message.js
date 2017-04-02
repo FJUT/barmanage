@@ -40,6 +40,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     isDisplay: {
       type: DataTypes.BOOLEAN
+    },
+    isPayed: {
+      type: DataTypes.BOOLEAN
     }
   }, {
     classMethods: {
