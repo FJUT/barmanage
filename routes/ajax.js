@@ -4,11 +4,11 @@
 var express = require('express')
 var router = express.Router()
 var models = require('../models')
-var { Bar, User, Message, BarPrice, Order } = models
+var {Bar, User, Message, BarPrice, Order} = models
 var upload = require('../middlewares/upload')
 var co = require('co')
 var DataApi = require('../lib/DataApi')
-var { paymentInstance, notifyMiddleware } = require('../lib/pay')
+var {paymentInstance, notifyMiddleware} = require('../lib/pay')
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
@@ -60,7 +60,7 @@ router.get('/getAllMessages', (req, res, next) => {
 
 // 获取最新消息
 router.get('/getLatestMessages', (req, res, next) => {
-  var { barId, lastMessageId } = req.query
+  var {barId, lastMessageId} = req.query
   DataApi.getLatestMessages({
     barId,
     lastMessageId
@@ -91,9 +91,9 @@ router.get('/newBapingMessage', (req, res, next) => {
       isPayed: true
     }
   })
-  .then(messages => {
-    return messages.map(msg => msg.get({plain: true}))
-  })
+    .then(messages => {
+      return messages.map(msg => msg.get({plain: true}))
+    })
 })
 
 // 发送图片
@@ -121,6 +121,35 @@ router.get('/getPrices', (req, res, next) => {
 
     res.json(result)
   })
+})
+
+// 更换用户头像
+router.post('/changeAvatar', upload.single('file'), (req, res, next) => {
+  models.User.update({
+    avatar: `https://jufoinfo.com/` + req.file.filename
+  }, {
+    where: {
+      id: req.body.UserId
+    }
+  })
+    .then(() => {
+      return models.User.findOne({
+        where: {
+          id: req.body.UserId
+        }
+      })
+    })
+    .then(created => {
+      res.json({
+        iRet: 0,
+        userInfo: created.get({plain: true})
+      })
+    })
+    .catch(() => {
+      res.json({
+        iRet: -1
+      })
+    })
 })
 
 // 发送霸屏文字
@@ -182,7 +211,7 @@ router.post('/sendBapingText', (req, res, next) => {
 
 // 发送霸屏图片和文字
 router.post('/sendBaping', upload.single('file'), (req, res, next) => {
-  console.log('filename', req.file.filename)
+  //console.log('filename', req.file.filename)
 
   var {BarId, UserId, msgText, seconds, price, openid} = req.body
 
@@ -191,7 +220,7 @@ router.post('/sendBaping', upload.single('file'), (req, res, next) => {
     var createdMessage = yield Message.create({
       msgType: 2,
       msgText: msgText,
-      msgImage: req.file.filename ? req.file.filename: '',
+      msgImage: req.file.filename ? req.file.filename : '',
       BarId,
       UserId,
       seconds,
