@@ -1,6 +1,7 @@
 const $ = require('jquery')
 const Vue = require('vue')
 const Element = require('element-ui')
+const MAX_IMAGE_COUNT = 20
 const { TimeSelect } = Element /* 注册需要使用的组件 */
 Vue.component(TimeSelect.name, TimeSelect)
 
@@ -62,8 +63,8 @@ var vm = new Vue({
       var currentPhotoCount = this.photos.length
       var selectCount = e.target.files.length
 
-      if (currentPhotoCount + selectCount > 5) {
-        alert('最多上传5张图片，请返回重新选择或者删掉后再选')
+      if (currentPhotoCount + selectCount > MAX_IMAGE_COUNT) {
+        alert(`最多上传${MAX_IMAGE_COUNT}张图片，请返回重新选择或者删掉后再选`)
         return
       }
 
