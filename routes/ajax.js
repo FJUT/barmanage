@@ -152,8 +152,8 @@ router.post('/changeAvatar', upload.single('file'), (req, res, next) => {
     })
 })
 
-// 发送霸屏文字
-router.post('/sendBapingText', (req, res, next) => {
+// 创建统一支付订单中间件
+const createPayMiddware = (req, res, next) => {
   var {BarId, UserId, msgText, seconds, price, openid} = req.body
 
   co(function*() {
@@ -161,7 +161,7 @@ router.post('/sendBapingText', (req, res, next) => {
     var createdMessage = yield Message.create({
       msgType: 2,
       msgText: msgText,
-      msgImage: '',
+      msgImage: req.file ? req.file.filename : '',
       BarId,
       UserId,
       seconds,
@@ -178,6 +178,10 @@ router.post('/sendBapingText', (req, res, next) => {
     var order = {
       body: `霸屏${seconds}秒`,
       out_trade_no: 'baping_' + createdOrder.id, // 商户订单号后续更新用
+      attach: JSON.stringify({
+        orderId: createdOrder.id,
+        messageId: createdMessage.id
+      }),
       // total_fee: price * 100, // 微信单位是分，一分钱
       total_fee: 1, // 测试用
       spbill_create_ip: '127.0.0.1',
@@ -206,93 +210,44 @@ router.post('/sendBapingText', (req, res, next) => {
       iRet: -1
     })
   })
-})
+}
 
+// 发送霸屏文字
+router.post('/sendBapingText', createPayMiddware)
 
 // 发送霸屏图片和文字
-router.post('/sendBaping', upload.single('file'), (req, res, next) => {
-  //console.log('filename', req.file.filename)
+router.post('/sendBaping', upload.single('file'), createPayMiddware)
 
-  var {BarId, UserId, msgText, seconds, price, openid} = req.body
-
-  co(function*() {
-    // 插入消息表
-    var createdMessage = yield Message.create({
-      msgType: 2,
-      msgText: msgText,
-      msgImage: req.file.filename ? req.file.filename : '',
-      BarId,
-      UserId,
-      seconds,
-      isDisplay: false
-    })
-
-    // 插入订单表
-    var createdOrder = yield Order.create({
-      amount: price,
-      MessageId: createdMessage.id
-    })
-
-    // 生成订单
-    var order = {
-      body: `霸屏${seconds}秒`,
-      out_trade_no: 'baping_' + createdOrder.id, // 商户订单号后续更新用
-      // total_fee: price * 100, // 微信单位是分，一分钱
-      total_fee: 1, // 测试用
-      spbill_create_ip: '127.0.0.1',
-      openid: openid,
-      trade_type: 'JSAPI'
-    }
-
-    // 请求微信服务支付
-    paymentInstance.getBrandWCPayRequestParams(order, (err, payargs) => {
-      console.log(typeof payargs)
-      if (err) {
-        console.log('创建统一支付订单失败:', err)
-        res.json({
-          iRet: -1
-        })
-      } else {
-        res.json({
-          iRet: 0,
-          payargs: payargs
-        })
-      }
-    })
-  }).catch(err => {
-    console.log('baping error', err)
-    res.json({
-      iRet: -1
-    })
-  })
-})
-
-var midd = notifyMiddleware
-  .getNotify()
+// 接收微信回调中间件
+const responseWeixinNotifyMiddware = notifyMiddleware.getNotify()
   .done((message, req, res, next) => {
     console.log('wx notify message:', message)
+    var attach = JSON.parse(message.attach)
+    // 订单号,消息号
+    var {orderId, messageId} = attach
 
-    // 订单号
-    var orderId = message.out_trade_no.slice(7)
-
-    Order
-      .update({status: true}, {
+    co(function*() {
+      yield Order.update({status: true}, {
         where: {
-          id: orderId,
-          MessageId: created.id
+          id: orderId
         }
       })
-      .then(([affectedCount, affectedRows]) => {
-        // 给微信回包
-        res.reply('success')
+
+      yield Message.update({isPayed: true}, {
+        where: {
+          id: messageId
+        }
       })
-      .catch(err => {
-        console.log(err)
-        res.reply(new Error('update order failed.'))
-      })
+
+      res.reply('success')
+    })
+    .catch(err => {
+      console.log(err)
+      res.reply(new Error('update oreder failed'))
+    })
   })
 
 // 接受微信回调
-router.use('/notify', midd)
+router.use('/notify', responseWeixinNotifyMiddware)
 
 module.exports = router
