@@ -6,6 +6,7 @@ var show = require('./show')
 var admin = require('./admin')
 var ajax = require('./ajax')
 var wx = require('./wx')
+var message = require('./message')
 
 module.exports = function (app) {
   app.use('/', routes)
@@ -16,4 +17,5 @@ module.exports = function (app) {
   app.use('/admin', admin)
   app.use('/ajax', ajax)
   app.use('/wx', wx)
+  app.use('/message', message)
 }

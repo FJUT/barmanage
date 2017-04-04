@@ -23,6 +23,10 @@ app.locals.navs = [
     path: 'order'
   },
   {
+    name: '内容管理',
+    path: 'message'
+  },
+  {
     name: '打开大屏幕',
     path: 'show'
   },
