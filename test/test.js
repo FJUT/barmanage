@@ -91,8 +91,8 @@ models.Message.create({
   isDisplay: false,
   isPayed: true,
   msgType: 2,
-  seconds: 20,
-  msgText: '暗金抽到君',
+  seconds: 3,
+  msgText: '日你咧',
   msgImage: 'http://localhost:3000/file_1490367529830_1.jpg'
 })
 

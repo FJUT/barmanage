@@ -16,37 +16,41 @@ const DataApi = require('../lib/DataApi')
 router.get('/', auth, (req, res, next) => {
   co(function*() {
     var barId = req.session.barInfo.id
-    var messages = yield Message.findAll({
-      where: {
-        BarId: req.session.barInfo.id,
-        createdAt: {
-          $gt: moment().subtract('3', 'days')
-        }
-      }
-    })
+    // var messages = yield Message.findAll({
+    //   where: {
+    //     BarId: req.session.barInfo.id,
+    //     createdAt: {
+    //       $gt: moment().subtract('3', 'days')
+    //     }
+    //   }
+    // })
 
-    var set = new Set()
-    messages.forEach(message => set.add(message.UserId))
+    // var set = new Set()
+    // messages.forEach(message => set.add(message.UserId))
 
-    var users = yield User.findAll({
-      where: {id: Array.from(set)}
-    })
+    // var users = yield User.findAll({
+    //   where: {id: Array.from(set)}
+    // })
 
-    var usersHash = {}
+    // var usersHash = {}
 
-    users.forEach(function(user) {
-      usersHash[user.id] = user.get({plain: true})
-    })
+    // users.forEach(function(user) {
+    //   usersHash[user.id] = user.get({plain: true})
+    // })
 
-    messages.forEach(function(message) {
-      message = message.get({plain: true})
+    // messages.forEach(function(message) {
+    //   message = message.get({plain: true})
 
-      message.createdAt = moment(message.createdAt).format('MM-DD HH:mm')
+    //   message.createdAt = moment(message.createdAt).format('MM-DD HH:mm')
 
-      const user = usersHash[message.UserId]
-      message.userName = user.name
-      message.userAvatar = user.avatar
-    })
+    //   const user = usersHash[message.UserId]
+    //   message.userName = user.name
+    //   message.userAvatar = user.avatar
+    // })
+
+    var messages = yield DataApi.getAllMessages(barId)
+
+    messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('MM-DD HH:mm'))
 
     res.render('show', {
       messages: messages
@@ -113,7 +117,7 @@ router.post('/setMessageDisplay', (req, res, next) => {
 
 // 获取最新消息
 router.get('/getNewMessages', (req, res, next) => {
-  const barId = req.session.barId
+  const barId = req.session.barInfo.id
   const lastMessageId = req.query.lastMessageId
 
   DataApi.getLatestMessages({
@@ -121,6 +125,8 @@ router.get('/getNewMessages', (req, res, next) => {
     lastMessageId
   })
   .then(messages => {
+    messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('MM-DD HH:mm'))
+    
     res.json({
       iRet: 0,
       data: messages

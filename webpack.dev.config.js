@@ -10,7 +10,8 @@ module.exports = function(env) {
       form: './public/js/form.js',
       show: './public/js/show.js',
       occupy: './public/js/occupy.js',
-      order: './public/js/order.js'
+      order: './public/js/order.js',
+      message: './public/js/message.js'
     },
     output: {
       filename: '[name].bundle.js',

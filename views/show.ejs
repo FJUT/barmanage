@@ -13,9 +13,9 @@
       <div class="msg-box-wrap">
           <div class="msg-box">
               <div class="msg-item" v-for="(item, index) in messages">
-                  <img class="msg-avatar" :src="item.userAvatar" alt="">
+                  <img class="msg-avatar" :src="item.UserAvatar" alt="">
                   <div class="msg-content">
-                      <span class="msg-user-name">{{item.userName}}</span>
+                      <span class="msg-user-name">{{item.UserName}}</span>
                       <span class="msg-created">{{item.createdAt}}</span>
                       <div class="msg-text">
                           <p wx:if="item.msgType == 0">{{item.msgText}}</p>

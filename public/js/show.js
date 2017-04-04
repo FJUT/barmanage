@@ -9,7 +9,7 @@ Vue.use(Carousel3d)
 
 const LIMIT = 5
 const PLAY_INTERVAL = 2000
-const allMessages = window.messages
+let allMessages = window.messages
 
 // 更新霸屏状态
 const setBapingDisplay = id => {
@@ -76,7 +76,18 @@ const LocalPage = {
                 return
               }
 
-              allMessages.push(response.data)
+              allMessages = allMessages.concat(response.data)
+              
+              // 如果已经存在滚屏，直接返回
+              if (this.ticker) {
+                return
+              }
+
+              // 否则初始化滚屏
+              this.messages = allMessages.slice(0, LIMIT)
+              if (this.messages.length > 2) {
+                this.initAutoScroll()
+              }
             })
             .always(() => setTimeout(poll, 10000))
           }
