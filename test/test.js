@@ -68,12 +68,29 @@ const moment = require('moment')
 // 	}
 // }).then(msg => console.log(msg.get({plain: true})))
 
-models.Message.find({
-  where: {
-    createdAt: {
-      $gt: moment().subtract(3, 'days')
-    }
-  }
-}).then(result => {
-  console.log(result)
+// models.Message.find({
+//   where: {
+//     createdAt: {
+//       $gt: moment().subtract(3, 'days')
+//     }
+//   }
+// }).then(result => {
+//   console.log(result)
+// })
+
+// models.Message.update({isPayed: true}, {
+//   where: {
+//     id: 1
+//   }
+// })
+
+models.Message.create({
+  BarId: 3,
+  UserId: 1,
+  isDisplay: false,
+  isPayed: true,
+  msgType: 2,
+  seconds: 300,
+  msgText: '暗金抽到君',
+  msgImage: 'http://localhost:3000/file_1490367529830_1.jpg'
 })

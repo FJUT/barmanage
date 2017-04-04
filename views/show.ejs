@@ -9,29 +9,42 @@
 <body>
 <div class="container">
     <div class="page-head">欢迎光临</div>
-    <div id="app">
-    <div class="msg-box-wrap">
-        <div class="msg-box">
-            <div class="msg-item" v-for="(item, index) in messages">
-                <img class="msg-avatar" :src="item.user.avatar" alt="">
-                <div class="msg-content">
-                    <span class="msg-user-name">{{item.user.name}}</span>
-                    <span class="msg-created">{{item.createdAt}}</span>
-                    <div class="msg-text">
-                        <p wx:if="item.msgType == 0">{{item.msgText}}</p>
-                        <img wx:else :src="item.msgImage">
-                    </div>
-                </div>
-            </div>
+    <div id="app" v-cloak>
+      <div class="msg-box-wrap">
+          <div class="msg-box">
+              <div class="msg-item" v-for="(item, index) in messages">
+                  <img class="msg-avatar" :src="item.userAvatar" alt="">
+                  <div class="msg-content">
+                      <span class="msg-user-name">{{item.userName}}</span>
+                      <span class="msg-created">{{item.createdAt}}</span>
+                      <div class="msg-text">
+                          <p wx:if="item.msgType == 0">{{item.msgText}}</p>
+                          <img wx:else :src="item.msgImage">
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="images">
+        <carousel-3d
+          :autoplay="true"
+          :border="0">
+          <slide v-for="(item, index) in images" :index="index"><img :src="item.msgImage" alt=""></slide>
+        </carousel-3d>
+      </div>
+      <div class="baping-msg" v-if="bapingShow">
+        <div class="bp-img">
+          <img :src="bapingMessage.msgImage" alt="">
         </div>
-    </div>
-    <div class="images">
-      <carousel-3d
-        :autoplay="true"
-        :border="0">
-        <slide v-for="(item, index) in images" :index="index"><img :src="item.msgImage" alt=""></slide>
-      </carousel-3d>
-    </div>
+        <div class="bp-msg-wrap">
+          <img :src="bapingMessage.UserAvatar" alt="" class="bp-user-avatar">
+          <span class="bp-user-name">{{bapingMessage.UserName}}</span>
+          <div class="bp-msg-text">{{bapingMessage.msgText}}</div>
+          <div class="bp-msg-time">
+            重金霸屏<span class="bp-sec">{{bapingMessage.seconds}}</span>秒
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 <script>

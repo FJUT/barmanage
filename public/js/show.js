@@ -9,57 +9,21 @@ Vue.use(Carousel3d)
 
 const LIMIT = 5
 const PLAY_INTERVAL = 2000
-
-var allMessages = window.messages
-
-var messageQueue = []
-var baQueue = []
-const lastMessageId = ''
-
-const showBaping = () => {
-  var message = baQueue.shift()
-  var seconds = message.seconds
-
-  setInterval(function() {
-    seconds--
-
-    if (seconds == 0) {
-      // 检查霸屏队列长度，如果为0隐藏霸屏界面
-
-      // 发请求修改消息isDisplay字段
-
-    }
-  }, 1000)
-}
-
-const fetchLatestMessage = () => {
-  $.ajax({
-    url: '/ajax/getLatestMessage',
+const allMessages = window.messages
+const setBapingDisplay = id => {
+  return $.ajax({
+    url: '/show/setMessageDisplay',
+    method: 'POST',
     data: {
-      lastMessageId: lastMessageId
+      id: id
     }
   })
-    .done(res => {
-      if (res.iRet == 0) {
-        // 更新消息队列
-        messageQueue = messageQueue.concat([res.data])
+}
 
-        var bapingMessages = res.data.filter(msg => {
-          return msg.msgType == 2 && msg.isDisplay == false
-        })
-
-        baQueue = baQueue.concat([bapingMessages])
-
-        if (baQueue.length > 0) {
-          // 显示霸屏界面
-
-          showBaping()
-        }
-
-      } else {
-        alert('后台错误')
-      }
-    })
+const getPendingBaping = () => {
+  return $.ajax({
+    url: '/show/getPendingBaping'
+  })
 }
 
 const LocalPage = {
@@ -68,19 +32,87 @@ const LocalPage = {
       el: '#app',
       data() {
         var images = window.messages.filter(o => o.msgType == 1)
+        var messages = allMessages.slice(0, LIMIT)
 
         return {
           images,
-          messages: allMessages.slice(0, LIMIT)
+          messages,
+          bapingShow: false,
+          bapingMessage: null
         }
       },
       mounted() {
         this.initAutoScroll()
+
+        // 轮询霸屏消息
+        this.pollBaping()
       },
       methods: {
+        // 获取未播放的霸屏
+        pollBaping() {
+          getPendingBaping()
+          .done(response => {
+            if (response.iRet != 0) {
+              alert('获取霸屏失败')
+              return
+            }
+
+            if (!response.data) {
+              setTimeout(() => this.pollBaping(), 3000)
+              return
+            }
+
+            // 更新视图
+            this.bapingMessage = response.data
+            this.bapingShow = true
+
+            this.startBapingCount()
+          })
+          .fail(err => {
+            alert('获取霸屏失败')
+            setTimeout(() => this.pollBaping(), 3000)
+          })
+        },
+        // 霸屏倒计时
+        startBapingCount() {
+          var seconds = this.bapingMessage.seconds
+          var ticker = setInterval(() => {
+            seconds--
+            this.$set(this.bapingMessage, 'seconds', seconds)
+
+            if (seconds == 0) {
+              clearInterval(ticker)
+              this.endBapingCountCallback()
+            }
+          }, 1000)
+        },
+        // 霸屏倒计时结束
+        endBapingCountCallback() {
+          setBapingDisplay(this.bapingMessage.id)
+            .done(res => {
+              this.bapingShow = false
+              this.bapingMessage = null
+            })
+            .fail(err => alert('更新霸屏状态失败'))
+            .always(() => this.pollBaping())
+        },
+        // 消息滚屏
         initAutoScroll() {
           var vm = this
           var scroller = $('.msg-box')
+
+          scroller.on('webkitTransitionEnd', e => {
+            scroller.css({
+                transition: 'none'
+              })
+
+              scroller.css({
+                transform: ''
+              })
+
+              allMessages.push(allMessages.shift())
+              vm.messages = allMessages.slice(0, LIMIT)
+          })
 
           var ticker = setInterval(() => {
             var firstItem = scroller.find('.msg-item').first()
@@ -93,19 +125,6 @@ const LocalPage = {
             scroller.css({
               transform: `translate3d(0, -${dis}px, 0)`
             })
-
-            setTimeout(() => {
-              scroller.css({
-                transition: 'none'
-              })
-
-              scroller.css({
-                transform: ''
-              })
-
-              allMessages.push(allMessages.shift())
-              vm.messages = allMessages.slice(0, LIMIT)
-            }, 500)
           }, PLAY_INTERVAL)
         }
       }

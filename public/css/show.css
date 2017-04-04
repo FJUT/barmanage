@@ -2,6 +2,10 @@ html, body, .container {
     height: 100%;
 }
 
+[v-cloak] {
+  display: none;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -103,5 +107,71 @@ body {
 }
 
 .msg-text img {
+  width: 100%;
+}
 
+.baping-msg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  background: rgba(0, 0, 0, 0.8);
+  font-weight: bolder;
+}
+
+.bp-img {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bp-img img {
+  width: 100%;
+}
+
+.bp-msg-wrap {
+  flex: 1;
+  color: #fff;
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px 0 10px 20px;
+}
+
+.bp-user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  border: 2px solid #ff8c00;
+}
+
+.bp-user-name {
+  font-size: 28px;
+  line-height: 48px;
+  position: relative;
+  top: -20px;
+  left: 10px;
+}
+
+.bp-msg-text {
+  font-size: 38px;
+  line-height: 48px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff8c00;
+}
+
+.bp-msg-time {
+  position: absolute;
+  bottom: 20px;
+  font-size: 28px;
+  line-height: 48px;
+}
+
+.bp-sec {
+  color: 	#ff8c00;
 }
