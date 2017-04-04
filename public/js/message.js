@@ -12,6 +12,8 @@ const app = new Vue({
     deleteById(id, index) {
       // this.messages.splice(index, 1)
 
+      alert(index)
+
       $.ajax({
         url: '/message/del',
         type: 'POST',

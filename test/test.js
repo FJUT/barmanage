@@ -92,7 +92,7 @@ models.Message.create({
   isPayed: true,
   msgType: 2,
   seconds: 3,
-  msgText: '日你咧',
+  msgText: '二月月，乌鸦卡！！！',
   msgImage: 'http://localhost:3000/file_1490367529830_1.jpg'
 })
 
