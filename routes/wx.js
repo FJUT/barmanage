@@ -72,6 +72,4 @@ router.post('/saveUserToDb', (req, res, next) => {
   })
 })
 
-
-
 module.exports = router

@@ -34,7 +34,7 @@ const LocalPage = {
     let app = new Vue({
       el: '#app',
       data() {
-        var images = window.messages.filter(o => o.msgType == 1)
+        var images = window.messages.filter(o => o.msgImage)
         var messages = allMessages.slice(0, LIMIT)
 
         return {

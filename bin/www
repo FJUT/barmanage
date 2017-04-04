@@ -23,7 +23,7 @@ app.locals.navs = [
     path: 'order'
   },
   {
-    name: '大屏显示(demo)',
+    name: '打开大屏幕',
     path: 'show'
   },
   {
