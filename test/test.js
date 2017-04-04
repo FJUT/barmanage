@@ -84,13 +84,22 @@ const moment = require('moment')
 //   }
 // })
 
-models.Message.create({
-  BarId: 3,
-  UserId: 1,
-  isDisplay: false,
-  isPayed: true,
-  msgType: 2,
-  seconds: 300,
-  msgText: '暗金抽到君',
-  msgImage: 'http://localhost:3000/file_1490367529830_1.jpg'
-})
+// 模拟发送霸屏
+// models.Message.create({
+//   BarId: 3,
+//   UserId: 1,
+//   isDisplay: false,
+//   isPayed: true,
+//   msgType: 2,
+//   seconds: 20,
+//   msgText: '暗金抽到君',
+//   msgImage: 'http://localhost:3000/file_1490367529830_1.jpg'
+// })
+
+models.Message.findAll({
+  where: {
+    id: {
+      $gt: 100
+    }
+  }
+}).done(data => console.log(data.length))

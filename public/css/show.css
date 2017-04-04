@@ -107,7 +107,8 @@ body {
 }
 
 .msg-text img {
-  width: 100%;
+  width: 40%;
+  margin-top: 10px;
 }
 
 .baping-msg {

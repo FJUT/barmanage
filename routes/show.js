@@ -11,13 +11,17 @@ const co = require('co')
 const moment = require('moment')
 const router = express.Router();
 const {Message, User} = models
+const DataApi = require('../lib/DataApi')
 
 router.get('/', auth, (req, res, next) => {
   co(function*() {
     var barId = req.session.barInfo.id
     var messages = yield Message.findAll({
       where: {
-        BarId: req.session.barInfo.id
+        BarId: req.session.barInfo.id,
+        createdAt: {
+          $gt: moment().subtract('3', 'days')
+        }
       }
     })
 
@@ -101,6 +105,28 @@ router.post('/setMessageDisplay', (req, res, next) => {
       iRet: 0
     })
   }).catch(err => {
+    res.json({
+      iRet: -1
+    })
+  })
+})
+
+// 获取最新消息
+router.get('/getNewMessages', (req, res, next) => {
+  const barId = req.session.barId
+  const lastMessageId = req.query.lastMessageId
+
+  DataApi.getLatestMessages({
+    barId,
+    lastMessageId
+  })
+  .then(messages => {
+    res.json({
+      iRet: 0,
+      data: messages
+    })
+  })
+  .catch(err => {
     res.json({
       iRet: -1
     })

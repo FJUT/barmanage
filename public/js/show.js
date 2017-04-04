@@ -10,6 +10,8 @@ Vue.use(Carousel3d)
 const LIMIT = 5
 const PLAY_INTERVAL = 2000
 const allMessages = window.messages
+
+// 更新霸屏状态
 const setBapingDisplay = id => {
   return $.ajax({
     url: '/show/setMessageDisplay',
@@ -20,6 +22,7 @@ const setBapingDisplay = id => {
   })
 }
 
+// 获取未显示的霸屏
 const getPendingBaping = () => {
   return $.ajax({
     url: '/show/getPendingBaping'
@@ -42,12 +45,44 @@ const LocalPage = {
         }
       },
       mounted() {
-        this.initAutoScroll()
+        if (this.messages.length > 2) {
+          this.initAutoScroll()
+        }
 
         // 轮询霸屏消息
         this.pollBaping()
+
+        // 轮询普通消息
+        this.pollNormalMessages()
       },
       methods: {
+        // 获取最新消息
+        pollNormalMessages() {
+          const poll = () => {
+            var lastMessageId = allMessages.length > 0 ? allMessages[allMessages.length - 1].id : ''
+
+            $.ajax({
+              url: '/show/getNewMessages',
+              data: {
+                lastMessageId
+              }
+            })
+            .done(response => {
+              if (response.iRet != 0) {
+                return
+              }
+
+              if (response.data.length == 0) {
+                return
+              }
+
+              allMessages.push(response.data)
+            })
+            .always(() => setTimeout(poll, 10000))
+          }
+
+          poll()
+        },
         // 获取未播放的霸屏
         pollBaping() {
           getPendingBaping()
@@ -114,7 +149,7 @@ const LocalPage = {
               vm.messages = allMessages.slice(0, LIMIT)
           })
 
-          var ticker = setInterval(() => {
+          this.ticker = setInterval(() => {
             var firstItem = scroller.find('.msg-item').first()
             var dis = firstItem.outerHeight() + 10
 
