@@ -21,7 +21,8 @@ router.get('/', auth, (req, res, next) => {
 
     var orders = yield Order.findAll({
       where: {
-        MessageId: messages.map(msg => msg.id)
+        MessageId: messages.map(msg => msg.id),
+        status: true
       }
     })
 

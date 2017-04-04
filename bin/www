@@ -11,7 +11,7 @@ var models = require('../models');
 
 app.locals.navs = [
   {
-    name: '酒吧信息',
+    name: '酒吧管理',
     path: 'form'
   },
   {

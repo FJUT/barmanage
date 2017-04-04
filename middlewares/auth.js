@@ -3,28 +3,43 @@
  */
 const sha1 = require('../lib/sha1')
 const Token = require('../lib/Token')
+const models = require('../models')
+const co = require('co')
 
 const auth = (req, res, next) => {
-  let token = req.cookies.token
+  co(function*() {
+    let token = req.cookies.token
 
-  if (!token) {
-    res.redirect('/login')
-    return
-  }
+    if (!token) {
+      res.redirect('/login')
+      return
+    }
 
-  let arr = Token.decode(token)
-  let [ phonenumber, password ] = arr
+    let arr = Token.decode(token)
+    let [ phonenumber, password ] = arr
 
-  password = sha1(password)
+    password = sha1(password)
 
-  let barInfo = req.session.barInfo
+    let barInfo = req.session.barInfo
 
-  if (barInfo.phonenumber == phonenumber && barInfo.password == password) {
-    res.locals.barInfo = barInfo
-    next()
-  } else {
-    res.redirect('/login')
-  }
+    if (!barInfo) {
+      barInfo = yield models.Bar.findOne({
+        where: {
+          phonenumber,
+          password
+        }
+      })
+
+      req.session.barInfo = barInfo.get({plain: true})
+    }
+
+    if (barInfo.phonenumber == phonenumber && barInfo.password == password) {
+      res.locals.barInfo = barInfo
+      next()
+    } else {
+      res.redirect('/login')
+    }
+  }).catch(next)
 }
 
 module.exports = auth

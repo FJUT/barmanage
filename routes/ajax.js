@@ -165,7 +165,8 @@ const createPayMiddware = (req, res, next) => {
       BarId,
       UserId,
       seconds,
-      isDisplay: false
+      isDisplay: false,
+      isPayed: false
     })
 
     // 插入订单表
@@ -227,24 +228,26 @@ const responseWeixinNotifyMiddware = notifyMiddleware.getNotify()
     var {orderId, messageId} = attach
 
     co(function*() {
-      yield Order.update({status: true}, {
+      var updateOrderResult = yield Order.update({status: true}, {
         where: {
           id: orderId
         }
       })
 
-      yield Message.update({isPayed: true}, {
+      var updateMessageResult = yield Message.update({isPayed: true}, {
         where: {
           id: messageId
         }
       })
 
+      console.log(updateOrderResult, updateMessageResult)
+
       res.reply('success')
     })
-    .catch(err => {
-      console.log(err)
-      res.reply(new Error('update oreder failed'))
-    })
+      .catch(err => {
+        console.log(err)
+        res.reply(new Error('update oreder failed'))
+      })
   })
 
 // 接受微信回调

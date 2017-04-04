@@ -12,6 +12,56 @@ const PLAY_INTERVAL = 2000
 
 var allMessages = window.messages
 
+var messageQueue = []
+var baQueue = []
+const lastMessageId = ''
+
+const showBaping = () => {
+  var message = baQueue.shift()
+  var seconds = message.seconds
+
+  setInterval(function() {
+    seconds--
+
+    if (seconds == 0) {
+      // 检查霸屏队列长度，如果为0隐藏霸屏界面
+
+      // 发请求修改消息isDisplay字段
+
+    }
+  }, 1000)
+}
+
+const fetchLatestMessage = () => {
+  $.ajax({
+    url: '/ajax/getLatestMessage',
+    data: {
+      lastMessageId: lastMessageId
+    }
+  })
+    .done(res => {
+      if (res.iRet == 0) {
+        // 更新消息队列
+        messageQueue = messageQueue.concat([res.data])
+
+        var bapingMessages = res.data.filter(msg => {
+          return msg.msgType == 2 && msg.isDisplay == false
+        })
+
+        baQueue = baQueue.concat([bapingMessages])
+
+        if (baQueue.length > 0) {
+          // 显示霸屏界面
+
+          showBaping()
+        }
+
+      } else {
+        alert('后台错误')
+      }
+    })
+}
+
 const LocalPage = {
   init: function() {
     let app = new Vue({
