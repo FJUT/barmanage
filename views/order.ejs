@@ -1,6 +1,9 @@
 <%- include('common/header.ejs') %>
 <%- include('header.ejs') %>
 <%- include('nav.ejs') %>
+<script>
+var orders = <%-JSON.stringify(orders)%>;  
+</script>
 <div class="content-wrapper">
   <section class="content-header">
     <h1>管理订单</h1>
@@ -8,41 +11,32 @@
   <section class="content">
     <div class="row">
       <div class="col-md-10">
-        <div class="box box-primary">
-          <div class="box-body">
-            <%if(orders.length <= 0) {%>
-            <p class="text-info">暂无订单</p>
-            <%}%>
-          </div>
-        </div>
         <div class="box">
           <div class="box-header with-border">
             <h3 class="box-title">订单状态</h3>
           </div>
           <!-- /.box-header -->
-          <div class="box-body">
-            <table class="table table-bordered">
+          <div class="box-body" id="app">
+            <p class="text-info" v-if="orders.length == 0">暂无订单</p>
+            <table class="table table-bordered" v-else>
               <tbody>
-              <tr>
-                <th>订单ID</th>
-                <th>用户</th>
-                <th>消息</th>
-                <th style="width: 40px">状态</th>
-              </tr>
-              <tr>
-                <td>1.</td>
-                <td>用户A</td>
-                <td>
-                  <div class="progress progress-xs">
-                    <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-                  </div>
-                </td>
-                <td><span class="badge bg-red">未播放</span></td>
-              </tr>
-              </tbody></table>
+                <tr>
+                  <th>订单ID</th>
+                  <th>订单价格</th>
+                  <th>订单消息ID</th>
+                  <th style="width: 40px">状态</th>
+                </tr>
+                <tr v-for="item in orders">
+                  <td>{{item.id}}</td>
+                  <td>{{item.amount}}元</td>
+                  <td>{{item.MessageId}}</td>
+                  <td><span class="badge bg-red">{{item.status ? '已支付' : '未支付'}}</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <!-- /.box-body -->
-          <div class="box-footer clearfix">
+          <!--<div class="box-footer clearfix">
             <ul class="pagination pagination-sm no-margin pull-right">
               <li><a href="#">«</a></li>
               <li><a href="#">1</a></li>
@@ -50,10 +44,12 @@
               <li><a href="#">3</a></li>
               <li><a href="#">»</a></li>
             </ul>
-          </div>
+          </div>-->
         </div>
       </div>
     </div>
   </section>
 </div>
+<script src="<%-url('init.js')%>"></script>
+<script src="<%-url('order.bundle.js')%>"></script>
 <%- include('common/footer.ejs') %>
