@@ -1,0 +1,67 @@
+<%- include('common/header.ejs') %>
+<%- include('header.ejs') %>
+<%- include('nav.ejs') %>
+<div class="content-wrapper">
+  <section class="content-header">
+    <h1>总览</h1>
+  </section>
+  <section class="content">
+    <div class="row">
+      <div class="col-md-10" id="app" v-cloak>
+        <div class="box box-primary">
+          <div class="box-body mainview">
+
+            <div class="mainview-block block-color row">
+              <div class="mainview-title-item col-md-3">
+                <label class="">{{money}}</label>
+                <p>营收总额<label class="detail">详情</label></p>
+              </div>
+              <div class="mainview-title-item col-md-3">
+                <label class="wall">123</label>
+                <p>上墙总数</p>
+              </div>
+              <div class="mainview-title-item col-md-3">
+                <label class="screen">123</label>
+                <p>霸屏总数</p>
+              </div>
+              <div class="mainview-title-item col-md-3">
+                <label class="user">123</label>
+                <p>用户总数</p>
+              </div>
+            </div>
+
+            <div class="mainview-block block-color row">
+              <div class="mainview-news item-color col-md-6">
+                <div class="sub-title">
+                  <p><label class="pull-left">微喵动态</label>
+                    <label class="pull-right">更多</label></p>
+                </div>
+                <div class="news-mini-list">
+                </div>
+              </div>
+              <div class="mainview-feedback item-color col-md-6">
+                <div class="sub-title">
+                  <p><label class="pull-left">反馈建议</label></p>
+                </div>
+                <form action="" class="feed-back-form">
+                  <textarea name="feedback" v-model="feedback" class="feedback form-control"
+                            placeholder="请写下您对微喵的意见或建议"></textarea>
+                  <div class="" style="margin-top: 5px;">
+                    <button type="submit" class="btn btn-success pull-left" style="padding: 5px 20px;">Left</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+  window.barInfo = <%- JSON.stringify(barInfo) %>
+</script>
+<script src="https://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
+<script src="<%= url('init.js') %>"></script>
+<script src="<%= url('mainview.bundle.js') %>"></script>
+<%- include('common/footer.ejs') %>

@@ -7,10 +7,12 @@ module.exports = function(env) {
   return {
     entry: {
       login: './public/js/login.js',
+      mainview: './public/js/mainview.js',
       form: './public/js/form.js',
       show: './public/js/show.js',
       occupy: './public/js/occupy.js',
       order: './public/js/order.js',
+      users: './public/js/users.js',
       message: './public/js/message.js'
     },
     output: {

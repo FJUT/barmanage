@@ -1,0 +1,23 @@
+<%- include('common/header.ejs') %>
+<%- include('header.ejs') %>
+<%- include('nav.ejs') %>
+<div class="content-wrapper">
+  <section class="content-header">
+    <h1>用户管理</h1>
+  </section>
+  <section class="content">
+    <div class="row">
+      <div class="col-md-10" id="app" v-cloak>
+        <div class="box box-primary">
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+  window.barInfo = <%- JSON.stringify(barInfo) %>
+</script>
+<script src="https://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
+<script src="<%= url('init.js') %>"></script>
+<script src="<%= url('users.bundle.js') %>"></script>
+<%- include('common/footer.ejs') %>
