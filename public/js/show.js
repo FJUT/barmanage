@@ -1,7 +1,7 @@
 /**
  * Created by shinan on 2017/1/24.
  */
-import $ from 'jquery'
+const $ = window.$
 import Vue from 'vue'
 import Carousel3d from 'vue-carousel-3d'
 
@@ -61,18 +61,48 @@ const LocalPage = {
             return
           }
 
-          $('#bp-effected-img').pieces({
-            onStart: {
-              animation: "pieces10",
-              overwrite: true,
-              speed: 40
-            },
-            row: 6,
-            cols: 6
+          this.$nextTick(() => {
+            this.autoPlay()
           })
         }
       },
       methods: {
+        // 霸屏图片动画特效
+        autoPlay() {
+          var types = ['pieces10', 'pieces30']
+
+          var imgHtml = $('#preview').html()
+          var index = 0
+
+          var play = function() {
+            $('#preview').empty()
+            $('#preview').html(imgHtml)
+
+            console.log($('#preview').length)
+
+            $('#bp-effected-img').pieces({
+              onStart: {
+                animation: types[index],
+                overwrite: true,
+                speed: 40,
+                delay: 4,
+                onComplete: function() {
+                  index++
+
+                  if (index >= types.length) {
+                    index = 0
+                  }
+
+                  play()
+                }
+              },
+              rows: 6,
+              cols: 6
+            })
+          }
+
+          play()
+        },
         // 获取最新消息
         pollNormalMessages() {
           const poll = () => {

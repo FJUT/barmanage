@@ -4,6 +4,7 @@
   <title>大屏幕</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script src="/js/jquery.min.js"></script>
   <script src="/js/TweenMax.min.js"></script>
   <script src="/js/piecesp.js"></script>
   <link rel="stylesheet" href="/css/show.css">
@@ -35,8 +36,8 @@
         </carousel-3d>
       </div>
       <div class="baping-msg" v-if="bapingShow">
-        <div class="bp-img">
-          <img :src="bapingMessage.msgImage" alt="" class="bp-effected-img">
+        <div class="bp-img" id="preview">
+          <img :src="bapingMessage.msgImage" alt="" id="bp-effected-img">
         </div>
         <div class="bp-msg-wrap">
           <img :src="bapingMessage.UserAvatar" alt="" class="bp-user-avatar">
