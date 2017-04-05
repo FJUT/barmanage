@@ -85,16 +85,16 @@ const moment = require('moment')
 // })
 
 // 模拟发送霸屏
-models.Message.create({
-  BarId: 3,
-  UserId: 1,
-  isDisplay: false,
-  isPayed: true,
-  msgType: 2,
-  seconds: 3,
-  msgText: '二月月，乌鸦卡！！！',
-  msgImage: 'http://localhost:3000/file_1490367529830_1.jpg'
-})
+// models.Message.create({
+//   BarId: 1,
+//   UserId: 1,
+//   isDisplay: false,
+//   isPayed: true,
+//   msgType: 2,
+//   seconds: 3,
+//   msgText: '二月月，乌鸦卡！！！',
+//   msgImage: 'http://localhost:3000/file_1490367529830_1.jpg'
+// })
 
 // models.Message.findAll({
 //   where: {
