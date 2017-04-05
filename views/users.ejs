@@ -9,13 +9,40 @@
     <div class="row">
       <div class="col-md-10" id="app" v-cloak>
         <div class="box box-primary">
+          <table class="table">
+            <thead>
+            <th>头像</th>
+            <th>昵称</th>
+            <th>OpenID</th>
+            <th>性别</th>
+            <th>城市</th>
+            <th>手机号</th>
+            <th>备注</th>
+            <th>操作</th>
+            </thead>
+            <tbody>
+            <% users.forEach(function(obj, i, arr){ %>
+            <tr>
+              <td><img src="<%=obj['avatar']%>"></td>
+              <td><%=obj['nickname']%></td>
+              <td><%=obj['openid']%></td>
+              <td><%=obj['sex']%></td>
+              <td><%=obj['province']%></td>
+              <td><%=obj['phonenumber']%></td>
+              <td><%=obj['note']%></td>
+              <td><button class="btn btn-danger">删除</button></td>
+            </tr>
+            <% }) %>
+            <tr></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </section>
 </div>
 <script>
-  window.barInfo = <%- JSON.stringify(barInfo) %>
+  window.error_message = "<%= err %>"
 </script>
 <script src="https://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
 <script src="<%= url('init.js') %>"></script>

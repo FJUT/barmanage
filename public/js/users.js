@@ -9,8 +9,7 @@ const vm = new Vue({
   el: '#app',
   data: function() {
     return {
-      money: '12313',
-      feedback: ''
+      err: window.error_message
     }
   }
 })

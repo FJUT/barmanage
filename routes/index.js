@@ -59,10 +59,6 @@ router.get('/mainview', auth, (req, res, next) => {
   res.render('mainview', { barInfo: res.locals.barInfo })
 })
 
-router.get('/users', auth, (req, res, next) => {
-  res.render('users', { barInfo: res.locals.barInfo })
-})
-
 router.post('/saveForm', (req, res) => {
   var { barInfo } = req.body
 
