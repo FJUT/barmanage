@@ -38,7 +38,10 @@ module.exports = function(env) {
     },
     resolve: {
       alias: {
-        'vue$': 'vue/dist/vue.common.js'
+        'vue$': 'vue/dist/vue.common.js',
+
+        //webpack正确引入jquery的方式
+        'jquery': 'jquery'
       }
     },
     plugins: [
@@ -46,7 +49,13 @@ module.exports = function(env) {
         处理多个入口文件中公共引用的代码，使用Commons中间件,
         例如，main和form两个入口文件里面公共引用的部分，会被合并到init.js里面
       */
-      new webpack.optimize.CommonsChunkPlugin('init.js')
+      new webpack.optimize.CommonsChunkPlugin('init.js'),
+
+      //webpack正确引入jquery的方式
+      new webpack.ProvidePlugin({
+        $: "jquery",
+        jQuery: "jquery"
+      })
     ]
   }
 }()

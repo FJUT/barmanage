@@ -194,6 +194,12 @@ h1, a, span {
 
 }
 
+.mainview-block .detail{
+  margin-left: 5px;
+  color: green;
+  cursor:pointer;
+}
+
 .item-color .sub-title {
   height: 30px;
 }
