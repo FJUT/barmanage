@@ -58,6 +58,9 @@ router.post('/saveUserToDb', (req, res, next) => {
       openid: data.openId,
       avatar: data.avatarUrl,
       name: data.nickName,
+      gender: data.gender,
+      city: data.city,
+      province: data.province,
       wx: JSON.stringify(data)
     }
   }).then(ret => {

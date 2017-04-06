@@ -23,11 +23,9 @@ router.get('/getBarList', (req, res, next) => {
 
 // 排行榜
 router.get('/getTopRankUsers', (req, res, next) => {
-  User
-    .findAll({
-      limit: 10
-    })
-    .then(users => {
+  User.findAll({
+    limit: 10
+  }).then(users => {
       res.json({
         iRet: 0,
         users: users.map(user => user.get({plain: true}))
@@ -131,21 +129,18 @@ router.post('/changeAvatar', upload.single('file'), (req, res, next) => {
     where: {
       id: req.body.UserId
     }
-  })
-    .then(() => {
+  }).then(() => {
       return models.User.findOne({
         where: {
           id: req.body.UserId
         }
       })
-    })
-    .then(created => {
+    }).then(created => {
       res.json({
         iRet: 0,
         userInfo: created.get({plain: true})
       })
-    })
-    .catch(() => {
+    }).catch(() => {
       res.json({
         iRet: -1
       })
@@ -172,6 +167,7 @@ const createPayMiddware = (req, res, next) => {
     // 插入订单表
     var createdOrder = yield Order.create({
       amount: price,
+      UserId: UserId,
       MessageId: createdMessage.id
     })
 

@@ -7,7 +7,6 @@ const $ = require('jquery')
 
 //基于webpack正确引入jquery的方式之上，引入bootstap
 import 'bootstrap/dist/js/bootstrap.min'
-import 'bootstrap-table'
 
 import Element from 'element-ui'
 Vue.use(Element)
