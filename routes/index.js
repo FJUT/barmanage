@@ -10,7 +10,7 @@ const co = require('co')
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
-  res.redirect('/form')
+  res.redirect('/mainview')
 })
 
 router.post('/register', (req, res, next) => {
@@ -53,6 +53,10 @@ router.post('/register', (req, res, next) => {
 
 router.get('/form', auth, (req, res, next) => {
   res.render('form', { barInfo: res.locals.barInfo })
+})
+
+router.get('/mainview', auth, (req, res, next) => {
+  res.render('mainview')
 })
 
 router.post('/saveForm', (req, res) => {

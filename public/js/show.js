@@ -55,23 +55,6 @@ const LocalPage = {
         // 轮询普通消息
         this.pollNormalMessages()
       },
-      watch: {
-        bapingShow(newVal) {
-          if (!newVal) {
-            return
-          }
-
-          $('#bp-effected-img').pieces({
-            onStart: {
-              animation: "pieces10",
-              overwrite: true,
-              speed: 40
-            },
-            row: 6,
-            cols: 6
-          })
-        }
-      },
       methods: {
         // 获取最新消息
         pollNormalMessages() {
