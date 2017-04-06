@@ -20,7 +20,7 @@ router.post('/register', (req, res, next) => {
   }
 
   co(function*() {
-    let { phonenumber, password } = req.body
+    let {phonenumber, password} = req.body
     let Bar = models.Bar
     let result = yield Bar.findAndCount({
       where: {
@@ -52,15 +52,24 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/form', auth, (req, res, next) => {
-  res.render('form', { barInfo: res.locals.barInfo })
+  res.render('form', {barInfo: res.locals.barInfo})
 })
 
 router.get('/mainview', auth, (req, res, next) => {
-  res.render('mainview')
+  models.CompanyNews.findAll({order: 'newsTime DESC'}).then((result) => {
+    if (!result)
+      res.render('mainview', {err: '查找用户错误'});
+    else {
+      console.log(result);
+      res.render('mainview', {news: result});
+    }
+  }).catch((err) => {
+    res.render('mainview', {err: err});
+  })
 })
 
 router.post('/saveForm', (req, res) => {
-  var { barInfo } = req.body
+  var {barInfo} = req.body
 
   models.Bar.update(Object.assign({}, barInfo), {
     where: {
@@ -71,13 +80,13 @@ router.post('/saveForm', (req, res) => {
       return models.Bar.findOne({where: {id: barInfo.id}})
     })
     .then(row => {
-    // 更新session
-    req.session.barInfo = row.get({plain: true})
+      // 更新session
+      req.session.barInfo = row.get({plain: true})
 
-    res.json({
-      iRet: 0
+      res.json({
+        iRet: 0
+      })
     })
-  })
 })
 
 router.post('/upload', upload.single('logo'), (req, res, next) => {

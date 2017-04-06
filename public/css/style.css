@@ -208,5 +208,10 @@ h1, a, span {
   width: 100%;
   height: 100px;
 }
+
+.news-time {
+  color: darkgray;
+  font-size: 12px;
+}
 /*mainview*/
 
