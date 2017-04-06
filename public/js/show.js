@@ -1,7 +1,7 @@
 /**
  * Created by shinan on 2017/1/24.
  */
-const $ = window.$
+import $ from 'jquery'
 import Vue from 'vue'
 import Carousel3d from 'vue-carousel-3d'
 

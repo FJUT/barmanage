@@ -1,0 +1,145 @@
+<%- include('common/header.ejs') %>
+<%- include('header.ejs') %>
+<%- include('nav.ejs') %>
+<div class="content-wrapper">
+  <section class="content-header">
+    <h1>总览</h1>
+  </section>
+  <section class="content">
+    <div class="row">
+      <div class="col-md-10" id="app" v-cloak>
+        <div class="box box-primary">
+          <div class="box-body mainview">
+
+            <div class="mainview-block block-color row">
+              <div class="mainview-title-item col-md-3">
+                <label class="">{{money}}</label>
+                <p>营收总额<label class="detail" @click="showBillDetail">详情</label></p>
+              </div>
+              <div class="mainview-title-item col-md-3">
+                <label class="wall">123</label>
+                <p>上墙总数</p>
+              </div>
+              <div class="mainview-title-item col-md-3">
+                <label class="screen">123</label>
+                <p>霸屏总数</p>
+              </div>
+              <div class="mainview-title-item col-md-3">
+                <label class="user">123</label>
+                <p>用户总数</p>
+              </div>
+            </div>
+
+            <div class="mainview-block block-color row">
+              <div class="mainview-news item-color col-md-6">
+                <div class="sub-title">
+                  <p><label class="pull-left">九服动态</label>
+                    <label class="pull-right detail" @click="showMoreNews">更多</label></p>
+                </div>
+                <div class="news-mini-list">
+                  <el-table :data="main5news" :show-header="false" style="width: 100%;font-size:14px" @row-click="main5newsClick">
+                    <el-table-column prop="newsTitle"></el-table-column>
+                    <el-table-column prop="newsTime" class-name="news-time" :formatter="timeformatter1" width="110"></el-table-column>
+                  </el-table>
+                </div>
+              </div>
+              <div class="mainview-feedback item-color col-md-6">
+                <div class="sub-title">
+                  <p><label class="pull-left">反馈建议</label></p>
+                </div>
+                <form action="" class="feed-back-form">
+                  <textarea name="feedback" v-model="feedback" class="feedback form-control"
+                            placeholder="请写下您对微喵的意见或建议"></textarea>
+                  <div class="" style="margin-top: 5px;">
+                    <button type="submit" class="btn btn-success pull-left" style="padding: 5px 20px;">提交</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!--营收总额的详情对话框-->
+            <div id="billdetailModel" class="modal fade" tabindex="-1" role="dialog">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">营收详情</h4>
+                  </div>
+                  <div class="modal-body">
+                    <!--<el-table :data="" :show-header="false" style="width: 100%">-->
+                      <!--<el-table-column prop="date" label="时间" width="180"></el-table-column>-->
+                      <!--<el-table-column prop="name" label="昵称" width="180"></el-table-column>-->
+                      <!--<el-table-column prop="address" label="性别"></el-table-column>-->
+                      <!--<el-table-column prop="address" label="金额"></el-table-column>-->
+                    <!--</el-table>-->
+                    <div style="height: 34px;">
+                      <el-pagination style="position: absolute;right: 10px;" layout="prev, pager, next">
+                      </el-pagination>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+            <!--更多新闻的对话框-->
+            <div id="morenewsModel" class="modal fade" tabindex="-10" role="dialog">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">最近新闻</h4>
+                  </div>
+                  <div class="modal-body">
+                    <el-table :data="newsCurShow" :show-header="false" style="width: 100%" @row-click="moreNewsClick">
+                      <el-table-column prop="newsTitle"></el-table-column>
+                      <el-table-column prop="newsTime" :formatter="timeformatter2" class-name="news-time" width="160"></el-table-column>
+                    </el-table>
+                    <div style="height: 34px;">
+                      <el-pagination :total="newsPages" style="position: absolute;right: 10px;" layout="prev, pager, next">
+                      </el-pagination>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+            <!--新闻内容对话框-->
+            <div id="newdetailModel" class="modal fade" tabindex="-20" role="dialog">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{{newsTitle}}</h4>
+                  </div>
+                  <div class="modal-body">
+                    {{newsContent}}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  </div>
+                </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<script>
+  window._jiufu_data = {news: (<%- JSON.stringify(news) %>)}
+</script>
+<script src="https://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
+<script src="<%= url('init.js') %>"></script>
+<script src="<%= url('mainview.bundle.js') %>"></script>
+<%- include('common/footer.ejs') %>
