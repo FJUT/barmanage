@@ -61,6 +61,13 @@ module.exports = (sequelize, DataTypes) => {
     wx: {
       type: DataTypes.STRING
     }
+  }, {
+    classMethods: {
+      associate: function (models) {
+        User.hasMany(models.Message)
+        User.hasMany(models.Order)
+      }
+    }
   })
 
   return User

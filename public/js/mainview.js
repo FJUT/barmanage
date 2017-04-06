@@ -37,7 +37,7 @@ const vm = new Vue({
   },
   mounted: function () {
     //在这里赋值触发watch
-    this.$data['news'] = window._jiufu_data['news']
+    this.$data['news'] = window._jiufu_news
   },
   watch: {
     news: function (val) {

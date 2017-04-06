@@ -51,6 +51,7 @@ module.exports = (sequelize, DataTypes) => {
       associate: function (models) {
         Message.belongsTo(models.Bar)
         Message.belongsTo(models.User)
+        Message.hasMany(models.Order)
       }
     }
   })

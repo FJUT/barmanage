@@ -137,7 +137,8 @@
   </section>
 </div>
 <script>
-  window._jiufu_data = {news: (<%- JSON.stringify(news) %>)}
+  window._jiufu_news = <%- JSON.stringify(news) %>
+    window._jiufu_order = <%- JSON.stringify(order) %>
 </script>
 <script src="https://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
 <script src="<%= url('init.js') %>"></script>

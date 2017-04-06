@@ -58,17 +58,26 @@ router.get('/form', auth, (req, res, next) => {
 router.get('/mainview', auth, (req, res, next) => {
   models.CompanyNews.findAll({order: 'newsTime DESC'}).then((newResult) => {
 
-    res.render('mainview', {news: newResult});
+    // res.render('mainview', {news: newResult});
 
-    // let _barId = res.locals.barInfo['id']
-    // models.Message.findAll({where:{
-    //   BarId: _barId,
-    //   msgType: 2
-    // }}).then((orderRes)=>{
-    //
-    // }).catch((err) => {
-    //   res.render('mainview', {err: err});
-    // })
+    //msgType:2为支付类型
+    let _barId = res.locals.barInfo['id']
+    models.Message.findAll({
+      where: {
+        BarId: _barId,
+        msgType: 2
+      },
+      include: [
+        {model: models.Order, where: {amount:{$gt:0}}},
+        {model: models.User}
+      ]
+    }).then((orderRes) => {
+      console.log("orderRes:", orderRes)
+      res.render('mainview', {news: newResult, order: orderRes});
+    }).catch((err) => {
+      console.log("orderRes:", err)
+      res.render('mainview', {err: err});
+    })
 
   }).catch((err) => {
     res.render('mainview', {err: err});
