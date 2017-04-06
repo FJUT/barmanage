@@ -55,30 +55,16 @@ const LocalPage = {
         // 轮询普通消息
         this.pollNormalMessages()
       },
-      watch: {
-        bapingShow(newVal) {
-          if (!newVal) {
-            return
-          }
-
-          this.$nextTick(() => {
-            this.autoPlay()
-          })
-        }
-      },
       methods: {
         // 霸屏图片动画特效
         autoPlay() {
           var types = ['pieces10', 'pieces30']
-
-          var imgHtml = $('#preview').html()
           var index = 0
+          var imgHtml = `<img id="bp-effected-img" src="${this.bapingMessage.msgImage}">`
 
           var play = function() {
             $('#preview').empty()
             $('#preview').html(imgHtml)
-
-            console.log($('#preview').length)
 
             $('#bp-effected-img').pieces({
               onStart: {
@@ -160,6 +146,9 @@ const LocalPage = {
             this.bapingShow = true
 
             this.startBapingCount()
+            this.$nextTick(() => {
+              this.autoPlay()
+            })
           })
           .fail(err => {
             alert('获取霸屏失败')

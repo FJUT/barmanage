@@ -91,9 +91,22 @@ models.Message.create({
   isDisplay: false,
   isPayed: true,
   msgType: 2,
-  seconds: 30,
+  seconds: 10,
   msgText: '二月月，乌鸦卡！！！',
   msgImage: 'http://localhost:3000/file_1490367529830_1.jpg'
+})
+
+// file_1490284197656_1.png
+
+models.Message.create({
+  BarId: 3,
+  UserId: 1,
+  isDisplay: false,
+  isPayed: true,
+  msgType: 2,
+  seconds: 30,
+  msgText: '二月月，乌鸦卡！！！',
+  msgImage: 'http://localhost:3000/file_1490284437258_0.png'
 })
 
 // models.Message.findAll({
