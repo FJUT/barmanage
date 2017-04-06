@@ -28,12 +28,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     orderNumber: {
       type: DataTypes.STRING,
-    },
-    updatedAt: {
-      type: DataTypes.DATETIME,
-    },
-    createdAt: {
-      type: DataTypes.DATETIME,
     }
   })
 
