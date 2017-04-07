@@ -141,10 +141,10 @@ router.get('/logout', (req, res, next) => {
 })
 
 router.post('/feedback', auth, (req, res) => {
-  let {barId} = req.session.barInfo
+  let barId = req.session.barInfo.id
   let {content} = req.body
-  models.Feedback.create({content: content, BarId: barId}, {
-    include: {model: models.Bar, where: {id: barId}}
+  models.Feedback.create({
+    content: content, BarId: barId
   }).then(function () {
     res.json({iRet: 0})
   }).catch(function (err) {
