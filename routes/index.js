@@ -66,15 +66,15 @@ router.get('/mainview', auth, (req, res, next) => {
     let _barId = res.locals.barInfo['id']
 
     models.Message.findAll({
-      attributes: [ 'id', 'BarId', 'UserId' ],
+      attributes: ['id', 'BarId', 'UserId'],
       where: {
         BarId: _barId,
         //msgType:2为支付类型
         msgType: 2
       },
       include: [
-        {model: models.Order, where: {amount: {$gt: 0}}, attributes: [ 'createdAt', 'amount', 'UserId' ]},
-        {model: models.User, attributes: [ 'name', 'gender', 'id' ]}
+        {model: models.Order, where: {amount: {$gt: 0}}, attributes: ['createdAt', 'amount', 'UserId']},
+        {model: models.User, attributes: ['name', 'gender', 'id']}
       ]
 
     }).then((orderRes) => {
@@ -138,6 +138,12 @@ router.get('/logout', (req, res, next) => {
   res.clearCookie('token')
   delete req.session.barInfo
   res.redirect('/')
+})
+
+router.get('/feedback', auth, (req, res) => {
+  let {content} = req.body
+  console.log(`feedback: ${req.session.barInfo}`)
+  console.log(`content: ${content}`)
 })
 
 module.exports = router;

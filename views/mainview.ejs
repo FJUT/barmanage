@@ -47,11 +47,11 @@
                 <div class="sub-title">
                   <p><label class="pull-left">反馈建议</label></p>
                 </div>
-                <form action="" class="feed-back-form">
+                <form action="/feedback" method="post" class="feed-back-form">
                   <textarea name="feedback" v-model="feedback" class="feedback form-control"
                             placeholder="请写下您对微喵的意见或建议"></textarea>
                   <div class="" style="margin-top: 5px;">
-                    <button type="submit" class="btn btn-success pull-left" style="padding: 5px 20px;">提交</button>
+                    <button type="submit" @click.prevent="onFeedback" class="btn btn-success pull-left" style="padding: 5px 20px;">提交</button>
                   </div>
                 </form>
               </div>

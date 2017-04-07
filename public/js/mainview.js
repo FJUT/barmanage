@@ -35,7 +35,7 @@ const vm = new Vue({
       newsContent: '',
 
       //订单
-      order:[],
+      order: [],
       orderMapped: [],  //order转换过之后的
       //订单每页显示数
       orderPerPageCount: 8,
@@ -85,7 +85,7 @@ const vm = new Vue({
       this.$data['orderPages'] = Math.ceil(val.length % this.$data['orderPerPageCount'])
 
       //将数组中每一个子Object或者Array中的数据拉出来放到最外层方便使用
-      this.$data['orderMapped'] = $.map(val, function(obj){
+      this.$data['orderMapped'] = $.map(val, function (obj) {
         var t = $.extend(true, {}, obj)
         delete t['Orders']
         delete t['User']
@@ -186,6 +186,18 @@ const vm = new Vue({
       this.$data['newsTitle'] = data['newsTitle']
       this.$data['newsContent'] = data['newsContent']
       $('#newdetailModel').modal()
+    },
+
+    onFeedback: function (event) {
+      $.ajax({
+        url: '/feedback',
+        dataType: "json",
+        type: 'post',
+        data: {content: this.feedback},
+        success(response) {
+          this.feedback = ''
+        }
+      })
     }
   }
 })
