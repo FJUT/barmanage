@@ -100,7 +100,8 @@
                       <el-table-column prop="newsTime" :formatter="timeformatter2" class-name="news-time" width="160"></el-table-column>
                     </el-table>
                     <div style="height: 34px;">
-                      <el-pagination :total="newsPages" style="position: absolute;right: 10px;" layout="prev, pager, next">
+                      <el-pagination :total="news.length" :page-size="newsPerPageCount" @current-change="onPageChange"
+                                     style="position: absolute;right: 10px;" layout="prev, pager, next">
                       </el-pagination>
                     </div>
                   </div>

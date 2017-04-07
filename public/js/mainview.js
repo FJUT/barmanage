@@ -23,7 +23,7 @@ const vm = new Vue({
       main5news: [],
       //当前页索引
       curPageIndex: 1,
-      //新闻分页
+      //新闻分页总数
       newsPages: 0,
       //每页展示的新闻数
       newsPerPageCount: 8,
@@ -108,6 +108,10 @@ const vm = new Vue({
         }
       }
       return _curNews
+    },
+
+    onPageChange: function (val) {
+      this.$data['curPageIndex'] = val
     },
 
     timeformatter1: function (data, target) {

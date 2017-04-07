@@ -56,6 +56,7 @@ router.get('/form', auth, (req, res, next) => {
 })
 
 router.get('/mainview', auth, (req, res, next) => {
+
   models.CompanyNews.findAll({order: 'newsTime DESC'}).then((newResult) => {
 
     // res.render('mainview', {news: newResult});
@@ -68,20 +69,24 @@ router.get('/mainview', auth, (req, res, next) => {
         msgType: 2
       },
       include: [
-        {model: models.Order, where: {amount:{$gt:0}}},
+        {model: models.Order, where: {amount: {$gt: 0}}},
         {model: models.User}
       ]
+
     }).then((orderRes) => {
+
       console.log("orderRes:", orderRes)
       res.render('mainview', {news: newResult, order: orderRes});
+
     }).catch((err) => {
-      console.log("orderRes:", err)
-      res.render('mainview', {err: err});
+
+      console.log("[mainview@Message]:", err)
     })
 
   }).catch((err) => {
-    res.render('mainview', {err: err});
+    console.log("[mainview@CompanyNews]:", err)
   })
+
 })
 
 router.post('/saveForm', (req, res) => {
@@ -91,18 +96,16 @@ router.post('/saveForm', (req, res) => {
     where: {
       id: barInfo.id
     }
-  })
-    .then(count => {
-      return models.Bar.findOne({where: {id: barInfo.id}})
-    })
-    .then(row => {
-      // 更新session
-      req.session.barInfo = row.get({plain: true})
+  }).then(count => {
+    return models.Bar.findOne({where: {id: barInfo.id}})
+  }).then(row => {
+    // 更新session
+    req.session.barInfo = row.get({plain: true})
 
-      res.json({
-        iRet: 0
-      })
+    res.json({
+      iRet: 0
     })
+  })
 })
 
 router.post('/upload', upload.single('logo'), (req, res, next) => {
