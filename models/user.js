@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     avatar: {
       type: DataTypes.STRING
     },
-    level: {
+    exp: {
       type: DataTypes.INTEGER
     },
     score: {

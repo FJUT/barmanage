@@ -26,11 +26,11 @@ router.get('/getTopRankUsers', (req, res, next) => {
   User.findAll({
     limit: 10
   }).then(users => {
-      res.json({
-        iRet: 0,
-        users: users.map(user => user.get({plain: true}))
-      })
+    res.json({
+      iRet: 0,
+      users: users.map(user => user.get({plain: true}))
     })
+  })
     .catch(err => {
       res.json({
         iRet: -1,
@@ -130,21 +130,21 @@ router.post('/changeAvatar', upload.single('file'), (req, res, next) => {
       id: req.body.UserId
     }
   }).then(() => {
-      return models.User.findOne({
-        where: {
-          id: req.body.UserId
-        }
-      })
-    }).then(created => {
-      res.json({
-        iRet: 0,
-        userInfo: created.get({plain: true})
-      })
-    }).catch(() => {
-      res.json({
-        iRet: -1
-      })
+    return models.User.findOne({
+      where: {
+        id: req.body.UserId
+      }
     })
+  }).then(created => {
+    res.json({
+      iRet: 0,
+      userInfo: created.get({plain: true})
+    })
+  }).catch(() => {
+    res.json({
+      iRet: -1
+    })
+  })
 })
 
 // 创建统一支付订单中间件
@@ -216,35 +216,37 @@ router.post('/sendBapingText', createPayMiddware)
 router.post('/sendBaping', upload.single('file'), createPayMiddware)
 
 // 接收微信回调中间件
-const responseWeixinNotifyMiddware = notifyMiddleware.getNotify()
-  .done((message, req, res, next) => {
-    console.log('wx notify message:', message)
-    var attach = JSON.parse(message.attach)
-    // 订单号,消息号
-    var {orderId, messageId} = attach
+const responseWeixinNotifyMiddware = notifyMiddleware.getNotify().done((message, req, res, next) => {
 
-    co(function*() {
-      var updateOrderResult = yield Order.update({status: true}, {
-        where: {
-          id: orderId
-        }
-      })
+  console.log('wx notify message:', message)
 
-      var updateMessageResult = yield Message.update({isPayed: true}, {
-        where: {
-          id: messageId
-        }
-      })
+  var attach = JSON.parse(message.attach)
 
-      console.log(updateOrderResult, updateMessageResult)
+  // 订单号,消息号
+  var {orderId, messageId} = attach
 
-      res.reply('success')
+  co(function*() {
+    var updateOrderResult = yield Order.update({status: true}, {
+      where: {
+        id: orderId
+      }
     })
-      .catch(err => {
-        console.log(err)
-        res.reply(new Error('update oreder failed'))
-      })
+
+    var updateMessageResult = yield Message.update({isPayed: true}, {
+      where: {
+        id: messageId
+      }
+    })
+
+    console.log(updateOrderResult, updateMessageResult)
+
+    res.reply('success')
+
+  }).catch(err => {
+    console.log(err)
+    res.reply(new Error('update oreder failed'))
   })
+})
 
 // 接受微信回调
 router.use('/notify', responseWeixinNotifyMiddware)

@@ -52,7 +52,9 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/form', auth, (req, res, next) => {
+
   res.render('form', {barInfo: res.locals.barInfo})
+
 })
 
 router.get('/mainview', auth, (req, res, next) => {
@@ -61,22 +63,24 @@ router.get('/mainview', auth, (req, res, next) => {
 
     // res.render('mainview', {news: newResult});
 
-    //msgType:2为支付类型
     let _barId = res.locals.barInfo['id']
+
     models.Message.findAll({
+      attributes: [ 'id', 'BarId', 'UserId' ],
       where: {
         BarId: _barId,
+        //msgType:2为支付类型
         msgType: 2
       },
       include: [
-        {model: models.Order, where: {amount: {$gt: 0}}},
-        {model: models.User}
+        {model: models.Order, where: {amount: {$gt: 0}}, attributes: [ 'createdAt', 'amount', 'UserId' ]},
+        {model: models.User, attributes: [ 'name', 'gender', 'id' ]}
       ]
 
     }).then((orderRes) => {
 
-      console.log("orderRes:", orderRes)
-      res.render('mainview', {news: newResult, order: orderRes});
+      //console.log("orderRes:", orderRes)
+      res.render('mainview', {news: newResult ? newResult : {}, order: orderRes ? orderRes : {}});
 
     }).catch((err) => {
 
@@ -84,7 +88,9 @@ router.get('/mainview', auth, (req, res, next) => {
     })
 
   }).catch((err) => {
+
     console.log("[mainview@CompanyNews]:", err)
+
   })
 
 })
