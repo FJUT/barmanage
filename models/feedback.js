@@ -14,10 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     updatedAt: {
-      type: DataTypes.DATETIME
+      type: DataTypes.DATE
     },
     createdAt: {
-      type: DataTypes.DATETIME
+      type: DataTypes.DATE
     }
   }, {
     classMethods: {
