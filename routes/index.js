@@ -140,10 +140,16 @@ router.get('/logout', (req, res, next) => {
   res.redirect('/')
 })
 
-router.get('/feedback', auth, (req, res) => {
+router.post('/feedback', auth, (req, res) => {
+  let {barId} = req.session.barInfo
   let {content} = req.body
-  console.log(`feedback: ${req.session.barInfo}`)
-  console.log(`content: ${content}`)
+  models.Feedback.create({content: content, BarId: barId}, {
+    include: {model: models.Bar, where: {id: barId}}
+  }).then(function () {
+    res.json({iRet: 0})
+  }).catch(function (err) {
+    res.json({iRet: -1, err: err})
+  })
 })
 
 module.exports = router;

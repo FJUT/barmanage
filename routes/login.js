@@ -47,7 +47,7 @@ router.post('/', (req, res, next) => {
       { expires: rememberme ? new Date(Date.now() + 8640e4) : 0 }
     )
 
-    res.redirect('/form')
+    res.redirect('/mainview')
   })
 })
 

@@ -6,10 +6,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    barID: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0
-    },
     content: {
       type: DataTypes.STRING
     },
