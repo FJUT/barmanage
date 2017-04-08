@@ -4,9 +4,6 @@ cers/
 config/
 node_modules/
 uploads/
-<<<<<<< HEAD
 release/
-=======
 seeders/
 test/
->>>>>>> 71a2f08d8fd3cc3dea428d4a095faf03d701bdb9
