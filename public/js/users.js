@@ -18,7 +18,7 @@ const vm = new Vue({
       //user
       user: [],
       //user每页显示数
-      userPerPageCount: 8,
+      userPerPageCount: 12,
       //user总页数
       userPages: 0,
       //user当前显示页数
@@ -35,18 +35,23 @@ const vm = new Vue({
       //计算页数
       this.userPages = Math.ceil(val.length % this.userPerPageCount)
 
-      //当前展示的新闻
+      //当前展示的用户
       this.userCurShow = this.getCurShow(val, this.userPageIndex, this.userPerPageCount)
+    },
+
+    userPageIndex: function (val) {
+      //当前展示的用户
+      this.userCurShow = this.getCurShow(this.user, this.userPageIndex, this.userPerPageCount)
     }
   },
   methods: {
-
-
     userClick:function () {
     },
 
-    genderformatter: function () {
-      
+    genderformatter: function (data, target) {
+      if (target['property'] == "gender") {
+        return data['gender'] == 2 ? "女": "男"
+      }
     },
 
     getCurShow: function (target, curIndex, numPerPage) {
@@ -65,5 +70,13 @@ const vm = new Vue({
       }
       return _curRet
     },
+
+    onUserPageChange: function (val) {
+      this.$data['userPageIndex'] = val
+    },
+
+    handleDelete: function (index, rowData) {
+      console.log(rowData)
+    }
   }
 })
