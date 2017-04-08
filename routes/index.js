@@ -20,7 +20,7 @@ router.post('/register', (req, res, next) => {
   }
 
   co(function*() {
-    let { phonenumber, password } = req.body
+    let {phonenumber, password} = req.body
     let Bar = models.Bar
     let result = yield Bar.findAndCount({
       where: {
@@ -52,25 +52,59 @@ router.post('/register', (req, res, next) => {
 })
 
 router.get('/form', auth, (req, res, next) => {
-  res.render('form', { barInfo: res.locals.barInfo })
+
+  res.render('form', {barInfo: res.locals.barInfo})
+
 })
 
 router.get('/mainview', auth, (req, res, next) => {
-  res.render('mainview')
+
+  models.CompanyNews.findAll({order: 'newsTime DESC'}).then((newResult) => {
+
+    // res.render('mainview', {news: newResult});
+
+    let _barId = res.locals.barInfo['id']
+
+    models.Message.findAll({
+      attributes: ['id', 'BarId', 'UserId'],
+      where: {
+        BarId: _barId,
+        //msgType:2为支付类型
+        msgType: 2
+      },
+      include: [
+        {model: models.Order, where: {amount: {$gt: 0}}, attributes: ['createdAt', 'amount', 'UserId']},
+        {model: models.User, attributes: ['name', 'gender', 'id']}
+      ]
+
+    }).then((orderRes) => {
+
+      //console.log("orderRes:", orderRes)
+      res.render('mainview', {news: newResult ? newResult : {}, order: orderRes ? orderRes : {}});
+
+    }).catch((err) => {
+
+      console.log("[mainview@Message]:", err)
+    })
+
+  }).catch((err) => {
+
+    console.log("[mainview@CompanyNews]:", err)
+
+  })
+
 })
 
 router.post('/saveForm', (req, res) => {
-  var { barInfo } = req.body
+  var {barInfo} = req.body
 
   models.Bar.update(Object.assign({}, barInfo), {
     where: {
       id: barInfo.id
     }
-  })
-    .then(count => {
-      return models.Bar.findOne({where: {id: barInfo.id}})
-    })
-    .then(row => {
+  }).then(count => {
+    return models.Bar.findOne({where: {id: barInfo.id}})
+  }).then(row => {
     // 更新session
     req.session.barInfo = row.get({plain: true})
 
@@ -104,6 +138,18 @@ router.get('/logout', (req, res, next) => {
   res.clearCookie('token')
   delete req.session.barInfo
   res.redirect('/')
+})
+
+router.post('/feedback', auth, (req, res) => {
+  let {barId} = req.session.barInfo
+  let {content} = req.body
+  models.Feedback.create({content: content, BarId: barId}, {
+    include: {model: models.Bar, where: {id: barId}}
+  }).then(function () {
+    res.json({iRet: 0})
+  }).catch(function (err) {
+    res.json({iRet: -1, err: err})
+  })
 })
 
 module.exports = router;

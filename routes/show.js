@@ -50,7 +50,7 @@ router.get('/', auth, (req, res, next) => {
 
     var messages = yield DataApi.getAllMessages(barId)
 
-    messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('MM-DD HH:mm'))
+    messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
 
     res.render('show', {
       messages: messages
@@ -125,7 +125,7 @@ router.get('/getNewMessages', (req, res, next) => {
     lastMessageId
   })
   .then(messages => {
-    messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('MM-DD HH:mm'))
+    messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
     
     res.json({
       iRet: 0,

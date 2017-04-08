@@ -26,16 +26,16 @@ module.exports = (sequelize, DataTypes) => {
     msgImage: {
       type: DataTypes.STRING
     },
-    msgVideo:{
-      type:DataTypes.STRING
+    msgVideo: {
+      type: DataTypes.STRING
     },
     msgTime: {
       type: DataTypes.DATE
     },
-    msgType:{
+    msgType: {
       type: DataTypes.INTEGER
     },
-    seconds:{
+    seconds: {
       type: DataTypes.INTEGER
     },
     isDisplay: {
@@ -48,9 +48,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     classMethods: {
-      associate: function(models) {
+      associate: function (models) {
         Message.belongsTo(models.Bar)
         Message.belongsTo(models.User)
+        Message.hasMany(models.Order)
       }
     }
   })

@@ -23,22 +23,20 @@ router.get('/getBarList', (req, res, next) => {
 
 // 排行榜
 router.get('/getTopRankUsers', (req, res, next) => {
-  User
-    .findAll({
-      limit: 10
+  User.findAll({
+    order:'score DESC',
+    limit: 50
+  }).then(users => {
+    res.json({
+      iRet: 0,
+      users: users.map(user => user.get({plain: true}))
     })
-    .then(users => {
-      res.json({
-        iRet: 0,
-        users: users.map(user => user.get({plain: true}))
-      })
+  }).catch(err => {
+    res.json({
+      iRet: -1,
+      msg: err.message
     })
-    .catch(err => {
-      res.json({
-        iRet: -1,
-        msg: err.message
-      })
-    })
+  })
 })
 
 // 获取酒吧详情
@@ -131,25 +129,22 @@ router.post('/changeAvatar', upload.single('file'), (req, res, next) => {
     where: {
       id: req.body.UserId
     }
+  }).then(() => {
+    return models.User.findOne({
+      where: {
+        id: req.body.UserId
+      }
+    })
+  }).then(created => {
+    res.json({
+      iRet: 0,
+      userInfo: created.get({plain: true})
+    })
+  }).catch(() => {
+    res.json({
+      iRet: -1
+    })
   })
-    .then(() => {
-      return models.User.findOne({
-        where: {
-          id: req.body.UserId
-        }
-      })
-    })
-    .then(created => {
-      res.json({
-        iRet: 0,
-        userInfo: created.get({plain: true})
-      })
-    })
-    .catch(() => {
-      res.json({
-        iRet: -1
-      })
-    })
 })
 
 // 创建统一支付订单中间件
@@ -172,6 +167,7 @@ const createPayMiddware = (req, res, next) => {
     // 插入订单表
     var createdOrder = yield Order.create({
       amount: price,
+      UserId: UserId,
       MessageId: createdMessage.id
     })
 
@@ -181,7 +177,9 @@ const createPayMiddware = (req, res, next) => {
       out_trade_no: 'baping_' + createdOrder.id, // 商户订单号后续更新用
       attach: JSON.stringify({
         orderId: createdOrder.id,
-        messageId: createdMessage.id
+        messageId: createdMessage.id,
+        userId: UserId,
+        amount: amount
       }),
       // total_fee: price * 100, // 微信单位是分，一分钱
       total_fee: 1, // 测试用
@@ -220,35 +218,47 @@ router.post('/sendBapingText', createPayMiddware)
 router.post('/sendBaping', upload.single('file'), createPayMiddware)
 
 // 接收微信回调中间件
-const responseWeixinNotifyMiddware = notifyMiddleware.getNotify()
-  .done((message, req, res, next) => {
-    console.log('wx notify message:', message)
-    var attach = JSON.parse(message.attach)
-    // 订单号,消息号
-    var {orderId, messageId} = attach
+const responseWeixinNotifyMiddware = notifyMiddleware.getNotify().done((message, req, res, next) => {
 
-    co(function*() {
-      var updateOrderResult = yield Order.update({status: true}, {
-        where: {
-          id: orderId
-        }
-      })
+  console.log('wx notify message:', message)
 
-      var updateMessageResult = yield Message.update({isPayed: true}, {
-        where: {
-          id: messageId
-        }
-      })
+  var attach = JSON.parse(message.attach)
 
-      console.log(updateOrderResult, updateMessageResult)
+  // 订单号,消息号
+  var {orderId, messageId, userId, amount} = attach
 
-      res.reply('success')
+  co(function*() {
+    //更新订单状态
+    var updateOrderResult = yield Order.update({status: true}, {
+      where: {
+        id: orderId
+      }
     })
-      .catch(err => {
-        console.log(err)
-        res.reply(new Error('update oreder failed'))
-      })
+
+    //更新消息支付状态
+    var updateMessageResult = yield Message.update({isPayed: true}, {
+      where: {
+        id: messageId
+      }
+    })
+
+    //更新用户exp和score
+    var updateExpAndScoreResult = yield User.findOne({where: {id: userId}}).then(function (user) {
+      return User.update({
+        exp: amount + user.exp,
+        score: amount * 10 + user.score
+      }, {where: {id: userId}})
+    })
+
+    console.log(updateOrderResult, updateMessageResult, updateExpAndScoreResult)
+
+    res.reply('success')
+
+  }).catch(err => {
+    console.log(err)
+    res.reply(new Error('update oreder failed'))
   })
+})
 
 // 接受微信回调
 router.use('/notify', responseWeixinNotifyMiddware)

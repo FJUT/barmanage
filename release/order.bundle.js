@@ -1,0 +1,1 @@
+webpackJsonp([4],[function(e,n,r){"use strict";function t(e){return e&&e.__esModule?e:{default:e}}var u=r(1),o=(t(u),r(2)),a=t(o);new a.default({el:"#app",data:function(){return{orders:window.orders}}})}]);

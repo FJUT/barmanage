@@ -1,7 +1,7 @@
 /**
  * Created by shinan on 2017/1/24.
  */
-import $ from 'jquery'
+var $ = window.$
 import Vue from 'vue'
 import Carousel3d from 'vue-carousel-3d'
 
@@ -56,6 +56,48 @@ const LocalPage = {
         this.pollNormalMessages()
       },
       methods: {
+        // 霸屏图片动画特效
+        autoPlay(seconds) {
+          var types = ['pieces10', 'pieces30']
+          var index = 0
+          var imgHtml = `<img id="msg_${this.bapingMessage.id}" src="${this.bapingMessage.msgImage}">`
+          var t = Date.now()
+
+          var play = () => {
+            $('#preview').empty()
+            $('#preview').html(imgHtml)
+            
+            setTimeout(() => {
+              $('#preview img').pieces({
+                onStart: {
+                  animation: types[index],
+                  overwrite: false,
+                  speed: 40,
+                  delay: 4,
+                  onComplete: function() {
+                    var now = Date.now()
+
+                    if ((now - t) / 1000 >= seconds) {
+                      return
+                    }
+
+                    index++
+
+                    if (index >= types.length) {
+                      index = 0
+                    }
+
+                    play()
+                  }
+                },
+                rows: 6,
+                cols: 6
+              })
+            }, 17)
+          }
+
+          play()
+        },
         // 获取最新消息
         pollNormalMessages() {
           const poll = () => {
@@ -99,27 +141,29 @@ const LocalPage = {
           getPendingBaping()
           .done(response => {
             if (response.iRet != 0) {
-              alert('获取霸屏失败')
+              console.log('获取霸屏失败')
               return
             }
 
+            // 如果没有霸屏，3秒后再查
             if (!response.data) {
               setTimeout(() => this.pollBaping(), 3000)
               return
             }
 
-            // 更新视图
+            // 如果有，更新视图，显示霸屏
             this.bapingMessage = response.data
             this.bapingShow = true
 
+            // 开始霸屏倒计时
             this.startBapingCount()
           })
           .fail(err => {
-            alert('获取霸屏失败')
+            console.log('获取霸屏失败')
             setTimeout(() => this.pollBaping(), 3000)
           })
         },
-        // 霸屏倒计时
+        // 霸屏倒计时并显示动画效果
         startBapingCount() {
           var seconds = this.bapingMessage.seconds
           var ticker = setInterval(() => {
@@ -131,6 +175,8 @@ const LocalPage = {
               this.endBapingCountCallback()
             }
           }, 1000)
+
+          this.autoPlay(seconds)
         },
         // 霸屏倒计时结束
         endBapingCountCallback() {
