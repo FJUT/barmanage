@@ -1,8 +1,8 @@
-
-/config/
 .idea/
 .vscode/
 cers/
 config/
 node_modules/
 uploads/
+seeders/
+test/
