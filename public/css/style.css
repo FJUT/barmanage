@@ -215,3 +215,9 @@ h1, a, span {
 }
 /*mainview*/
 
+/*备案链接*/
+.beian-link {
+  display:block;
+  text-align: center;
+}
+

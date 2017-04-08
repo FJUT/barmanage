@@ -1,4 +1,4 @@
-webpackJsonp([5],[function(e,t,n){"use strict";function r(e){return e&&e.__esModule?e:{default:e}}var i=n(1),o=(r(i),n(2)),a=r(o);new a.default({el:"#app",data:function(){return{orders:window.orders}}})},function(e,t,n){var r,i;/*!
+webpackJsonp([7],[function(e,t,n){"use strict";var r=n(2);n(1),new r({el:"#app",data:function(){return{err:window.error_message}}})},function(e,t,n){var r,i;/*!
 	 * jQuery JavaScript Library v3.1.1
 	 * https://jquery.com/
 	 *
