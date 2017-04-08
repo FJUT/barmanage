@@ -21,8 +21,8 @@
                       <span class="msg-user-name">{{item.UserName}}</span>
                       <span class="msg-created">{{item.createdAt}}</span>
                       <div class="msg-text">
-                          <p wx:if="item.msgType == 0">{{item.msgText}}</p>
-                          <img wx:else :src="item.msgImage">
+                          <p v-if="item.msgType == 0">{{item.msgText}}</p>
+                          <img v-else :src="item.msgImage">
                       </div>
                   </div>
               </div>
