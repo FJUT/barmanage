@@ -42,7 +42,7 @@ body {
 }
 
 .msg-box-wrap {
-    width: 77%;
+    width: 100%;
     height: 100%;
     position: absolute;
     left: 0;
@@ -51,7 +51,8 @@ body {
 }
 
 .images {
-    width: 22%;
+    /*width: 22%;*/
+    display: none;
     position: absolute;
     right: 0;
     top: 0;
@@ -111,6 +112,7 @@ body {
   margin-top: 10px;
 }
 
+/*霸屏样式开始*/
 .baping-msg {
   position: fixed;
   top: 0;
@@ -176,3 +178,33 @@ body {
 .bp-sec {
   color: 	#ff8c00;
 }
+/*霸屏样式结束*/
+
+/* 竖屏的媒体查询 */
+@media (min-width:721px) {
+  .images {
+    width: 28%;
+    display: block;
+  }
+
+  .msg-box-wrap {
+    width: 70%;
+  }
+}
+
+@media (max-width: 720px) {
+  .baping-msg {
+    flex-direction: column;
+  }
+
+  .bp-msg-wrap {
+    flex: 2;
+    zoom: 1;
+  }
+
+  .bp-img {
+    width: 100%;
+    flex: 4;
+  }
+}
+

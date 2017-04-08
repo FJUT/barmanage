@@ -175,7 +175,7 @@ h1, a, span {
 
 /*mainview*/
 .mainview .block-color {
-  background-color: beige;
+  background-color: #ECF0F5;
 }
 
 .mainview-block {
@@ -188,10 +188,6 @@ h1, a, span {
   height: 60px;
   background-color: #00a7d0;
   width: 100%;
-}
-
-.mainview .block-color .item-color {
-
 }
 
 .mainview-block .detail{
@@ -214,4 +210,10 @@ h1, a, span {
   font-size: 12px;
 }
 /*mainview*/
+
+/*备案链接*/
+.beian-link {
+  display:block;
+  text-align: center;
+}
 
