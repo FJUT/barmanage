@@ -11,42 +11,6 @@ var path =require('path')
 var models = require('../models');
 
 //将服务器配置放到locals中，这样在ejs模板引擎中就默认包含了这些变量，可以直接用
-app.locals.navs = [
-    {
-        name: '总览',
-        path: 'mainview'
-    },
-    {
-        name: '霸屏设置',
-        path: 'occupy'
-    },
-    {
-        name: '订单管理',
-        path: 'order'
-    },
-    {
-        name: '内容管理',
-        path: 'message'
-    },
-    {
-        name: '用户管理',
-        path: 'users'
-    },
-    {
-        name: '打开大屏幕',
-        path: 'show'
-    },
-    {
-        name: '酒吧管理',
-        path: 'form'
-    },
-    {
-        name: '退出登录',
-        path: 'logout'
-    }
-]
-
-//将服务器配置放到locals中，这样在ejs模板引擎中就默认包含了这些变量，可以直接用
 app.locals.svrconf = require(path.join(__dirname, '..', 'config', 'svrconf.json'))
 
 app.locals.isActive = function (path, active) {

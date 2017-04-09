@@ -1,7 +1,7 @@
 <aside class="main-sidebar">
   <section class="sidebar" style="height: auto;">
     <ul class="sidebar-menu">
-      <% navs.forEach(function(nav, index) { %>
+      <% svrconf.navs.forEach(function(nav, index) { %>
       <li class="treeview <%= isActive(nav.path, active) %>">
         <a href="/<%= nav.path %>" <% if(index == 3){ %>target="_blank"
           <% } %>

@@ -1,3 +1,37 @@
 {
-  "svrname": "YeHi"
+  "svrname": "YeHi",
+  "navs": [
+    {
+      "name": "总览",
+      "path": "mainview"
+    },
+    {
+      "name": "霸屏设置",
+      "path": "occupy"
+    },
+    {
+      "name": "订单管理",
+      "path": "order"
+    },
+    {
+      "name": "内容管理",
+      "path": "message"
+    },
+    {
+      "name": "用户管理",
+      "path": "users"
+    },
+    {
+      "name": "打开大屏幕",
+      "path": "show"
+    },
+    {
+      "name": "酒吧管理",
+      "path": "form"
+    },
+    {
+      "name": "退出登录",
+      "path": "logout"
+    }
+  ]
 }
