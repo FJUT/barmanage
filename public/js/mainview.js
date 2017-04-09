@@ -45,6 +45,9 @@ const vm = new Vue({
       orderPageIndex: 1,
       //当前显示的订单
       orderCurShow: [],
+
+      //收入总额
+      totalMoney: 0
     }
   },
   mounted: function () {
@@ -93,6 +96,12 @@ const vm = new Vue({
         $.extend(true, t, obj['User'])
         return t
       })
+
+      let _total = 0
+      val.forEach(function (obj, i, arr) {
+        _total = _total + parseFloat(obj['Orders'][0]['amount'])
+      })
+      this.totalMoney = _total
 
       //当前展示的订单
       this.$data['orderCurShow'] = this.getCurShow(this.$data['orderMapped'], this.$data['orderPageIndex'], this.$data['orderPerPageCount'])

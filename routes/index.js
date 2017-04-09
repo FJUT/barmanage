@@ -59,13 +59,12 @@ router.get('/form', auth, (req, res, next) => {
 
 router.get('/mainview', auth, (req, res, next) => {
 
-  models.CompanyNews.findAll({order: 'newsTime DESC'}).then((newResult) => {
+  let _barId = res.locals.barInfo['id']
 
-    // res.render('mainview', {news: newResult});
+  co(function *() {
+    let newsResult = yield models.CompanyNews.findAll({order: 'newsTime DESC'})
 
-    let _barId = res.locals.barInfo['id']
-
-    models.Message.findAll({
+    let orderResult = yield models.Message.findAll({
       attributes: ['id', 'BarId', 'UserId'],
       where: {
         BarId: _barId,
@@ -73,27 +72,19 @@ router.get('/mainview', auth, (req, res, next) => {
         msgType: 2
       },
       include: [
-        {model: models.Order, where: {amount: {$gt: 0}}, attributes: ['createdAt', 'amount', 'UserId']},
+        {
+          model: models.Order,
+          where: {amount: {$gt: 0}, status: {$ne: 0}},
+          attributes: ['createdAt', 'amount', 'UserId']
+        },
         {model: models.User, attributes: ['name', 'gender', 'id']}
       ]
-
-    }).then((orderRes) => {
-
-      //console.log("orderRes:", orderRes)
-      res.render('mainview', {
-        news: newResult ? newResult : {},
-        order: orderRes ? orderRes : {}
-      });
-
-    }).catch((err) => {
-
-      console.log("[mainview@Message]:", err)
     })
 
-  }).catch((err) => {
-
-    console.log("[mainview@CompanyNews]:", err)
-
+    res.render('mainview', {
+      news: newsResult ? newsResult : {},
+      order: orderResult ? orderResult : {}
+    });
   })
 
 })
