@@ -42,20 +42,12 @@ body {
 }
 
 .msg-box-wrap {
-    width: 100%;
+    width: 70%;
     height: 100%;
     position: absolute;
     left: 0;
     top: 0;
     overflow: hidden;
-}
-
-.images {
-    /*width: 22%;*/
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 0;
 }
 
 .msg-item {
@@ -136,6 +128,14 @@ body {
   width: 100%;
 }
 
+.images {
+  width: 28%;
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
 .bp-msg-wrap {
   flex: 1;
   color: #fff;
@@ -181,18 +181,17 @@ body {
 /*霸屏样式结束*/
 
 /* 竖屏的媒体查询 */
-@media (min-width:721px) {
-  .images {
-    width: 28%;
-    display: block;
-  }
-
-  .msg-box-wrap {
-    width: 70%;
-  }
-}
-
 @media (max-width: 720px) {
+  /* 隐藏图片 */
+  .images {
+    width: 0;
+  }
+
+  /* 消息列表宽100% */
+  .msg-box-wrap {
+    width: 100%;
+  }
+
   .baping-msg {
     flex-direction: column;
   }
@@ -204,7 +203,34 @@ body {
 
   .bp-img {
     width: 100%;
-    flex: 4;
+    flex: 6;
+  }
+
+  .bp-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border: 2px solid #ff8c00;
+  }
+
+  .bp-user-name {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .bp-msg-text {
+    font-size: 24px;
+    line-height: 24px;
+    color: #ff8c00;
+  }
+
+  .bp-msg-time {
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .bp-sec {
+    color: 	#ff8c00;
   }
 }
 

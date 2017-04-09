@@ -58,10 +58,10 @@ router.get('/getAllMessages', (req, res, next) => {
 
 // 获取最新消息
 router.get('/getLatestMessages', (req, res, next) => {
-  var {barId, lastMessageId} = req.query
+  var {barId, lastUpdated} = req.query
   DataApi.getLatestMessages({
     barId,
-    lastMessageId
+    lastUpdated
   }).then(messages => res.send(messages))
 })
 
@@ -72,6 +72,7 @@ router.post('/sendMessage', (req, res, next) => {
   Message.create({
     msgType: 0,
     msgText: msgText,
+    isPayed: true,
     BarId: BarId,
     UserId: UserId
   }).then(created => {
@@ -101,6 +102,7 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
   Message.create({
     msgType: 1,
     msgImage: req.file.filename,
+    isPayed: true,
     BarId,
     UserId
   }).then(created => {
@@ -150,6 +152,7 @@ router.post('/changeAvatar', upload.single('file'), (req, res, next) => {
 // 创建统一支付订单中间件
 const createPayMiddware = (req, res, next) => {
   var {BarId, UserId, msgText, seconds, price, openid} = req.body
+  var amount = price
 
   co(function*() {
     // 插入消息表
@@ -210,6 +213,66 @@ const createPayMiddware = (req, res, next) => {
     })
   })
 }
+
+// 调试用，模拟发送霸屏
+router.post('/sendBapingFake', upload.single('file'), (req, res, next) => {
+  var {BarId, UserId, msgText, seconds, price, openid} = req.body
+
+  co(function*() {
+    // 插入消息表
+    var createdMessage = yield Message.create({
+      msgType: 2,
+      msgText: msgText,
+      msgImage: req.file ? req.file.filename : '',
+      BarId,
+      UserId,
+      seconds,
+      isDisplay: false,
+      isPayed: false
+    })
+
+    // 插入订单表
+    var createdOrder = yield Order.create({
+      amount: price,
+      UserId: UserId,
+      MessageId: createdMessage.id
+    })
+
+    res.json({
+      iRet: 0
+    })
+
+    var messageId = createdMessage.id
+    var orderId = createdOrder.id
+
+    // 模拟更新订单表，消息表
+    setTimeout(() => {
+      co(function*() {
+        //更新订单状态
+        var updateOrderResult = yield Order.update({status: true}, {
+          where: {
+            id: orderId
+          }
+        })
+
+        //更新消息支付状态
+        var updateMessageResult = yield Message.update({isPayed: true}, {
+          where: {
+            id: messageId
+          }
+        })
+
+        //更新用户exp和score
+        var updateExpAndScoreResult = yield User.findOne({where: {id: UserId}}).then(function (user) {
+          return User.update({
+            exp: price + user.exp,
+            score: price * 10 + user.score
+          }, {where: {id: UserId}})
+        })
+      })
+    }, 500)
+  })
+})
 
 // 发送霸屏文字
 router.post('/sendBapingText', createPayMiddware)

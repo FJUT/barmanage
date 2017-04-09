@@ -38,10 +38,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     exp: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     },
     score: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     },
     province:{
       type: DataTypes.STRING
