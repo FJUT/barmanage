@@ -80,7 +80,10 @@ router.get('/mainview', auth, (req, res, next) => {
     }).then((orderRes) => {
 
       //console.log("orderRes:", orderRes)
-      res.render('mainview', {news: newResult ? newResult : {}, order: orderRes ? orderRes : {}});
+      res.render('mainview', {
+        news: newResult ? newResult : {},
+        order: orderRes ? orderRes : {}
+      });
 
     }).catch((err) => {
 

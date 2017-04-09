@@ -7,8 +7,10 @@
 var app = require('../app');
 var debug = require('debug')('barmanage:server');
 var http = require('http');
+var path =require('path')
 var models = require('../models');
 
+//将服务器配置放到locals中，这样在ejs模板引擎中就默认包含了这些变量，可以直接用
 app.locals.navs = [
     {
         name: '总览',
@@ -43,6 +45,9 @@ app.locals.navs = [
         path: 'logout'
     }
 ]
+
+//将服务器配置放到locals中，这样在ejs模板引擎中就默认包含了这些变量，可以直接用
+app.locals.svrconf = require(path.join(__dirname, '..', 'config', 'svrconf.json'))
 
 app.locals.isActive = function (path, active) {
     if (path === active) {
