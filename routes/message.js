@@ -10,7 +10,7 @@ const router = express.Router()
 const {Message} = models
 
 router.get('/', auth, (req, res, next) => {
-  const { id } = res.locals.barInfo
+  const {id} = res.locals.barInfo
 
   co(function*() {
     var messages = yield Message.findAll({
@@ -32,14 +32,12 @@ router.post('/del', (req, res, next) => {
     where: {
       id: id
     }
-  })
-  .then(delCount => {
+  }).then(delCount => {
     res.json({
       iRet: 0,
       data: delCount
     })
-  })
-  .catch(err => {
+  }).catch(err => {
     res.json({
       iRet: -1
     })

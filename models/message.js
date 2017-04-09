@@ -45,6 +45,15 @@ module.exports = (sequelize, DataTypes) => {
     isPayed: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    createdAt : {
+      type: DataTypes.DATE
+    },
+    updatedAt : {
+      type: DataTypes.DATE
+    },
+    deletedAt : {
+      type: DataTypes.DATE
     }
   }, {
     classMethods: {
@@ -53,7 +62,12 @@ module.exports = (sequelize, DataTypes) => {
         Message.belongsTo(models.User)
         Message.hasMany(models.Order)
       }
-    }
+    },
+
+    //建表时是否包含所有timestamp字段，createdAt，updatedAt，deletedAt，这三个字段
+    timestamps: true,
+    //设置为true，在destroy时不会正真的删除而是，将deletedAt设置为删除的时间
+    paranoid: true
   })
 
   return Message

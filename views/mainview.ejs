@@ -13,7 +13,7 @@
 
             <div class="mainview-block block-color row">
               <div class="mainview-title-item col-md-3">
-                <label class="">{{money}}</label>
+                <label class="">{{totalMoney}}</label>
                 <p>营收总额<label class="detail" @click="showBillDetail">详情</label></p>
               </div>
               <div class="mainview-title-item col-md-3">
@@ -33,7 +33,7 @@
             <div class="mainview-block block-color row">
               <div class="mainview-news item-color col-md-6">
                 <div class="sub-title">
-                  <p><label class="pull-left">九服动态</label>
+                  <p><label class="pull-left"><%=svrconf.svrname%>动态</label>
                     <label class="pull-right detail" @click="showMoreNews">更多</label></p>
                 </div>
                 <div class="news-mini-list">
@@ -49,7 +49,7 @@
                 </div>
                 <form action="/feedback" method="post" class="feed-back-form">
                   <textarea name="feedback" v-model="feedback" class="feedback form-control"
-                            placeholder="请写下您对微喵的意见或建议"></textarea>
+                            placeholder="请写下您对<%=svrconf.svrname%>的意见或建议"></textarea>
                   <div class="" style="margin-top: 5px;">
                     <button type="submit" @click.prevent="onFeedback" class="btn btn-success pull-left" style="padding: 5px 20px;">提交</button>
                   </div>
@@ -67,11 +67,11 @@
                     <h4 class="modal-title">营收详情</h4>
                   </div>
                   <div class="modal-body">
-                    <el-table :data="orderCurShow" :show-header="false" style="width: 100%">
-                      <el-table-column prop="createdAt" label="时间" width="180" :formatter="timeformatterOrder"></el-table-column>
-                      <el-table-column prop="name" label="昵称" width="180"></el-table-column>
+                    <el-table :data="orderCurShow" style="width: 100%">
+                      <el-table-column prop="createdAt" label="消费时间" width="180" :formatter="timeformatterOrder"></el-table-column>
+                      <el-table-column prop="name" label="客户昵称" width="180"></el-table-column>
                       <el-table-column prop="gender" label="性别"></el-table-column>
-                      <el-table-column prop="amount" label="金额"></el-table-column>
+                      <el-table-column prop="amount" label="消费金额"></el-table-column>
                     </el-table>
                     <div style="height: 34px;">
                       <el-pagination :total="order.length" :page-size="orderPerPageCount" @current-change="onOrderPageChange"
