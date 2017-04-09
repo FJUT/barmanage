@@ -63,6 +63,7 @@ module.exports = (sequelize, DataTypes) => {
     classMethods: {
       associate: (models) => {
         Bar.hasMany(models.Feedback)
+        Bar.hasMany(models.Order)
       }
     }
   })

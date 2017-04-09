@@ -179,7 +179,7 @@ const createPayMiddware = (req, res, next) => {
         orderId: createdOrder.id,
         messageId: createdMessage.id,
         userId: UserId,
-        amount: amount
+        amount: price
       }),
       // total_fee: price * 100, // 微信单位是分，一分钱
       total_fee: 1, // 测试用
