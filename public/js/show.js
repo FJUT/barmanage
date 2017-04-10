@@ -199,7 +199,8 @@ const LocalPage = {
               })
 
               scroller.css({
-                transform: ''
+                transform: '',
+                webkitTransform: ''
               })
 
               allMessages.push(allMessages.shift())
@@ -211,11 +212,12 @@ const LocalPage = {
             var dis = firstItem.outerHeight() + 10
 
             scroller.css({
-              transition: 'transform 500ms'
+              transition: 'transform .5s ease-in-out'
             })
 
             scroller.css({
-              transform: `translate3d(0, -${dis}px, 0)`
+              transform: `translate3d(0, -${dis}px, 0)`,
+              webkitTransform: `translate3d(0, -${dis}px, 0)`
             })
           }, PLAY_INTERVAL)
         }
