@@ -3,7 +3,7 @@
 cers/
 node_modules/
 uploads/
-release/
+release/*
 seeders/
 test/
-config/
+config/*
