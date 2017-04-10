@@ -47,14 +47,23 @@ const vm = new Vue({
       orderCurShow: [],
 
       //收入总额
-      totalMoney: 0
+      totalMoney: 0,
+      userCount: 0,
+      wallCount: 0,
+      bapingCount: 0
     }
   },
   mounted: function () {
     //在这里赋值触发watch
-    this.$data['news'] = window._jiufu_news
+    this.news = window._jiufu_news
 
-    this.$data['order'] = window._jiufu_order
+    this.order = window._jiufu_order
+
+    this.userCount = window._jiufu_user_count
+
+    this.wallCount = window._jiufu_wall_count
+
+    this.bapingCount = window._jiufu_baping_count
   },
   watch: {
     news: function (val) {

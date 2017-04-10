@@ -81,9 +81,27 @@ router.get('/mainview', auth, (req, res, next) => {
       ]
     })
 
+    let userCount = yield models.User.count()
+
+    let wallCount = yield models.Message.count({
+      where: {
+        msgType: {$ne: 2}
+      }
+    })
+
+    let bapingCount = yield models.Message.count({
+      where: {
+        msgType: 2,
+        isPayed: 1
+      }
+    })
+
     res.render('mainview', {
       news: newsResult ? newsResult : {},
-      order: orderResult ? orderResult : {}
+      order: orderResult ? orderResult : {},
+      userCount: userCount ? userCount : 0,
+      wallCount: wallCount ? wallCount : 0,
+      bapingCount: bapingCount ? bapingCount : 0
     });
   })
 
