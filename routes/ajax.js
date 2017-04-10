@@ -24,7 +24,7 @@ router.get('/getBarList', (req, res, next) => {
 // 排行榜
 router.get('/getTopRankUsers', (req, res, next) => {
   User.findAll({
-    order:'score DESC',
+    order: 'score DESC',
     limit: 50
   }).then(users => {
     res.json({
@@ -47,6 +47,26 @@ router.get('/getBarDetail', (req, res, next) => {
     }
   }).then(bar => {
     res.send(bar.get({plain: true}))
+  })
+})
+
+// 进入酒吧
+router.get('/landbar', (req, res, next) => {
+  co(function *() {
+    let bar = yield Bar.find({where: {id: req.query.barid}})
+
+    let user = yield User.find({where: {id: req.query.userid}})
+
+    if (bar && user) {
+      let landInfo = yield models.LandInfo.create({userid: req.query.userid, barid: req.query.barid})
+      if (landInfo)
+        res.json({iRet: 0})
+      else
+        res.json({iRet: -1, msg: '插入landinfo失败'})
+    } else {
+      let msg = !bar ? `没有找到barid:${req.query.barid}` : `没有找到userid:${req.query.userid}`
+      res.json({iRet: -1, msg: msg})
+    }
   })
 })
 

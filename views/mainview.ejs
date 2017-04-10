@@ -17,15 +17,15 @@
                 <p>营收总额<label class="detail" @click="showBillDetail">详情</label></p>
               </div>
               <div class="mainview-title-item col-md-3">
-                <label class="wall">123</label>
+                <label class="wall">{{wallCount}}</label>
                 <p>上墙总数</p>
               </div>
               <div class="mainview-title-item col-md-3">
-                <label class="screen">123</label>
+                <label class="screen">{{bapingCount}}</label>
                 <p>霸屏总数</p>
               </div>
               <div class="mainview-title-item col-md-3">
-                <label class="user">123</label>
+                <label class="user">{{userCount}}</label>
                 <p>用户总数</p>
               </div>
             </div>
@@ -33,13 +33,15 @@
             <div class="mainview-block block-color row">
               <div class="mainview-news item-color col-md-6">
                 <div class="sub-title">
-                  <p><label class="pull-left"><%=svrconf.svrname%>动态</label>
+                  <p><label class="pull-left"><%= svrconf.svrname %>动态</label>
                     <label class="pull-right detail" @click="showMoreNews">更多</label></p>
                 </div>
                 <div class="news-mini-list">
-                  <el-table :data="main5news" :show-header="false" style="width: 100%;font-size:14px" @row-click="main5newsClick">
+                  <el-table :data="main5news" :show-header="false" style="width: 100%;font-size:14px"
+                            @row-click="main5newsClick">
                     <el-table-column prop="newsTitle"></el-table-column>
-                    <el-table-column prop="newsTime" class-name="news-time" :formatter="timeformatter1" width="110"></el-table-column>
+                    <el-table-column prop="newsTime" class-name="news-time" :formatter="timeformatter1"
+                                     width="110"></el-table-column>
                   </el-table>
                 </div>
               </div>
@@ -49,9 +51,11 @@
                 </div>
                 <form action="/feedback" method="post" class="feed-back-form">
                   <textarea name="feedback" v-model="feedback" class="feedback form-control"
-                            placeholder="请写下您对<%=svrconf.svrname%>的意见或建议"></textarea>
+                            placeholder="请写下您对<%= svrconf.svrname %>的意见或建议"></textarea>
                   <div class="" style="margin-top: 5px;">
-                    <button type="submit" @click.prevent="onFeedback" class="btn btn-success pull-left" style="padding: 5px 20px;">提交</button>
+                    <button type="submit" @click.prevent="onFeedback" class="btn btn-success pull-left"
+                            style="padding: 5px 20px;">提交
+                    </button>
                   </div>
                 </form>
               </div>
@@ -68,13 +72,15 @@
                   </div>
                   <div class="modal-body">
                     <el-table :data="orderCurShow" style="width: 100%">
-                      <el-table-column prop="createdAt" label="消费时间" width="180" :formatter="timeformatterOrder"></el-table-column>
+                      <el-table-column prop="createdAt" label="消费时间" width="180"
+                                       :formatter="timeformatterOrder"></el-table-column>
                       <el-table-column prop="name" label="客户昵称" width="180"></el-table-column>
                       <el-table-column prop="gender" label="性别"></el-table-column>
                       <el-table-column prop="amount" label="消费金额"></el-table-column>
                     </el-table>
                     <div style="height: 34px;">
-                      <el-pagination :total="order.length" :page-size="orderPerPageCount" @current-change="onOrderPageChange"
+                      <el-pagination :total="order.length" :page-size="orderPerPageCount"
+                                     @current-change="onOrderPageChange"
                                      style="position: absolute;right: 10px;" layout="prev, pager, next">
                       </el-pagination>
                     </div>
@@ -98,10 +104,12 @@
                   <div class="modal-body">
                     <el-table :data="newsCurShow" :show-header="false" style="width: 100%" @row-click="moreNewsClick">
                       <el-table-column prop="newsTitle"></el-table-column>
-                      <el-table-column prop="newsTime" :formatter="timeformatter2" class-name="news-time" width="160"></el-table-column>
+                      <el-table-column prop="newsTime" :formatter="timeformatter2" class-name="news-time"
+                                       width="160"></el-table-column>
                     </el-table>
                     <div style="height: 34px;">
-                      <el-pagination :total="news.length" :page-size="newsPerPageCount" @current-change="onNewsPageChange"
+                      <el-pagination :total="news.length" :page-size="newsPerPageCount"
+                                     @current-change="onNewsPageChange"
                                      style="position: absolute;right: 10px;" layout="prev, pager, next">
                       </el-pagination>
                     </div>
@@ -139,8 +147,11 @@
   </section>
 </div>
 <script>
-  window._jiufu_news = <%- JSON.stringify(news) %>
-    window._jiufu_order = <%- JSON.stringify(order) %>
+  window._jiufu_news = <%- JSON.stringify(news) %>;
+  window._jiufu_order = <%- JSON.stringify(order) %>;
+  window._jiufu_user_count = <%- JSON.stringify(userCount) %>;
+  window._jiufu_wall_count = <%- JSON.stringify(wallCount) %>;
+  window._jiufu_baping_count = <%- JSON.stringify(bapingCount) %>;
 </script>
 <script src="https://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
 <script src="<%= url('init.js') %>"></script>
