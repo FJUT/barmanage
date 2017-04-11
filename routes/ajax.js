@@ -75,7 +75,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
     //计算等级，并填充用户名称信息
     let allUserLvConsume = allUsersConsumeResult.map(function (obj) {
       let tmp = {UserId: obj.dataValues['UserId'], amountsum: obj.dataValues['amountsum']}
-      let lv = _getLv(lvlist, tmp['amountsum'])
+      let lv = _getLv(lvlist, tmp['amountsum'] * m2exp)
       tmp['lv'] = lv['lv']
       tmp['down'] = lv['down']
       tmp['up'] = lv['up']
@@ -102,7 +102,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
     if (type == 1 || type == 3) {
       res.json({iRet: 0, data: allUserLvConsume})
     } else if (type == 2) { //霸屏次数
-      let allUsers = yield Message.findAll({
+      let allUsersBPC = yield Message.findAll({
         group: ['UserId'],
         attributes: ['UserId', [sequelize.fn('count', sequelize.col('isPayed')), 'bpcount']],
         order: [[Sequelize.col('bpcount'), 'DESC']],
@@ -111,7 +111,23 @@ router.get('/getTopRankUsers', (req, res, next) => {
         // offset: offset,
         // limit: limit
       })
-      res.send(allUsers)
+
+      //将其他信息填充进来
+      let allUserBpLvC = allUsersBPC.map(function (user) {
+        let tmp = {}
+        allUserLvConsume.forEach(function (lvc, i, arr) {
+          if(user.dataValues['UserId'] == lvc['UserId']) {
+            tmp['UserId'] = user.dataValues['UserId']
+            tmp['bpcount'] = user.dataValues['bpcount']
+            tmp['lv'] = lvc['lv']
+            tmp['cur'] = lvc['cur']
+            tmp['consume'] = lvc['cur'] / m2exp
+          }
+        })
+        return tmp
+      })
+
+      res.json({iRet: 0, data: allUserBpLvC})
     }
   }).catch(function (err) {
     res.json({iRet: -1, msg: err})
@@ -132,11 +148,18 @@ router.get('/getBarDetail', (req, res, next) => {
 // 获取用户等级
 router.get('/getLevel', (req, res, next) => {
   let userid = req.query.userid
-  let barid = req.query.barid
+  //let barid = req.query.barid
   co(function *() {
-    let consumerSum = yield Order.sum('amount', {where: {UserId: userid, BarId: barid, status: 1}})
+    let consumerSum = yield Order.sum('amount', {where: {UserId: userid, status: 1}}) // BarId: barid,
     let lvlist = req.app.locals.svrconf['lvlist']
-    let lv = _getLv(lvlist, consumerSum)
+    //钱到经验的转换比例
+    let m2exp = req.app.locals.svrconf['m2exp']
+    let lv = _getLv(lvlist, consumerSum * m2exp)
+
+    //前台知道叫什么后台不用查数据库
+    //let userInfo = yield User.findOne({where: {id: userid}})
+    //lv['name'] = userInfo['name']
+
     res.json({iRet: 0, lv: lv})
   })
 })
