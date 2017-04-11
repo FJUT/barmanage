@@ -193,30 +193,46 @@ const LocalPage = {
           var vm = this
           var scroller = $('.msg-box')
 
-          scroller.on('webkitTransitionEnd', e => {
-            scroller.css({
-                transition: 'none'
-              })
-
-              scroller.css({
-                transform: ''
-              })
-
-              allMessages.push(allMessages.shift())
-              vm.messages = allMessages.slice(0, LIMIT)
-          })
+          // scroller.on('webkitTransitionEnd', e => {
+          //   scroller.css({
+          //       transition: 'none'
+          //     })
+          //
+          //     scroller.css({
+          //       transform: '',
+          //       webkitTransform: ''
+          //     })
+          //
+          //     allMessages.push(allMessages.shift())
+          //     vm.messages = allMessages.slice(0, LIMIT)
+          // })
 
           this.ticker = setInterval(() => {
             var firstItem = scroller.find('.msg-item').first()
             var dis = firstItem.outerHeight() + 10
 
             scroller.css({
-              transition: 'transform 500ms'
+              transition: 'transform .5s ease-in-out'
             })
 
             scroller.css({
-              transform: `translate3d(0, -${dis}px, 0)`
+              transform: `translateY(-${dis}px)`,
+              webkitTransform: `translateY(-${dis}px)`
             })
+
+            setTimeout(() => {
+              scroller.css({
+                transition: 'none'
+              })
+
+              scroller.css({
+                transform: '',
+                webkitTransform: ''
+              })
+
+              allMessages.push(allMessages.shift())
+              vm.messages = allMessages.slice(0, LIMIT)
+            }, 510)
           }, PLAY_INTERVAL)
         }
       }

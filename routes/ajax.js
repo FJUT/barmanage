@@ -70,7 +70,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
     //let userLandInfoDupli = yield sequelize.query("select id, name from users where id in (select userid from landinfos where barid=3)")
     //let userLand = allUserInfoDupli[0]
 
-    let allUserInfo = yield User.findAll({attributes: ['id', 'name', 'nickname']})
+    let allUserInfo = yield User.findAll({attributes: ['id', 'name', 'nickname', 'avatar']})
 
     //计算等级，并填充用户名称信息
     let allUserLvConsume = allUsersConsumeResult.map(function (obj) {
@@ -84,6 +84,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
       allUserInfo.forEach(function (obj, i, arr) {
         if (obj['id'] == tmp['UserId']) {
           tmp['name'] = obj['name']
+          tmp['avatar'] = obj['avatar']
           return false
         }
       })
@@ -121,6 +122,8 @@ router.get('/getTopRankUsers', (req, res, next) => {
             tmp['bpcount'] = user.dataValues['bpcount']
             tmp['lv'] = lvc['lv']
             tmp['cur'] = lvc['cur']
+            tmp['avatar'] = lvc['avatar']
+            tmp['name'] = lvc['name']
             tmp['consume'] = lvc['cur'] / m2exp
           }
         })
