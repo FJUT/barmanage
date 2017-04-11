@@ -39,7 +39,7 @@ router.get('/getBarList', (req, res, next) => {
 // 排行榜
 router.get('/getTopRankUsers', (req, res, next) => {
 
-  let barid = req.query['barid']
+  //let barid = req.query['barid']
 
   // type=1 等级  type=2 baping type=3 消费
   let type = req.query['type']
@@ -58,7 +58,8 @@ router.get('/getTopRankUsers', (req, res, next) => {
       group: ['UserId'],
       attributes: ['UserId', [Sequelize.fn('sum', Sequelize.col('amount')), 'amountsum']],
       order: [[Sequelize.col('amountsum'), 'DESC']], //，按照消费排名
-      where: {BarId: barid, status: 1}
+      //where: {BarId: barid, status: 1}
+      where: {status: 1}
     })
 
     //暂时先不分那个酒吧对应哪个用户
@@ -105,7 +106,8 @@ router.get('/getTopRankUsers', (req, res, next) => {
         group: ['UserId'],
         attributes: ['UserId', [sequelize.fn('count', sequelize.col('isPayed')), 'bpcount']],
         order: [[Sequelize.col('bpcount'), 'DESC']],
-        where: {BarId: barid, isPayed: 1}
+        //where: {BarId: barid, isPayed: 1}
+        where: {isPayed: 1}
         // offset: offset,
         // limit: limit
       })
