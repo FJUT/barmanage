@@ -99,20 +99,35 @@ router.get('/getTopRankUsers', (req, res, next) => {
       return tmp
     })
 
+    let allUsersBPC = yield Message.findAll({
+      group: ['UserId'],
+      attributes: ['UserId', [sequelize.fn('count', sequelize.col('isPayed')), 'bpcount']],
+      order: [[Sequelize.col('bpcount'), 'DESC']],
+      //where: {BarId: barid, isPayed: 1}
+      where: {isPayed: 1}
+      // offset: offset,
+      // limit: limit
+    })
+
     //等级 1 和 消费 3
     if (type == 1 || type == 3) {
-      res.json({iRet: 0, data: allUserLvConsume})
-    } else if (type == 2) { //霸屏次数
-      let allUsersBPC = yield Message.findAll({
-        group: ['UserId'],
-        attributes: ['UserId', [sequelize.fn('count', sequelize.col('isPayed')), 'bpcount']],
-        order: [[Sequelize.col('bpcount'), 'DESC']],
-        //where: {BarId: barid, isPayed: 1}
-        where: {isPayed: 1}
-        // offset: offset,
-        // limit: limit
+      let allUserCLvBp = allUserLvConsume.map(function (lvc) {
+        let tmp = {}
+        allUsersBPC.forEach(function (bpc, i, arr) {
+          if(bpc.dataValues['UserId'] == lvc['UserId']) {
+            tmp['UserId'] = bpc.dataValues['UserId']
+            tmp['bpcount'] = bpc.dataValues['bpcount']
+            tmp['lv'] = lvc['lv']
+            tmp['cur'] = lvc['cur']
+            tmp['avatar'] = lvc['avatar']
+            tmp['name'] = lvc['name']
+            tmp['consume'] = lvc['cur'] / m2exp
+          }
+        })
+        return tmp
       })
-
+      res.json({iRet: 0, data: allUserCLvBp})
+    } else if (type == 2) { //霸屏次数
       //将其他信息填充进来
       let allUserBpLvC = allUsersBPC.map(function (user) {
         let tmp = {}
