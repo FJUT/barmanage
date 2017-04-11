@@ -3,12 +3,27 @@
  */
 var express = require('express')
 var router = express.Router()
-var models = require('../models')
-var {Bar, User, Message, BarPrice, Order} = models
-var upload = require('../middlewares/upload')
 var co = require('co')
+var models = require('../models')
+var {Bar, User, Message, BarPrice, Order, LandInfo, sequelize, Sequelize} = models
+var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
+
+function _getLv(lvlist, consume) {
+  let lv = {}
+  for (let i = 0; i < lvlist.length; i++) {
+    if (consume > lvlist[i] && consume < lvlist[i + 1]) {
+      lv['lv'] = i + 1
+      lv['down'] = lvlist[i]
+      lv['up'] = lvlist[i + 1]
+      lv['cur'] = consume
+      break
+    }
+  }
+
+  return lv
+}
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
@@ -23,19 +38,79 @@ router.get('/getBarList', (req, res, next) => {
 
 // 排行榜
 router.get('/getTopRankUsers', (req, res, next) => {
-  User.findAll({
-    order: 'score DESC',
-    limit: 50
-  }).then(users => {
-    res.json({
-      iRet: 0,
-      users: users.map(user => user.get({plain: true}))
+
+  let barid = req.query['barid']
+
+  // type=1 等级  type=2 baping type=3 消费
+  let type = req.query['type']
+
+  let offset = req.query['offset'] ? req.query['offset'] : -1
+  let limit = req.query['limit'] ? req.query['limit'] : -1
+
+  co(function *() {
+
+    let lvlist = req.app.locals.svrconf['lvlist']
+    //钱到经验的转换比例
+    let m2exp = req.app.locals.svrconf['m2exp']
+
+    //获取所有用户的消费，按照消费排名
+    let allUsersConsumeResult = yield Order.findAll({
+      group: ['UserId'],
+      attributes: ['UserId', [Sequelize.fn('sum', Sequelize.col('amount')), 'amountsum']],
+      order: [[Sequelize.col('amountsum'), 'DESC']], //，按照消费排名
+      where: {BarId: barid, status: 1}
     })
-  }).catch(err => {
-    res.json({
-      iRet: -1,
-      msg: err.message
+
+    //暂时先不分那个酒吧对应哪个用户
+
+    //找到酒吧登录过的所有用户id和用户名
+    //query 返回，应该调用spread函数，参数是两个(result, metadata)，由于这两个结果是一样的
+    //所已这里alluser就是一个包含了两个一样结果的数组
+    //let userLandInfoDupli = yield sequelize.query("select id, name from users where id in (select userid from landinfos where barid=3)")
+    //let userLand = allUserInfoDupli[0]
+
+    let allUserInfo = yield User.findAll({attributes:['id', 'name', 'nickname']})
+
+    //计算等级，并填充用户名称信息
+    let allUserLvConsume = allUsersConsumeResult.map(function (obj) {
+      let tmp = {UserId: obj.dataValues['UserId'], amountsum: obj.dataValues['amountsum']}
+      let lv = _getLv(lvlist, tmp['amountsum'])
+      tmp['lv'] = lv['lv']
+      tmp['down'] = lv['down']
+      tmp['up'] = lv['up']
+      tmp['cur'] = lv['cur']
+
+      allUserInfo.forEach(function (obj, i, arr) {
+        if (obj['id'] == tmp['UserId']) {
+          tmp['name'] = obj['name']
+          return false
+        }
+      })
+
+      // userLand.forEach(function (obj, i, arr) {
+      //   if (obj['id'] == tmp['UserId']) {
+      //     tmp['name'] = obj['name']
+      //     return false
+      //   }
+      // })
+
+      return tmp
     })
+
+    //等级和消费
+    if (type == 1 || type == 3) {
+      res.send(allUserLvConsume)
+    } else if (type == 2) { //霸屏次数
+      let allUsers = yield Message.findAll({
+        group: ['UserId'],
+        attributes: ['UserId', [sequelize.fn('count', sequelize.col('isPayed')), 'bpcount']],
+        order: [[Sequelize.col('bpcount'), 'DESC']],
+        where: {BarId: barid, isPayed: 1}
+        // offset: offset,
+        // limit: limit
+      })
+      res.send(allUsers)
+    }
   })
 })
 
@@ -47,6 +122,18 @@ router.get('/getBarDetail', (req, res, next) => {
     }
   }).then(bar => {
     res.send(bar.get({plain: true}))
+  })
+})
+
+// 获取用户等级
+router.get('/getLevel', (req, res, next) => {
+  let userid = req.query.userid
+  let barid = req.query.barid
+  co(function *() {
+    let consumerSum = yield Order.sum('amount', {where: {UserId: userid, BarId: barid, status: 1}})
+    let lvlist = req.app.locals.svrconf['lvlist']
+    let lv = _getLv(lvlist, consumerSum)
+    res.json({iRet: 0, lv: lv})
   })
 })
 
