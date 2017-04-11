@@ -70,7 +70,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
     //let userLandInfoDupli = yield sequelize.query("select id, name from users where id in (select userid from landinfos where barid=3)")
     //let userLand = allUserInfoDupli[0]
 
-    let allUserInfo = yield User.findAll({attributes:['id', 'name', 'nickname']})
+    let allUserInfo = yield User.findAll({attributes: ['id', 'name', 'nickname']})
 
     //计算等级，并填充用户名称信息
     let allUserLvConsume = allUsersConsumeResult.map(function (obj) {
@@ -98,9 +98,9 @@ router.get('/getTopRankUsers', (req, res, next) => {
       return tmp
     })
 
-    //等级和消费
+    //等级 1 和 消费 3
     if (type == 1 || type == 3) {
-      res.send(allUserLvConsume)
+      res.json({iRet: 0, data: allUserLvConsume})
     } else if (type == 2) { //霸屏次数
       let allUsers = yield Message.findAll({
         group: ['UserId'],
@@ -113,6 +113,8 @@ router.get('/getTopRankUsers', (req, res, next) => {
       })
       res.send(allUsers)
     }
+  }).catch(function (err) {
+    res.json({iRet: -1, msg: err})
   })
 })
 
