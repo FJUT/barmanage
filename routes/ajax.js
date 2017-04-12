@@ -336,8 +336,8 @@ const createPayMiddware = (req, res, next) => {
         userId: UserId,
         amount: price
       }),
-      // total_fee: price * 100, // 微信单位是分，一分钱
-      total_fee: 1, // 测试用
+      total_fee: price * 100, // 微信单位是分，一分钱
+      // total_fee: 1, // 测试用
       spbill_create_ip: '127.0.0.1',
       openid: openid,
       trade_type: 'JSAPI'
