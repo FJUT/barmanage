@@ -45,30 +45,23 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
-    province:{
+    province: {
       type: DataTypes.STRING
     },
-    city:{
+    city: {
       type: DataTypes.STRING
     },
-    phonenumber:{
+    phonenumber: {
       type: DataTypes.STRING
     },
-    email:{
-      type:DataTypes.STRING
+    email: {
+      type: DataTypes.STRING
     },
     openid: {
       type: DataTypes.STRING
     },
     wx: {
       type: DataTypes.STRING
-    }
-  }, {
-    classMethods: {
-      associate: function (models) {
-        User.hasMany(models.Message)
-        User.hasMany(models.Order)
-      }
     }
   })
 

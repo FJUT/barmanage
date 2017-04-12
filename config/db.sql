@@ -1,5 +1,5 @@
-/*Users*/
-DROP TABLE IF EXISTS `Users`;
+/*Users  用户表只需要修改wx字段为400长度*/
+/*DROP TABLE IF EXISTS `Users`;
 CREATE TABLE `Users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -14,12 +14,12 @@ CREATE TABLE `Users` (
   `phonenumber` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `openid` varchar(255) DEFAULT NULL,
-  `wx` varchar(255) DEFAULT NULL,
+  `wx` varchar(400) DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
   `deletedAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;*/
 
 /*Bars*/
 DROP TABLE IF EXISTS `Bars`;

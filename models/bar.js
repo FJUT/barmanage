@@ -59,13 +59,6 @@ module.exports = (sequelize, DataTypes) => {
     screenBackImage: {
       type: DataTypes.STRING
     }
-  }, {
-    classMethods: {
-      associate: (models) => {
-        Bar.hasMany(models.Feedback)
-        Bar.hasMany(models.Order)
-      }
-    }
   })
 
   return Bar

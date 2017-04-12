@@ -21,14 +21,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: '0'
     }
-  }, {
-    classMethods: {
-      associate: (models) => {
-        Order.belongsTo(models.Message)
-        Order.belongsTo(models.User)
-        Order.belongsTo(models.Bar)
-      }
-    }
   })
 
   return Order
