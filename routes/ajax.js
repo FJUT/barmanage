@@ -14,7 +14,7 @@ var {paymentInstance, notifyMiddleware} = require('../lib/pay')
 function _getLv(lvlist, consume) {
   let lv = {}
 
-  if(consume >= lvlist[lvlist.length - 1]) {
+  if (consume >= lvlist[lvlist.length - 1]) {
     lv['lv'] = lvlist.length - 1
     lv['down'] = 'Max'
     lv['up'] = 'Max'
@@ -123,7 +123,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
       let allUserCLvBp = allUserLvConsume.map(function (lvc) {
         let tmp = {}
         allUsersBPC.forEach(function (bpc, i, arr) {
-          if(bpc.dataValues['UserId'] == lvc['UserId']) {
+          if (bpc.dataValues['UserId'] == lvc['UserId']) {
             tmp['UserId'] = bpc.dataValues['UserId']
             tmp['bpcount'] = bpc.dataValues['bpcount']
             tmp['lv'] = lvc['lv']
@@ -141,7 +141,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
       let allUserBpLvC = allUsersBPC.map(function (user) {
         let tmp = {}
         allUserLvConsume.forEach(function (lvc, i, arr) {
-          if(user.dataValues['UserId'] == lvc['UserId']) {
+          if (user.dataValues['UserId'] == lvc['UserId']) {
             tmp['UserId'] = user.dataValues['UserId']
             tmp['bpcount'] = user.dataValues['bpcount']
             tmp['lv'] = lvc['lv']
@@ -180,9 +180,15 @@ router.get('/getLevel', (req, res, next) => {
     let consumerSum = yield Order.sum('amount', {where: {UserId: userid, status: 1}}) // BarId: barid,
     let lvlist = req.app.locals.svrconf['lvlist']
 
-    //钱到经验的转换比例
-    let m2exp = req.app.locals.svrconf['m2exp']
-    let lv = _getLv(lvlist, consumerSum * m2exp)
+    let lv = {}
+
+    if (!consumerSum) {
+      lv = {lv: 0, up: 600, down: 0, cur: 0}
+    } else {
+      //钱到经验的转换比例
+      let m2exp = req.app.locals.svrconf['m2exp']
+      lv = _getLv(lvlist, consumerSum * m2exp)
+    }
 
     res.json({iRet: 0, lv: lv})
   })
@@ -312,6 +318,15 @@ const createPayMiddware = (req, res, next) => {
   var {BarId, UserId, msgText, seconds, price, openid} = req.body
   var amount = price
 
+  //白名单检测，在白名单内收费0.01
+  let chklist = req.app.locals.chklist
+  chklist && chklist.forEach((chkobj, i, arr) => {
+    if(chkobj['openid'] == openid) {
+      amount = 0.01
+      return false
+    }
+  })
+
   co(function*() {
     // 插入消息表
     var createdMessage = yield Message.create({
@@ -327,7 +342,7 @@ const createPayMiddware = (req, res, next) => {
 
     // 插入订单表
     var createdOrder = yield Order.create({
-      amount: price,
+      amount: amount,
       UserId: UserId,
       MessageId: createdMessage.id
     })
@@ -340,7 +355,7 @@ const createPayMiddware = (req, res, next) => {
         orderId: createdOrder.id,
         messageId: createdMessage.id,
         userId: UserId,
-        amount: price
+        amount: amount
       }),
       // total_fee: price * 100, // 微信单位是分，一分钱
       total_fee: 1, // 测试用
