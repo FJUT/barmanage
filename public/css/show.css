@@ -51,7 +51,8 @@ body {
 .images {
   flex: 1;
   margin-left: 10px;
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .msg-item {
@@ -194,6 +195,7 @@ body {
   .images {
     width: 100%;
     display: flex;
+    flex-direction: row;
   }
 
   .carousel-wrap {
