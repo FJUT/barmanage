@@ -67,23 +67,6 @@ router.get('/mainview', auth, (req, res, next) => {
     let _sql_order = `select u.name, o.amount, u.gender, o.createdAt from users u, orders o  where o.BarId = ${_barId} and o.UserId = u.id and o.status=1`
     let orderResult = yield models.sequelize.query(_sql_order)
 
-    // let orderResult = yield models.Message.findAll({
-    //   attributes: ['id', 'BarId', 'UserId'],
-    //   where: {
-    //     BarId: _barId,
-    //     //msgType:2为支付类型
-    //     msgType: 2
-    //   },
-    //   include: [
-    //     {
-    //       model: models.Order,
-    //       where: {amount: {$gt: 0}, status: {$ne: 0}},
-    //       attributes: ['createdAt', 'amount', 'UserId']
-    //     },
-    //     {model: models.User, attributes: ['name', 'gender', 'id']}
-    //   ]
-    // })
-
     //目前查的是系统用户总数
     let userCount = yield models.User.count()
 

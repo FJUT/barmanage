@@ -10,11 +10,20 @@ var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
 
+//等级从0开始
 function _getLv(lvlist, consume) {
   let lv = {}
+
+  if(consume >= lvlist[lvlist.length - 1]) {
+    lv['lv'] = lvlist.length - 1
+    lv['down'] = 'Max'
+    lv['up'] = 'Max'
+    lv['cur'] = consume
+  }
+
   for (let i = 0; i < lvlist.length; i++) {
-    if (consume > lvlist[i] && consume < lvlist[i + 1]) {
-      lv['lv'] = i + 1
+    if (consume >= lvlist[i] && consume < lvlist[i + 1]) {
+      lv['lv'] = i
       lv['down'] = lvlist[i]
       lv['up'] = lvlist[i + 1]
       lv['cur'] = consume
@@ -170,13 +179,10 @@ router.get('/getLevel', (req, res, next) => {
   co(function *() {
     let consumerSum = yield Order.sum('amount', {where: {UserId: userid, status: 1}}) // BarId: barid,
     let lvlist = req.app.locals.svrconf['lvlist']
+
     //钱到经验的转换比例
     let m2exp = req.app.locals.svrconf['m2exp']
     let lv = _getLv(lvlist, consumerSum * m2exp)
-
-    //前台知道叫什么后台不用查数据库
-    //let userInfo = yield User.findOne({where: {id: userid}})
-    //lv['name'] = userInfo['name']
 
     res.json({iRet: 0, lv: lv})
   })
