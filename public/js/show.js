@@ -60,11 +60,10 @@ const LocalPage = {
         autoPlay(seconds) {
           var types = ['pieces10', 'pieces30']
           var index = 0
-          var imgHtml = `<img id="msg_${this.bapingMessage.id}" src="${this.bapingMessage.msgImage}">`
+          var imgHtml = `<img src="${this.bapingMessage.msgImage}" class="img-holder" alt="">`
           var t = Date.now()
 
           var play = () => {
-            $('#preview').empty()
             $('#preview').html(imgHtml)
             
             setTimeout(() => {
@@ -156,7 +155,9 @@ const LocalPage = {
             this.bapingShow = true
 
             // 开始霸屏倒计时
-            this.startBapingCount()
+            this.$nextTick(
+              () => this.startBapingCount()
+            )
           })
           .fail(err => {
             console.log('获取霸屏失败')

@@ -117,19 +117,22 @@ body {
   bottom: 0;
   display: flex;
   flex-direction: row;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 1);
   font-weight: bolder;
 }
 
 .bp-img {
   width: 40%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
 }
 
-.bp-img img {
-  width: 100%;
+.bp-img .img-holder{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .bp-msg-wrap {
@@ -224,6 +227,10 @@ body {
     font-size: 24px;
     line-height: 24px;
     color: #ff8c00;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
   }
 
   .bp-msg-time {
