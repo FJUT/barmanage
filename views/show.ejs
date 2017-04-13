@@ -34,8 +34,8 @@
           :border="0">
           <slide v-for="(item, index) in images" :index="index"><img :src="item.msgImage" alt=""></slide>
         </carousel-3d>
+        <img src="/images/12cm.jpg" class="qrcode">
       </div>
-      <img src="/images/12cm.jpg" class="qrcode">
       <div class="baping-msg" v-if="bapingShow">
         <div class="bp-img" id="preview">
           <img :src="bapingMessage.msgImage" class="img-holder" alt="">

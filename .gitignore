@@ -7,3 +7,4 @@ uploads/
 release/
 seeders/
 test/
+config/config.json

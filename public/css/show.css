@@ -192,8 +192,16 @@ body {
   }
 
   .images {
-    width: 50%;
+    width: 100%;
     flex: 1;
+    display: flex;
+  }
+
+  .qrcode {
+    flex: 1;
+    margin-left: 10px;
+    max-width: 45%;
+    max-height: 100%;
   }
 
   .baping-msg {
