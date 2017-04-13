@@ -122,7 +122,7 @@ router.get('/getLevel', (req, res, next) => {
     let lv = {}
 
     if (!consumerSum) {
-      lv = {lv: 0, up: lvlist, down: 0, cur: 0}
+      lv = {lv: 0, up: lvlist[1], down: lvlist[0], cur: 0}
     } else {
       //钱到经验的转换比例
       let m2exp = req.app.locals.svrconf['m2exp']
