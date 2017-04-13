@@ -16,7 +16,6 @@ html, body, .container {
 .container {
   width: 96%;
   margin: 0 auto;
-  zoom: 1.6;
 }
 
 body {
@@ -52,6 +51,17 @@ body {
   flex: 1;
   margin-left: 10px;
   display: block;
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel-wrap {
+  flex: 1;
+}
+
+.qrcode {
+  flex: 1;
+  padding: 10px;
 }
 
 .msg-item {
@@ -193,7 +203,7 @@ body {
 
   .images {
     width: 100%;
-    display: flex;
+    flex-direction: row;
   }
 
   .carousel-wrap {
@@ -202,9 +212,6 @@ body {
 
   .qrcode {
     flex: 1;
-    margin-left: 10px;
-    margin-top: 10px;
-    max-width: 45%;
   }
 
   .baping-msg {
