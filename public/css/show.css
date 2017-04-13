@@ -193,8 +193,11 @@ body {
 
   .images {
     width: 100%;
-    flex: 1;
     display: flex;
+  }
+
+  .carousel-wrap {
+    flex: 1;
   }
 
   .qrcode {
@@ -202,7 +205,6 @@ body {
     margin-left: 10px;
     margin-top: 10px;
     max-width: 45%;
-    max-height: 100%;
   }
 
   .baping-msg {

@@ -29,11 +29,13 @@
           </div>
       </div>
       <div class="images">
-        <carousel-3d
-          :autoplay="true"
-          :border="0">
-          <slide v-for="(item, index) in images" :index="index"><img :src="item.msgImage" alt=""></slide>
-        </carousel-3d>
+        <div class="carousel-wrap">
+          <carousel-3d
+            :autoplay="true"
+            :border="0">
+            <slide v-for="(item, index) in images" :index="index"><img :src="item.msgImage" alt=""></slide>
+          </carousel-3d>
+        </div>
         <img src="/images/12cm.jpg" class="qrcode">
       </div>
       <div class="baping-msg" v-if="bapingShow">
