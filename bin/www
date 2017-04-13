@@ -12,6 +12,7 @@ var models = require('../models');
 
 //将服务器配置放到locals中，这样在ejs模板引擎中就默认包含了这些变量，可以直接用
 app.locals.svrconf = require(path.join(__dirname, '..', 'config', 'svrconf.json'))
+app.locals.chklist = require(path.join(__dirname, '..', 'config', 'chklist.json'))
 
 app.locals.isActive = function (path, active) {
     if (path === active) {

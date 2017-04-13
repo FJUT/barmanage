@@ -46,24 +46,22 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    createdAt : {
+    createdAt: {
       type: DataTypes.DATE
     },
-    updatedAt : {
+    updatedAt: {
       type: DataTypes.DATE
     },
-    deletedAt : {
+    deletedAt: {
       type: DataTypes.DATE
+    },
+    BarId: {
+      type: DataTypes.INTEGER,
+    },
+    UserId: {
+      type: DataTypes.INTEGER,
     }
   }, {
-    classMethods: {
-      associate: function (models) {
-        Message.belongsTo(models.Bar)
-        Message.belongsTo(models.User)
-        Message.hasMany(models.Order)
-      }
-    },
-
     //建表时是否包含所有timestamp字段，createdAt，updatedAt，deletedAt，这三个字段
     timestamps: true,
     //设置为true，在destroy时不会正真的删除而是，将deletedAt设置为删除的时间

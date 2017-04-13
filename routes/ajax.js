@@ -10,11 +10,20 @@ var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
 
+//等级从0开始
 function _getLv(lvlist, consume) {
   let lv = {}
+
+  if (consume >= lvlist[lvlist.length - 1]) {
+    lv['lv'] = lvlist.length - 1
+    lv['down'] = 'Max'
+    lv['up'] = 'Max'
+    lv['cur'] = consume
+  }
+
   for (let i = 0; i < lvlist.length; i++) {
-    if (consume > lvlist[i] && consume < lvlist[i + 1]) {
-      lv['lv'] = i + 1
+    if (consume >= lvlist[i] && consume < lvlist[i + 1]) {
+      lv['lv'] = i
       lv['down'] = lvlist[i]
       lv['up'] = lvlist[i + 1]
       lv['cur'] = consume
@@ -50,105 +59,44 @@ router.get('/getTopRankUsers', (req, res, next) => {
   co(function *() {
 
     let lvlist = req.app.locals.svrconf['lvlist']
+
     //钱到经验的转换比例
     let m2exp = req.app.locals.svrconf['m2exp']
 
-    //获取所有用户的消费，按照消费排名
-    let allUsersConsumeResult = yield Order.findAll({
-      group: ['UserId'],
-      attributes: ['UserId', [Sequelize.fn('sum', Sequelize.col('amount')), 'amountsum']],
-      order: [[Sequelize.col('amountsum'), 'DESC']], //，按照消费排名
-      //where: {BarId: barid, status: 1}
-      where: {status: 1}
-    })
-
-    //暂时先不分那个酒吧对应哪个用户
-
-    //找到酒吧登录过的所有用户id和用户名
-    //query 返回，应该调用spread函数，参数是两个(result, metadata)，由于这两个结果是一样的
-    //所已这里alluser就是一个包含了两个一样结果的数组
-    //let userLandInfoDupli = yield sequelize.query("select id, name from users where id in (select userid from landinfos where barid=3)")
-    //let userLand = allUserInfoDupli[0]
-
-    let allUserInfo = yield User.findAll({attributes: ['id', 'name', 'nickname', 'avatar']})
-
-    //计算等级，并填充用户名称信息
-    let allUserLvConsume = allUsersConsumeResult.map(function (obj) {
-      let tmp = {UserId: obj.dataValues['UserId'], amountsum: obj.dataValues['amountsum']}
-      let lv = _getLv(lvlist, tmp['amountsum'] * m2exp)
-      tmp['lv'] = lv['lv']
-      tmp['down'] = lv['down']
-      tmp['up'] = lv['up']
-      tmp['cur'] = lv['cur']
-
-      allUserInfo.forEach(function (obj, i, arr) {
-        if (obj['id'] == tmp['UserId']) {
-          tmp['name'] = obj['name']
-          tmp['avatar'] = obj['avatar']
-          return false
-        }
-      })
-
-      // userLand.forEach(function (obj, i, arr) {
-      //   if (obj['id'] == tmp['UserId']) {
-      //     tmp['name'] = obj['name']
-      //     return false
-      //   }
-      // })
-
-      return tmp
-    })
-
-    let allUsersBPC = yield Message.findAll({
-      group: ['UserId'],
-      attributes: ['UserId', [sequelize.fn('count', sequelize.col('isPayed')), 'bpcount']],
-      order: [[Sequelize.col('bpcount'), 'DESC']],
-      //where: {BarId: barid, isPayed: 1}
-      where: {isPayed: 1}
-      // offset: offset,
-      // limit: limit
-    })
-
-    //等级 1 和 消费 3
+    let _sql_ = ""
     if (type == 1 || type == 3) {
-      let allUserCLvBp = allUserLvConsume.map(function (lvc) {
-        let tmp = {}
-        allUsersBPC.forEach(function (bpc, i, arr) {
-          if(bpc.dataValues['UserId'] == lvc['UserId']) {
-            tmp['UserId'] = bpc.dataValues['UserId']
-            tmp['bpcount'] = bpc.dataValues['bpcount']
-            tmp['lv'] = lvc['lv']
-            tmp['cur'] = lvc['cur']
-            tmp['avatar'] = lvc['avatar']
-            tmp['name'] = lvc['name']
-            tmp['consume'] = lvc['cur'] / m2exp
-          }
-        })
-        return tmp
-      })
-      res.json({iRet: 0, data: allUserCLvBp})
-    } else if (type == 2) { //霸屏次数
-      //将其他信息填充进来
-      let allUserBpLvC = allUsersBPC.map(function (user) {
-        let tmp = {}
-        allUserLvConsume.forEach(function (lvc, i, arr) {
-          if(user.dataValues['UserId'] == lvc['UserId']) {
-            tmp['UserId'] = user.dataValues['UserId']
-            tmp['bpcount'] = user.dataValues['bpcount']
-            tmp['lv'] = lvc['lv']
-            tmp['cur'] = lvc['cur']
-            tmp['avatar'] = lvc['avatar']
-            tmp['name'] = lvc['name']
-            tmp['consume'] = lvc['cur'] / m2exp
-          }
-        })
-        return tmp
+      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, SUM(o.amount) consume, count(o.amount) bpcount FROM users u, orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.consume DESC"
+    } else if (type == 2) {
+      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, SUM(o.amount) consume, count(o.amount) bpcount FROM users u, orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.bpcount DESC"
+    } else {
+      res.json({iRet: -1, msg: `type字段类型为定义${type}`})
+      return
+    }
+
+    let _query_result = yield sequelize.query(_sql_)
+    if (_query_result && _query_result[0]) {
+      let _mapRes = _query_result[0].map((qobj) => {
+        let _tmp = {}
+        _tmp['UserId'] = qobj['UserId']
+        _tmp['consume'] = qobj['consume']
+        _tmp['name'] = qobj['name']
+        _tmp['avatar'] = qobj['avatar']
+        _tmp['bpcount'] = qobj['bpcount']
+
+        let _lv = _getLv(lvlist, _tmp['consume'] * m2exp)
+        _tmp['lv'] = _lv['lv']
+        return _tmp
       })
 
-      res.json({iRet: 0, data: allUserBpLvC})
+      if (_mapRes)
+        res.json({iRet: 0, data: _mapRes})
+      else
+        res.json({iRet: -1, msg: "[3]计算结果出错"})
     }
+    else
+      res.json({iRet: 0, data: {}, msg: "数据库查无结果"})
   }).catch(function (err) {
-    res.json({iRet: -1, msg: err})
+    res.json({iRet: -1, msg: "[-1]外部捕捉错误:" + err})
   })
 })
 
@@ -170,13 +118,16 @@ router.get('/getLevel', (req, res, next) => {
   co(function *() {
     let consumerSum = yield Order.sum('amount', {where: {UserId: userid, status: 1}}) // BarId: barid,
     let lvlist = req.app.locals.svrconf['lvlist']
-    //钱到经验的转换比例
-    let m2exp = req.app.locals.svrconf['m2exp']
-    let lv = _getLv(lvlist, consumerSum * m2exp)
 
-    //前台知道叫什么后台不用查数据库
-    //let userInfo = yield User.findOne({where: {id: userid}})
-    //lv['name'] = userInfo['name']
+    let lv = {}
+
+    if (!consumerSum) {
+      lv = {lv: 0, up: lvlist, down: 0, cur: 0}
+    } else {
+      //钱到经验的转换比例
+      let m2exp = req.app.locals.svrconf['m2exp']
+      lv = _getLv(lvlist, consumerSum * m2exp)
+    }
 
     res.json({iRet: 0, lv: lv})
   })
@@ -306,6 +257,15 @@ const createPayMiddware = (req, res, next) => {
   var {BarId, UserId, msgText, seconds, price, openid} = req.body
   var amount = price
 
+  //白名单检测，在白名单内收费0.01
+  let chklist = req.app.locals.chklist
+  chklist && chklist.forEach((chkobj, i, arr) => {
+    if (chkobj['openid'] == openid) {
+      amount = 0.01
+      return false
+    }
+  })
+
   co(function*() {
     // 插入消息表
     var createdMessage = yield Message.create({
@@ -321,7 +281,7 @@ const createPayMiddware = (req, res, next) => {
 
     // 插入订单表
     var createdOrder = yield Order.create({
-      amount: price,
+      amount: amount,
       UserId: UserId,
       MessageId: createdMessage.id
     })
@@ -334,9 +294,9 @@ const createPayMiddware = (req, res, next) => {
         orderId: createdOrder.id,
         messageId: createdMessage.id,
         userId: UserId,
-        amount: price
+        amount: amount
       }),
-      total_fee: price * 100, // 微信单位是分，一分钱
+      total_fee: amount * 100, // 微信单位是分，一分钱
       // total_fee: 1, // 测试用
       spbill_create_ip: '127.0.0.1',
       openid: openid,
