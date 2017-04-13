@@ -32,6 +32,10 @@ users表中wx的字段少了，不能包含全部内容要400长度
 
 pm2 stop all
 
+每一次启动服务器之前要构建一下：
+
+npm run build
+
 启动命令 
 
 pm2 start pm2.json --env production
