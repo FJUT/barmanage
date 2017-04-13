@@ -64,7 +64,7 @@ router.get('/mainview', auth, (req, res, next) => {
   co(function *() {
     let newsResult = yield models.CompanyNews.findAll({order: 'newsTime DESC'})
 
-    let _sql_order = `select u.name, o.amount, u.gender, o.createdAt from users u, orders o  where o.BarId = ${_barId} and o.UserId = u.id and o.status=1`
+    let _sql_order = `select u.name, o.amount, u.gender, o.createdAt from Users u, Orders o where o.BarId = ${_barId} and o.UserId = u.id and o.status=1`
     let orderResult = yield models.sequelize.query(_sql_order)
 
     //目前查的是系统用户总数

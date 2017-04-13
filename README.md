@@ -25,3 +25,13 @@ Redis（使用默认配置即可）
 
 数据库的问题：
 users表中wx的字段少了，不能包含全部内容要400长度
+
+#服务器使用命令
+
+关闭命令 
+
+pm2 stop all
+
+启动命令 
+
+pm2 start pm2.json --env production
