@@ -259,7 +259,7 @@ const createPayMiddware = (req, res, next) => {
 
   //白名单检测，在白名单内收费0.01
   let chklist = req.app.locals.chklist
-  chklist && chklist.forEach((chkobj, i, arr) => {
+  chklist && chklist['white'] && chklist['white'].forEach((chkobj, i, arr) => {
     if (chkobj['openid'] == openid) {
       amount = 0.01
       return false
