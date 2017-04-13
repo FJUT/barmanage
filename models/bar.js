@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     logo: {
-      type: DataTypes.CHAR,
+      type: DataTypes.STRING,
       defaultValue: LOGO_DEFAULT
     },
     name: {
-      type: DataTypes.CHAR,
+      type: DataTypes.STRING,
       defaultValue: NAME_DEFAULT
     },
     address: {
@@ -24,10 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: ''
     },
     bussinesshours: {
-      type: DataTypes.CHAR
+      type: DataTypes.STRING
     },
     position: {
-      type: DataTypes.CHAR
+      type: DataTypes.STRING
     },
     score: {
       type: DataTypes.INTEGER

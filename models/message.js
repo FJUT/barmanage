@@ -54,6 +54,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     deletedAt: {
       type: DataTypes.DATE
+    },
+    BarId: {
+      type: DataTypes.INTEGER,
+    },
+    UserId: {
+      type: DataTypes.INTEGER,
     }
   }, {
     //建表时是否包含所有timestamp字段，createdAt，updatedAt，deletedAt，这三个字段
