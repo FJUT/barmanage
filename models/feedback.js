@@ -14,13 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     createdAt: {
       type: DataTypes.DATE
-    }
-  }, {
-    classMethods: {
-      associate: (models) => {
-        Feedback.belongsTo(models.Bar)
-      }
-    }
+    },
+    BarId: {
+      type: DataTypes.INTEGER,
+    },
   })
 
   return Feedback

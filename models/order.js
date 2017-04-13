@@ -20,14 +20,15 @@ module.exports = (sequelize, DataTypes) => {
     type: { //0：霸屏消息
       type: DataTypes.INTEGER,
       defaultValue: '0'
-    }
-  }, {
-    classMethods: {
-      associate: (models) => {
-        Order.belongsTo(models.Message)
-        Order.belongsTo(models.User)
-        Order.belongsTo(models.Bar)
-      }
+    },
+    BarId: {
+      type: DataTypes.INTEGER,
+    },
+    UserId: {
+      type: DataTypes.INTEGER,
+    },
+    MessageId: {
+      type: DataTypes.INTEGER,
     }
   })
 

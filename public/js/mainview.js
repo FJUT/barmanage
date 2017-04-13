@@ -15,7 +15,7 @@ const vm = new Vue({
   el: '#app',
   data: function () {
     return {
-      money: '12313',
+      money: 0,
       feedback: '',
       news: [], //所有新闻条数
 
@@ -36,7 +36,6 @@ const vm = new Vue({
 
       //订单
       order: [],
-      orderMapped: [],  //order转换过之后的
       //订单每页显示数
       orderPerPageCount: 8,
       //订单总页数
@@ -96,29 +95,19 @@ const vm = new Vue({
       //计算页数
       this.$data['orderPages'] = Math.ceil(val.length % this.$data['orderPerPageCount'])
 
-      //将数组中每一个子Object或者Array中的数据拉出来放到最外层方便使用
-      this.$data['orderMapped'] = $.map(val, function (obj) {
-        var t = $.extend(true, {}, obj)
-        delete t['Orders']
-        delete t['User']
-        $.extend(true, t, obj['Orders'][0])
-        $.extend(true, t, obj['User'])
-        return t
-      })
-
       let _total = 0
       val.forEach(function (obj, i, arr) {
-        _total = _total + parseFloat(obj['Orders'][0]['amount'])
+        _total = _total + parseFloat(obj['amount'])
       })
       this.totalMoney = _total
 
       //当前展示的订单
-      this.$data['orderCurShow'] = this.getCurShow(this.$data['orderMapped'], this.$data['orderPageIndex'], this.$data['orderPerPageCount'])
+      this.$data['orderCurShow'] = this.getCurShow(this.order, this.$data['orderPageIndex'], this.$data['orderPerPageCount'])
     },
 
     orderPageIndex: function (val) {
       //当前展示的新闻
-      this.$data['orderCurShow'] = this.getCurShow(this.$data['orderMapped'], val, this.$data['orderPerPageCount'])
+      this.$data['orderCurShow'] = this.getCurShow(this.order, val, this.$data['orderPerPageCount'])
     }
   },
   methods: {
