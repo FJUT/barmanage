@@ -123,14 +123,13 @@ body {
 
 .bp-img {
   width: 40%;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .bp-img .img-holder{
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   max-width: 100%;
   max-height: 100%;
 }
