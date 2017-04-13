@@ -36,8 +36,6 @@ function _getLv(lvlist, consume) {
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
-  var id = req.query.id
-
   DataApi.getAllBars().then(bars => {
     res.send(bars)
   }).catch(err => {
@@ -52,6 +50,11 @@ router.get('/getTopRankUsers', (req, res, next) => {
 
   // type=1 等级  type=2 baping type=3 消费
   let type = req.query['type']
+
+  if (!/\d+/.test(type)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
 
   let offset = req.query['offset'] ? req.query['offset'] : -1
   let limit = req.query['limit'] ? req.query['limit'] : -1
@@ -102,6 +105,10 @@ router.get('/getTopRankUsers', (req, res, next) => {
 
 // 获取酒吧详情
 router.get('/getBarDetail', (req, res, next) => {
+  if (!/\d+/.test(req.query.id)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
   Bar.find({
     where: {
       id: req.query.id
@@ -114,6 +121,10 @@ router.get('/getBarDetail', (req, res, next) => {
 // 获取用户等级
 router.get('/getLevel', (req, res, next) => {
   let userid = req.query.userid
+  if (!/\d+/.test(userid)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
   //let barid = req.query.barid
   co(function *() {
     let consumerSum = yield Order.sum('amount', {where: {UserId: userid, status: 1}}) // BarId: barid,
@@ -135,19 +146,29 @@ router.get('/getLevel', (req, res, next) => {
 
 // 进入酒吧
 router.get('/landbar', (req, res, next) => {
-  co(function *() {
-    let bar = yield Bar.find({where: {id: req.query.barid}})
 
-    let user = yield User.find({where: {id: req.query.userid}})
+  let barid = req.query.barid
+
+  let userid = req.query.userid
+
+  if (!/\d+/.test(barid) || !/\d+/.test(userid)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
+
+  co(function *() {
+    let bar = yield Bar.find({where: {id: barid}})
+
+    let user = yield User.find({where: {id: userid}})
 
     if (bar && user) {
-      let landInfo = yield models.LandInfo.create({userid: req.query.userid, barid: req.query.barid})
+      let landInfo = yield models.LandInfo.create({userid: userid, barid: barid})
       if (landInfo)
         res.json({iRet: 0})
       else
         res.json({iRet: -1, msg: '插入landinfo失败'})
     } else {
-      let msg = !bar ? `没有找到barid:${req.query.barid}` : `没有找到userid:${req.query.userid}`
+      let msg = !bar ? `没有找到barid:${barid}` : `没有找到userid:${userid}`
       res.json({iRet: -1, msg: msg})
     }
   })
@@ -155,8 +176,12 @@ router.get('/landbar', (req, res, next) => {
 
 // 获取酒吧消息列表
 router.get('/getAllMessages', (req, res, next) => {
-  DataApi.getAllMessages(req.query.id)
-    .then(messages => res.send(messages))
+  let id = req.query.id
+  if (!/\d+/.test(id)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
+  DataApi.getAllMessages(id).then(messages => res.send(messages))
 })
 
 // 获取最新消息
@@ -186,22 +211,28 @@ router.post('/sendMessage', (req, res, next) => {
 // 获取最新霸屏列表
 router.get('/newBapingMessage', (req, res, next) => {
   const {BarId} = req.query
+  if (!/\d+/.test(BarId)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
   Message.findAll({
     where: {
       BarId,
       isDisplay: false,
       isPayed: true
     }
+  }).then(messages => {
+    return messages.map(msg => msg.get({plain: true}))
   })
-    .then(messages => {
-      return messages.map(msg => msg.get({plain: true}))
-    })
 })
 
 // 发送图片
 router.post('/sendImage', upload.single('file'), (req, res, next) => {
   var {BarId, UserId} = req.body
-
+  if (!/\d+/.test(BarId) || !/\d+/.test(UserId)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
   Message.create({
     msgType: 1,
     msgImage: req.file.filename,
@@ -215,9 +246,14 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
 
 // 获取霸屏价格
 router.get('/getPrices', (req, res, next) => {
+  let barid = req.query.barId
+  if (!/\d+/.test(barid)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
   BarPrice.findAll({
     where: {
-      BarId: req.query.barId
+      BarId: barid
     }
   }).then(result => {
     result = result.map(o => o.get({plain: true}))
@@ -228,16 +264,21 @@ router.get('/getPrices', (req, res, next) => {
 
 // 更换用户头像
 router.post('/changeAvatar', upload.single('file'), (req, res, next) => {
+  let UserId = req.body.UserId
+  if (!/\d+/.test(UserId)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
   models.User.update({
     avatar: `https://jufoinfo.com/` + req.file.filename
   }, {
     where: {
-      id: req.body.UserId
+      id: UserId
     }
   }).then(() => {
     return models.User.findOne({
       where: {
-        id: req.body.UserId
+        id: UserId
       }
     })
   }).then(created => {
