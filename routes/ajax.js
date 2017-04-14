@@ -10,30 +10,6 @@ var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
 
-//等级从0开始
-function _getLv(lvlist, consume) {
-  let lv = {}
-
-  if (consume >= lvlist[lvlist.length - 1]) {
-    lv['lv'] = lvlist.length - 1
-    lv['down'] = 'Max'
-    lv['up'] = 'Max'
-    lv['cur'] = consume
-  }
-
-  for (let i = 0; i < lvlist.length; i++) {
-    if (consume >= lvlist[i] && consume < lvlist[i + 1]) {
-      lv['lv'] = i
-      lv['down'] = lvlist[i]
-      lv['up'] = lvlist[i + 1]
-      lv['cur'] = consume
-      break
-    }
-  }
-
-  return lv
-}
-
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
   DataApi.getAllBars().then(bars => {
@@ -45,9 +21,6 @@ router.get('/getBarList', (req, res, next) => {
 
 // 排行榜
 router.get('/getTopRankUsers', (req, res, next) => {
-
-  //let barid = req.query['barid']
-
   // type=1 等级  type=2 baping type=3 消费
   let type = req.query['type']
 
@@ -60,11 +33,6 @@ router.get('/getTopRankUsers', (req, res, next) => {
   let limit = req.query['limit'] ? req.query['limit'] : -1
 
   co(function *() {
-
-    let lvlist = req.app.locals.svrconf['lvlist']
-
-    //钱到经验的转换比例
-    let m2exp = req.app.locals.svrconf['m2exp']
 
     let _sql_ = ""
     if (type == 1 || type == 3) {
@@ -86,7 +54,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
         _tmp['avatar'] = qobj['avatar']
         _tmp['bpcount'] = qobj['bpcount']
 
-        let _lv = _getLv(lvlist, _tmp['consume'] * m2exp)
+        let _lv = DataApi.getLv(_tmp['consume'] * DataApi.m2exp)
         _tmp['lv'] = _lv['lv']
         return _tmp
       })
@@ -128,16 +96,13 @@ router.get('/getLevel', (req, res, next) => {
   //let barid = req.query.barid
   co(function *() {
     let consumerSum = yield Order.sum('amount', {where: {UserId: userid, status: 1}}) // BarId: barid,
-    let lvlist = req.app.locals.svrconf['lvlist']
 
     let lv = {}
-
     if (!consumerSum) {
-      lv = {lv: 0, up: lvlist[1], down: lvlist[0], cur: 0}
+      lv = DataApi.getLv(0)
     } else {
       //钱到经验的转换比例
-      let m2exp = req.app.locals.svrconf['m2exp']
-      lv = _getLv(lvlist, consumerSum * m2exp)
+      lv = DataApi.getLv(consumerSum * DataApi.m2exp)
     }
 
     res.json({iRet: 0, lv: lv})
@@ -324,6 +289,7 @@ const createPayMiddware = (req, res, next) => {
     var createdOrder = yield Order.create({
       amount: amount,
       UserId: UserId,
+      BarId: BarId,
       MessageId: createdMessage.id
     })
 
@@ -337,7 +303,7 @@ const createPayMiddware = (req, res, next) => {
         userId: UserId,
         amount: amount
       }),
-      total_fee: amount * 100, // 微信单位是分，一分钱
+      total_fee: parseFloat(amount) * 100, // 微信单位是分，一分钱
       // total_fee: 1, // 测试用
       spbill_create_ip: '127.0.0.1',
       openid: openid,
@@ -366,66 +332,6 @@ const createPayMiddware = (req, res, next) => {
     })
   })
 }
-
-// 调试用，模拟发送霸屏
-router.post('/sendBapingFake', upload.single('file'), (req, res, next) => {
-  var {BarId, UserId, msgText, seconds, price, openid} = req.body
-
-  co(function*() {
-    // 插入消息表
-    var createdMessage = yield Message.create({
-      msgType: 2,
-      msgText: msgText,
-      msgImage: req.file ? req.file.filename : '',
-      BarId,
-      UserId,
-      seconds,
-      isDisplay: false,
-      isPayed: false
-    })
-
-    // 插入订单表
-    var createdOrder = yield Order.create({
-      amount: price,
-      UserId: UserId,
-      MessageId: createdMessage.id
-    })
-
-    res.json({
-      iRet: 0
-    })
-
-    var messageId = createdMessage.id
-    var orderId = createdOrder.id
-
-    // 模拟更新订单表，消息表
-    setTimeout(() => {
-      co(function*() {
-        //更新订单状态
-        var updateOrderResult = yield Order.update({status: true}, {
-          where: {
-            id: orderId
-          }
-        })
-
-        //更新消息支付状态
-        var updateMessageResult = yield Message.update({isPayed: true}, {
-          where: {
-            id: messageId
-          }
-        })
-
-        //更新用户exp和score
-        var updateExpAndScoreResult = yield User.findOne({where: {id: UserId}}).then(function (user) {
-          return User.update({
-            exp: price + user.exp,
-            score: price * 10 + user.score
-          }, {where: {id: UserId}})
-        })
-      })
-    }, 500)
-  })
-})
 
 // 发送霸屏文字
 router.post('/sendBapingText', createPayMiddware)
@@ -460,9 +366,10 @@ const responseWeixinNotifyMiddware = notifyMiddleware.getNotify().done((message,
 
     //更新用户exp和score
     var updateExpAndScoreResult = yield User.findOne({where: {id: userId}}).then(function (user) {
+      let _amount = parseFloat(amount)
       return User.update({
-        exp: amount + user.exp,
-        score: amount * 10 + user.score
+        exp: _amount + parseFloat(user.exp),
+        score: _amount * DataApi.m2exp + parseFloat(user.score)
       }, {where: {id: userId}})
     })
 
@@ -478,5 +385,67 @@ const responseWeixinNotifyMiddware = notifyMiddleware.getNotify().done((message,
 
 // 接受微信回调
 router.use('/notify', responseWeixinNotifyMiddware)
+
+// 调试用，模拟发送霸屏
+router.post('/sendBapingFake', upload.single('file'), (req, res, next) => {
+  var {BarId, UserId, msgText, seconds, price, openid} = req.body
+
+  co(function*() {
+    // 插入消息表
+    var createdMessage = yield Message.create({
+      msgType: 2,
+      msgText: msgText,
+      msgImage: req.file ? req.file.filename : '',
+      BarId,
+      UserId,
+      seconds,
+      isDisplay: false,
+      isPayed: false
+    })
+
+    // 插入订单表
+    var createdOrder = yield Order.create({
+      amount: price,
+      UserId: UserId,
+      BarId: BarId,
+      MessageId: createdMessage.id
+    })
+
+    res.json({
+      iRet: 0
+    })
+
+    var messageId = createdMessage.id
+    var orderId = createdOrder.id
+
+    // 模拟更新订单表，消息表
+    setTimeout(() => {
+      co(function*() {
+        //更新订单状态
+        var updateOrderResult = yield Order.update({status: true}, {
+          where: {
+            id: orderId
+          }
+        })
+
+        //更新消息支付状态
+        var updateMessageResult = yield Message.update({isPayed: true}, {
+          where: {
+            id: messageId
+          }
+        })
+
+        //更新用户exp和score
+        var updateExpAndScoreResult = yield User.findOne({where: {id: UserId}}).then(function (user) {
+          let _price = parseFloat(price)
+          return User.update({
+            exp: _price + parseFloat(user.exp),
+            score: _price * DataApi.m2exp + parseFloat(user.score)
+          }, {where: {id: UserId}})
+        })
+      })
+    }, 500)
+  })
+})
 
 module.exports = router
