@@ -88,12 +88,10 @@ router.get('/getPendingBaping', (req, res, next) => {
     // }
 
     var messages = yield DataApi.getMessages({
-      where: {
-        BarId: req.session.barInfo.id,
-        isDisplay: false,
-        isPayed: true,
-        msgType: 2
-      }
+      BarId: req.session.barInfo.id,
+      isDisplay: false,
+      isPayed: true,
+      msgType: 2
     })
 
     var msg = messages.length > 0 ? messages[0] : null
