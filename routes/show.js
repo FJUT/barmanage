@@ -65,7 +65,29 @@ router.get('/', auth, (req, res, next) => {
 // 获取未播放的霸屏
 router.get('/getPendingBaping', (req, res, next) => {
   co(function*() {
-    var messages = yield Message.findAll({
+    // var messages = yield Message.findAll({
+    //   where: {
+    //     BarId: req.session.barInfo.id,
+    //     isDisplay: false,
+    //     isPayed: true,
+    //     msgType: 2
+    //   }
+    // })
+
+    // var msg = messages.length > 0 ? messages[0].get({plain:true}) : null
+    
+    // if (msg) {
+    //   var user = yield User.findOne({
+    //     where: {
+    //       id: msg.UserId
+    //     }
+    //   })
+
+    //   msg.UserAvatar = user.avatar
+    //   msg.UserName = user.name
+    // }
+
+    var messages = yield DataApi.getMessages({
       where: {
         BarId: req.session.barInfo.id,
         isDisplay: false,
@@ -74,18 +96,7 @@ router.get('/getPendingBaping', (req, res, next) => {
       }
     })
 
-    var msg = messages.length > 0 ? messages[0].get({plain:true}) : null
-    
-    if (msg) {
-      var user = yield User.findOne({
-        where: {
-          id: msg.UserId
-        }
-      })
-
-      msg.UserAvatar = user.avatar
-      msg.UserName = user.name
-    }
+    var msg = messages.length > 0 ? messages[0] : null
     
     res.json({
       iRet: 0,

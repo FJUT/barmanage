@@ -88,6 +88,22 @@ body {
   margin-top: 10px;
 }
 
+/*用户等级*/
+.bp-user-level {
+  background: #d14580;
+  padding: 0 10px;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 24px;
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  position: relative;
+  top: -20px;
+  left: 10px;
+  margin-left: 10px;
+}
+
 .msg-created {
   position: absolute;
   right: 10px;
