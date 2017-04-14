@@ -173,6 +173,20 @@ router.post('/sendMessage', (req, res, next) => {
   })
 })
 
+// 获取霸屏是否开启 0关闭 1开启
+router.get('/getBapingStatus', (req, res, next) => {
+  let barid = req.query.barId
+  if (!/\d+/.test(barid)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
+
+  let _s = global._bapingStatus[barid] || "close"
+
+  res.json({iRet:0, data:{bp:_s}})
+})
+
+
 // 获取最新霸屏列表
 router.get('/newBapingMessage', (req, res, next) => {
   const {BarId} = req.query

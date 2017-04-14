@@ -205,6 +205,17 @@ const vm = new Vue({
           this.feedback = ''
         }
       })
+    },
+
+    closeBaping: function (event) {
+      $.ajax({
+        url: '/show/close',
+        dataType: "json",
+        type: 'get',
+        success(response) {
+          console.log(response)
+        }
+      })
     }
   }
 })

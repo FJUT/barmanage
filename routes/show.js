@@ -13,6 +13,8 @@ const router = express.Router();
 const {Message, User} = models
 const DataApi = require('../lib/DataApi')
 
+global._bapingStatus = global._bapingStatus || {}
+
 router.get('/', auth, (req, res, next) => {
   co(function*() {
     var barId = req.session.barInfo.id
@@ -51,6 +53,8 @@ router.get('/', auth, (req, res, next) => {
     var messages = yield DataApi.getAllMessages(barId)
 
     messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
+
+    global._bapingStatus[barId] = 'open'
 
     res.render('show', {
       messages: messages
@@ -137,6 +141,17 @@ router.get('/getNewMessages', (req, res, next) => {
       iRet: -1
     })
   })
+})
+
+// 获取最新消息
+router.get('/close', (req, res, next) => {
+  const barId = req.session.barInfo.id
+  if (!/\d+/.test(barId)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
+  global._bapingStatus[barId] = 'close'
+  res.json({ iRet: 0})
 })
 
 module.exports = router
