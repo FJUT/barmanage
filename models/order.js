@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     amount: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       defaultValue: 0
     },
     status: {

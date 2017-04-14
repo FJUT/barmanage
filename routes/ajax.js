@@ -173,7 +173,7 @@ router.post('/sendMessage', (req, res, next) => {
   })
 })
 
-// 获取霸屏是否开启 0关闭 1开启
+// 获取霸屏是否开启 close关闭 open开启
 router.get('/getBapingStatus', (req, res, next) => {
   let barid = req.query.barId
   if (!/\d+/.test(barid)) {
@@ -277,6 +277,13 @@ const createPayMiddware = (req, res, next) => {
   var {BarId, UserId, msgText, seconds, price, openid} = req.body
   var amount = price
 
+  //霸屏未开启
+  // let _bp = global._bapingStatus[BarId]
+  // if(!_bp || _bp == "close") {
+  //   res.json({ iRet: -1, msg : "霸屏未开启"})
+  //   return
+  // }
+
   //白名单检测，在白名单内收费0.01
   let chklist = req.app.locals.chklist
   chklist && chklist['white'] && chklist['white'].forEach((chkobj, i, arr) => {
@@ -341,9 +348,7 @@ const createPayMiddware = (req, res, next) => {
     })
   }).catch(err => {
     console.log('baping error', err)
-    res.json({
-      iRet: -1
-    })
+    res.json({ iRet: -1, msg : err})
   })
 }
 
