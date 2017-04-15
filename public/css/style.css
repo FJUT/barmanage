@@ -211,6 +211,35 @@ h1, a, span {
 }
 /*mainview*/
 
+/*occupy*/
+.occupy .screen.open{
+  color: green;
+}
+
+.occupy .screen{
+  color: red;
+}
+
+.occupy .status {
+  position: absolute;
+  top: 68px;
+  left: 60px;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 1;
+}
+
+.occupy .status.open{
+  color: green;
+}
+
+.occupy .status.close{
+  color: red;
+}
+
+/*occupy*/
+
 /*备案链接*/
 .beian-link {
   display:block;

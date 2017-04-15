@@ -3,7 +3,7 @@
     <ul class="sidebar-menu">
       <% svrconf.navs.forEach(function(nav, index) { %>
       <li class="treeview <%= isActive(nav.path, active) %>">
-        <a href="/<%= nav.path %>" <% if(nav.path == "show"){ %>target="_blank"<% } %>>
+        <a href="/<%= nav.path %>"> <!--\% if(nav.path == "show"){ %\>target="_blank"\<\% } -->
           <%= nav.name %>
         </a>
       </li>

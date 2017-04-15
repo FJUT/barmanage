@@ -22,10 +22,6 @@
       "path": "users"
     },
     {
-      "name": "打开大屏幕",
-      "path": "show"
-    },
-    {
       "name": "酒吧管理",
       "path": "form"
     },
