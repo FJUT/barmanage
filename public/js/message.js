@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import Vue from 'vue'
 import Element from 'element-ui'
+require("bootstrap")
 
 Vue.use(Element)
 
@@ -92,3 +93,10 @@ const app = new Vue({
     }
   }
 })
+
+
+$('.el-table__body-wrapper table').on("click", '.cell img', function (target) {
+  $('.imagepreview').attr('src', $(this).attr('src'));
+  $('#imagemodal').modal();
+})
+
