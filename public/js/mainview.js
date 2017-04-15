@@ -95,9 +95,9 @@ const vm = new Vue({
       //计算页数
       this.$data['orderPages'] = Math.ceil(val.length % this.$data['orderPerPageCount'])
 
-      let _total = 0
+      let _total = 0.0
       val.forEach(function (obj, i, arr) {
-        _total = _total + parseFloat(obj['amount'])
+        _total = _total + parseFloat(obj['amount']) * 0.99 * 0.5
       })
       this.totalMoney = _total.toFixed(2)
 
