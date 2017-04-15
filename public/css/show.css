@@ -62,6 +62,13 @@ body {
 .qrcode {
   flex: 1;
   padding: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.qrcode img {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .msg-item {
@@ -227,7 +234,7 @@ body {
   }
 
   .qrcode {
-    flex: 1;
+    /*width: 220px;*/
   }
 
   .baping-msg {
