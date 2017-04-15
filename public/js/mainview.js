@@ -99,7 +99,7 @@ const vm = new Vue({
       val.forEach(function (obj, i, arr) {
         _total = _total + parseFloat(obj['amount'])
       })
-      this.totalMoney = _total
+      this.totalMoney = _total.toFixed(2)
 
       //当前展示的订单
       this.$data['orderCurShow'] = this.getCurShow(this.order, this.$data['orderPageIndex'], this.$data['orderPerPageCount'])
