@@ -1,63 +1,79 @@
 <%- include('common/header.ejs') %>
 <%- include('header.ejs') %>
 <%- include('nav.ejs') %>
+<link type="text/css" rel="stylesheet" href="css/icono.min.css">
 <div class="content-wrapper">
   <section class="content-header">
-    <h1>设置霸屏时长和价格</h1>
+    <h1>设置霸</h1>
   </section>
-  <section class="content">
+  <section class="content occupy">
     <div class="row">
       <div class="col-md-10" id="app">
         <div class="box box-primary">
-          <div class="box-header">
-            <ul class="pagination pagination-sm no-margin pull-right">
-              <li><a href="#">«</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">»</a></li>
-            </ul>
+          <div class="box-header with-border">
+            <h2 class="box-title">霸屏开关</h2>
+          </div>
+          <div class="box-body">
+            <i class="icono-display screen" :class="{open : isScreenOpen}" style="margin: auto 20px;width: 100px;height: 56px;"></i>
+            <div class="status open" :class="{hide : !isScreenOpen}" >打开</div>
+            <div class="status close" :class="{hide : isScreenOpen}">关闭</div>
+            <a type="button" href="/show" target="_blank" @click="openScreen" class="btn btn-primary">打开大屏幕</a>
+            <a type="button" class="btn btn-danger" @click="closeScreen">关闭大屏幕</a>
+          </div>
+        </div>
+        <div class="box box-primary">
+          <!--<div class="box-header">-->
+          <!--<ul class="pagination pagination-sm no-margin pull-right">-->
+          <!--<li><a href="#">«</a></li>-->
+          <!--<li><a href="#">1</a></li>-->
+          <!--<li><a href="#">2</a></li>-->
+          <!--<li><a href="#">3</a></li>-->
+          <!--<li><a href="#">»</a></li>-->
+          <!--</ul>-->
+          <!--</div>-->
+          <div class="box-header with-border">
+            <h2 class="box-title">霸屏价格</h2>
           </div>
           <div class="box-body">
             <table class="table table-bordered">
               <tbody>
-                <tr>
-                  <th class="col-md-2">#</th>
-                  <th class="col-md-3">时长</th>
-                  <th class="col-md-3">价格</th>
-                  <th class="col-md-2">操作</th>
-                </tr>
-                <tr v-for="(row, index) in rows">
-                  <template v-if="row.id > -1">
-                    <template v-if="!row.edit">
-                      <th scope="row">{{index + 1}}</th>
-                      <td>{{row.seconds}}秒</td>
-                      <td>{{row.price}}元</td>
-                      <td>
-                        <button type="button" class="btn btn-sm btn-primary" @click="editById(row.id)">修改</button>
-                        <button type="button" class="btn btn-sm btn-danger" @click="deleteById(row.id)">删除</button>
-                      </td>
-                    </template>
-                    <template v-else>
-                      <th scope="row">{{index}}</th>
-                      <td><input type="text" v-model="row.seconds"></td>
-                      <td><input type="text" v-model="row.price"></td>
-                      <td>
-                        <button type="button" class="btn btn-sm btn-default" @click="doUpdate(row.id)">更新</button>
-                        <button type="button" class="btn btn-sm btn-danger" @click="cancelUpdate(row.id)">取消</button>
-                      </td>
-                    </template>
+              <tr>
+                <th class="col-md-2">#</th>
+                <th class="col-md-3">时长</th>
+                <th class="col-md-3">价格</th>
+                <th class="col-md-2">操作</th>
+              </tr>
+              <tr v-for="(row, index) in rows">
+                <template v-if="row.id > -1">
+                  <template v-if="!row.edit">
+                    <th scope="row">{{index + 1}}</th>
+                    <td>{{row.seconds}}秒</td>
+                    <td>{{row.price}}元</td>
+                    <td>
+                      <button type="button" class="btn btn-sm btn-primary" @click="editById(row.id)">修改</button>
+                      <button type="button" class="btn btn-sm btn-danger" @click="deleteById(row.id)">删除</button>
+                    </td>
                   </template>
                   <template v-else>
                     <th scope="row">{{index}}</th>
                     <td><input type="text" v-model="row.seconds"></td>
                     <td><input type="text" v-model="row.price"></td>
                     <td>
-                      <button type="button" class="btn btn-default" @click="doPlus">添加</button>
-                      <button type="button" class="btn btn-danger" @click="cancelPlus">取消</button>
+                      <button type="button" class="btn btn-sm btn-default" @click="doUpdate(row.id)">更新</button>
+                      <button type="button" class="btn btn-sm btn-danger" @click="cancelUpdate(row.id)">取消</button>
                     </td>
                   </template>
-                </tr>
+                </template>
+                <template v-else>
+                  <th scope="row">{{index}}</th>
+                  <td><input type="text" v-model="row.seconds"></td>
+                  <td><input type="text" v-model="row.price"></td>
+                  <td>
+                    <button type="button" class="btn btn-default" @click="doPlus">添加</button>
+                    <button type="button" class="btn btn-danger" @click="cancelPlus">取消</button>
+                  </td>
+                </template>
+              </tr>
               </tbody>
             </table>
           </div>
@@ -69,10 +85,13 @@
     </div>
   </section>
 </div>
+
 <script>
-var rows = <%-JSON.stringify(rows)%>
-var barInfo = <%-JSON.stringify(barInfo)%>
+  window.rows = <%- JSON.stringify(rows) %>;
+  window.barInfo = <%- JSON.stringify(barInfo) %>;
+  window.screeStatus = <%-JSON.stringify(barInfo)-%>
 </script>
-<script src="<%=url('init.js')%>"></script>
-<script src="<%=url('occupy.bundle.js')%>"></script>
+
+<script src="<%= url('init.js') %>"></script>
+<script src="<%= url('occupy.bundle.js') %>"></script>
 <%- include('common/footer.ejs') %>

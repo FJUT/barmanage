@@ -7,6 +7,8 @@ const models = require('../models')
 const auth = require('../middlewares/auth')
 const co = require('co')
 
+global._bapingStatus = global._bapingStatus || {}
+
 router.get('/', auth, (req, res, next) => {
   co(function*() {
     var BarId = res.locals.barInfo.id
@@ -20,8 +22,30 @@ router.get('/', auth, (req, res, next) => {
 
     res.render('occupy', {
       rows: data,
-      barInfo: res.locals.barInfo
+      barInfo: res.locals.barInfo,
+      screeStatus: global._bapingStatus[BarId] || "close"
     })
+  })
+})
+
+
+//关闭大屏幕
+router.get('/closeScreen', auth, (req, res, next) => {
+  var BarId = res.locals.barInfo.id
+  co(function*() {
+    var BarId = res.locals.barInfo.id
+    var barCount = yield models.BarPrice.count({
+      where: {
+        BarId
+      }
+    })
+
+    if (barCount > 0) {
+      global._bapingStatus[BarId] = "close"
+      res.json({iRet:0})
+    } else{
+      res.json({iRet:-1, msg:`酒吧Id:${BarId}不存在`})
+    }
   })
 })
 

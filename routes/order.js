@@ -13,15 +13,16 @@ router.get('/', auth, (req, res, next) => {
   const { id } = res.locals.barInfo
 
   co(function*() {
-    var messages = yield Message.findAll({
-      where: {
-        BarId: id
-      }
-    })
+    // var messages = yield Message.findAll({
+    //   where: {
+    //     BarId: id
+    //   }
+    // })
 
     var orders = yield Order.findAll({
       where: {
-        MessageId: messages.map(msg => msg.id),
+        // MessageId: messages.map(msg => msg.id),
+        BarId: id,
         status: true
       }
     })
