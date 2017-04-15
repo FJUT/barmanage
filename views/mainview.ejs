@@ -147,7 +147,7 @@
   </section>
 </div>
 <script>
-  window._jiufu_news = <%- JSON.stringify(news) %>;
+  window._jiufu_news = <%- JSON.stringify(!!news ? news : []) %>;
   window._jiufu_order = <%- JSON.stringify(order) %>;
   window._jiufu_user_count = <%- JSON.stringify(userCount) %>;
   window._jiufu_wall_count = <%- JSON.stringify(wallCount) %>;

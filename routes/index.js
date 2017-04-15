@@ -74,7 +74,8 @@ router.get('/mainview', auth, (req, res, next) => {
       where: {
         msgType: {$ne: 2},
         BarId: _barId
-      }
+      },
+      paranoid: true
     })
 
     let bapingCount = yield models.Message.count({
@@ -82,7 +83,8 @@ router.get('/mainview', auth, (req, res, next) => {
         BarId: _barId,
         msgType: 2,
         isPayed: 1
-      }
+      },
+      paranoid: true
     })
 
     res.render('mainview', {
