@@ -8,6 +8,7 @@
     "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
+    "aliyun-sdk": "^1.9.22",
     "body-parser": "~1.15.1",
     "bootstrap": "^3.3.7",
     "co": "^4.6.0",
