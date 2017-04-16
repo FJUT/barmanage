@@ -5,6 +5,11 @@ var $ = window.$
 import Vue from 'vue'
 import Carousel3d from 'vue-carousel-3d'
 
+const ANIMATION_TYPES = {
+  normal: ['pieces10', 'pieces30'],
+  spec: ['pieces17', 'pieces58', 'pieces72']
+}
+
 Vue.use(Carousel3d)
 
 const LIMIT = 5
@@ -58,7 +63,7 @@ const LocalPage = {
       methods: {
         // 霸屏图片动画特效
         autoPlay(seconds) {
-          var types = ['pieces10', 'pieces30']
+          var types = this.bapingMessage.lv >= 5 ? ANIMATION_TYPES.spec : ANIMATION_TYPES.normal
           var index = 0
           var imgHtml = `<img src="${this.bapingMessage.msgImage}" class="img-holder" alt="">`
           var t = Date.now()

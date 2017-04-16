@@ -2,12 +2,15 @@
  * Created by Administrator on 2017/4/15.
  */
 const ALY = require('aliyun-sdk')
-const accessKeyId = ''
-const secretAccessKey = ''
+/*
+* 参考 https://help.aliyun.com/document_detail/28428.html?spm=5176.doc50199.6.553.Dg1qil 创建key和secret
+* */
+const accessKeyId = 'LTAIBnvDolNCwnuw'
+const AccessKeySevcret = 'lAvBOp5JoFeb5NjhxVshbrOC3xXXlg'
 
 const green = new ALY.GREEN({
-  accessKeyId: '你的accessKeyId',
-  secretAccessKey: '你的accessKeySecret',
+  accessKeyId: accessKeyId,
+  secretAccessKey: AccessKeySevcret,
   endpoint: 'http://green.cn-hangzhou.aliyuncs.com',
   apiVersion: '2016-12-16'
 })
@@ -90,9 +93,7 @@ module.exports = (req, res, next) => {
     .then(taskIds => {
       return imageResults(taskIds)
     })
-    .then(() => {
-      next()
-    })
+    .then(next)
     .catch(err => {
       res.json({
         iRet: -1,
