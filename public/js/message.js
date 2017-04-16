@@ -18,6 +18,8 @@ const app = new Vue({
       messagePageIndex: 1,
       //当前显示的订单
       messageCurShow: [],
+      //读数据等待变量
+      messageLoading: false
     }
   },
   mounted: function () {

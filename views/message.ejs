@@ -8,12 +8,12 @@
   <section class="content">
     <div class="row">
       <div class="col-md-10">
-        <div class="box box-primary">
+        <div class="box box-primary" id="app">
           <!--<div class="box-header with-border">-->
             <!--<h3 class="box-title">消息列表</h3>-->
           <!--</div>-->
           <!-- /.box-header -->
-          <div class="box-body" id="app">
+          <div class="box-body">
             <!--<p class="text-info" v-if="messageCurShow.length == 0">暂无消息</p>-->
 
             <el-table :data="messageCurShow" style="width: 100%">
@@ -65,6 +65,11 @@
               <li><a href="#">»</a></li>
             </ul>
           </div>-->
+
+          <div class="overlay" :class="{hide: !messageLoading}">
+            <i class="fa fa-refresh fa-spin"></i>
+          </div>
+
         </div>
       </div>
     </div>
