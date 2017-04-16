@@ -10,31 +10,42 @@ const app = new Vue({
     return {
       messages: [],
       //订单每页显示数
-      messagePerPageCount: 20,
+      messagePerPageCount: 50,
       //订单总页数
       messagePages: 0,
       //订单当前显示页数
       messagePageIndex: 1,
-      //当前显示的订单
-      messageCurShow: [],
+      //消息总数
+      totalCount: 0
     }
   },
+
   mounted: function () {
     this.messages = window.messages
+    this.totalCount = window.count
   },
+
   watch: {
-    messages: function (val) {
+    totalCount: function (val) {
       //计算页数
       this.messagePages = Math.ceil(val.length % this.messagePerPageCount)
-
-      //当前展示的
-      this.messageCurShow = this.getCurShow(val, this.messagePageIndex, this.messagePerPageCount)
     },
 
     messagePageIndex: function (val) {
-      this.messageCurShow = this.getCurShow(this.messages, this.messagePageIndex, this.messagePerPageCount)
+      let url = `/message/query?limit=${this.messagePerPageCount}&offset=${this.messagePerPageCount * ( val - 1 )}`
+      $.ajax({
+        url: url,
+        success: function (json) {
+          app.totalCount = parseInt(json['count'])
+          app.messages = json['messages']
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      })
     }
   },
+
   methods: {
     onMessagePageChange: function (val) {
       this.messagePageIndex = val
@@ -74,21 +85,21 @@ const app = new Vue({
       })
     },
 
-    getCurShow: function (target, curIndex, numPerPage) {
-      let _target = target//this.$data['news']
-      let _curRet = []
-      let _curPageIndex = curIndex //this.$data['newsPageIndex']
-      let _numPerPage = numPerPage //this.$data['newsPerPageCount']
-      if (_target.length < _numPerPage) {
-        $.extend(true, _curRet, _target)
-      } else {
-        for (let _it in _target) {
-          if (_it >= (_curPageIndex - 1) * _numPerPage && _it < _curPageIndex * _numPerPage) {
-            _curRet.push(_target[_it])
-          }
-        }
-      }
-      return _curRet
-    }
+    // getCurShow: function (target, curIndex, numPerPage) {
+    //   let _target = target//this.$data['news']
+    //   let _curRet = []
+    //   let _curPageIndex = curIndex //this.$data['newsPageIndex']
+    //   let _numPerPage = numPerPage //this.$data['newsPerPageCount']
+    //   if (_target.length < _numPerPage) {
+    //     $.extend(true, _curRet, _target)
+    //   } else {
+    //     for (let _it in _target) {
+    //       if (_it >= (_curPageIndex - 1) * _numPerPage && _it < _curPageIndex * _numPerPage) {
+    //         _curRet.push(_target[_it])
+    //       }
+    //     }
+    //   }
+    //   return _curRet
+    // }
   }
 })
