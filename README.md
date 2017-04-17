@@ -40,6 +40,10 @@ npm run build
 
 pm2 start pm2.json --env production
 
+测试版本启动命令：
+
+pm2 start pm2.json --env test --port 9000
+
 #数据库备份
 1，每天8点备份mysql数据；
 2，为节省空间，删除超过3个月的所有备份数据；
