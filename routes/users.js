@@ -8,7 +8,7 @@ const auth = require('../middlewares/auth')
 router.get('/', auth, function (req, res, next) {
   let {id} = res.locals.barInfo
   co(function *() {
-    let sendMsgUsersResult = yield models.sequelize.query(`select distinct UserId from messages where BarId = ${id}`)
+    let sendMsgUsersResult = yield models.sequelize.query(`select distinct UserId from Messages where BarId = ${id}`)
     let users = []
     if (sendMsgUsersResult && sendMsgUsersResult[0]) {
       let inUserArr = sendMsgUsersResult[0].map((o) => o['UserId'])
