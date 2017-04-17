@@ -1,16 +1,25 @@
 {
-  "apps" : [{
-    "name"        : "bar",
-    "script"      : "./bin/www",
-    "watch": ["routes"],
-    "ignore_watch" : ["node_modules"],
-    "instances": 0,
-    "exec_mode": "cluster",
-    "env": {
-      "NODE_ENV": "development"
-    },
-    "env_production" : {
-      "NODE_ENV": "production"
+  "apps": [
+    {
+      "name": "bar",
+      "script": "./bin/www",
+      "watch": [
+        "routes"
+      ],
+      "ignore_watch": [
+        "node_modules"
+      ],
+      "instances": 0,
+      "exec_mode": "cluster",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "env_test": {
+        "NODE_ENV": "test"
+      },
+      "env_production": {
+        "NODE_ENV": "production"
+      }
     }
-  }]
+  ]
 }

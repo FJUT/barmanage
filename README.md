@@ -39,3 +39,7 @@ npm run build
 启动命令 
 
 pm2 start pm2.json --env production
+
+测试版本启动命令：
+
+pm2 start pm2.json --env test --port 9000
