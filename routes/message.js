@@ -23,7 +23,7 @@ router.get('/', auth, (req, res, next) => {
   co(function*() {
     let count = yield Message.count({where: {BarId: id}})
 
-    let _sql = "SELECT * FROM Messages WHERE (deletedAt IS NULL AND BarId = 1) ORDER BY createdAt DESC LIMIT 50"
+    let _sql = `SELECT * FROM Messages WHERE (deletedAt IS NULL AND BarId = ${id}) ORDER BY createdAt DESC LIMIT 50`
 
     let messages = yield sequelize.query(_sql)
 
@@ -53,7 +53,7 @@ router.get('/query', auth, (req, res, next) => {
   co(function*() {
     var count = yield Message.count({where: {BarId: id}})
 
-    let _sql = `SELECT * FROM Messages WHERE (deletedAt IS NULL AND BarId = 1) ORDER BY createdAt DESC LIMIT ${offset}, ${limit}`
+    let _sql = `SELECT * FROM Messages WHERE (deletedAt IS NULL AND BarId = ${id}) ORDER BY createdAt DESC LIMIT ${offset}, ${limit}`
 
     let messages = yield sequelize.query(_sql)
 
