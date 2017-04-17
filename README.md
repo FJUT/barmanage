@@ -39,3 +39,11 @@ npm run build
 启动命令 
 
 pm2 start pm2.json --env production
+
+#数据库备份
+1，每天8点备份mysql数据；
+2，为节省空间，删除超过3个月的所有备份数据；
+3，删除超过7天的备份数据，保留3个月里的 10号 20号 30号的备份数据；
+crontab -e
+0 8 * * * /data/dbdata/backup_mysql.sh
+
