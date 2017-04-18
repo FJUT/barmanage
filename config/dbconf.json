@@ -11,8 +11,8 @@
   },
   "test": {
     "username": "root",
-    "password": "jufo_mysql@2017",
-    "database": "database_test",
+    "password": "",
+    "database": "weizhong",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "dialectOptions": {
