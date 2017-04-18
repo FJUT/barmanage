@@ -10,7 +10,7 @@ const auth = require('../middlewares/auth')
 const co = require('co')
 const moment = require('moment')
 const router = express.Router();
-const {Message, User} = models
+const {Message, User, LandInfo, sequelize} = models
 const DataApi = require('../lib/DataApi')
 
 global._bapingStatus = global._bapingStatus || {}
@@ -75,7 +75,7 @@ router.get('/getPendingBaping', (req, res, next) => {
     // })
 
     // var msg = messages.length > 0 ? messages[0].get({plain:true}) : null
-    
+
     // if (msg) {
     //   var user = yield User.findOne({
     //     where: {
@@ -95,7 +95,7 @@ router.get('/getPendingBaping', (req, res, next) => {
     })
 
     var msg = messages.length > 0 ? messages[0] : null
-    
+
     res.json({
       iRet: 0,
       data: msg
@@ -136,19 +136,60 @@ router.get('/getNewMessages', (req, res, next) => {
   DataApi.getLatestMessages({
     barId,
     lastMessageId
-  })
-  .then(messages => {
+  }).then(messages => {
     messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
-    
+
     res.json({
       iRet: 0,
       data: messages
     })
-  })
-  .catch(err => {
+  }).catch(err => {
     res.json({
       iRet: -1
     })
+  })
+})
+
+router.get('/getNewLamp', (req, res, next) => {
+  //const barId = req.session.barInfo.id
+
+  let barId = 1
+  co(function *() {
+    let _sql = `SELECT id, name, avatar, exp, gender FROM Users u WHERE u.id IN (SELECT userid FROM LandInfos l WHERE \
+    l.BarId = ${barId} AND (l.displayAt IS NULL \
+    OR l.displayAt < DATE_SUB(NOW(), INTERVAL 1 HOUR))) \
+    GROUP BY u.id;`
+    let _result = yield sequelize.query(_sql)
+
+    if (_result && _result[0] && _result[0].length > 0) {
+      let _ret = _result[0].map((obj) => {
+        let _lv = DataApi.getLv(parseFloat(obj['exp']) * DataApi.m2exp)
+        return {
+          lv: _lv['lv'],
+          id: obj['id'],
+          name: obj['name'],
+          gender: obj['gender'],
+          avatar: obj['avatar'],
+          exp: obj['exp']
+        }
+      }).filter((obj) => {  //过滤等级大于5级的用户
+        return obj['lv'] >= 5
+      })
+
+      let updateUserIds = _ret.map((obj) => {
+        return obj['id']
+      })
+      let _ret_up = yield LandInfo.update({displayAt: new Date()}, {
+        where: {userid: {$in: updateUserIds}},
+        barid: barId
+      })
+
+      res.json({iRet: 0, data: _ret})
+    } else {
+      res.json({iRet: 0, data: null})
+    }
+  }).catch((err) => {
+    res.json({iRet: -1, msg: err})
   })
 })
 
@@ -160,7 +201,7 @@ router.get('/close', (req, res, next) => {
     return
   }
   global._bapingStatus[barId] = 'close'
-  res.json({ iRet: 0})
+  res.json({iRet: 0})
 })
 
 module.exports = router
