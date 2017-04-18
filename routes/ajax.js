@@ -122,20 +122,40 @@ router.get('/landbar', (req, res, next) => {
   }
 
   co(function *() {
-    let bar = yield Bar.find({where: {id: barid}})
-
     let user = yield User.find({where: {id: userid}})
 
+    //暂时只记录5级及以上用户的登录信息
+    let _lv = DataApi.getLv(parseInt(user.exp) * DataApi.m2exp)
+    if (_lv['lv'] < 5) {
+      res.json({iRet: -1, msg: "暂不记录小于5级用户的登录请求"})
+      return
+    }
+
+    let bar = yield Bar.find({where: {id: barid}})
+
     if (bar && user) {
-      let landInfo = yield models.LandInfo.create({userid: userid, barid: barid})
-      if (landInfo)
-        res.json({iRet: 0})
-      else
-        res.json({iRet: -1, msg: '插入landinfo失败'})
+      //找到用户登录当前酒吧的记录
+      let _record = yield models.LandInfo.findAll({
+        where: {userid: userid, barid: barid},
+        order: [['displayAt', 'DESC']]
+      })
+
+      //没有就直接插入
+      if (_record && _record.length > 0) {
+        let landInfo = yield models.LandInfo.create({userid: userid, barid: barid})
+        if (landInfo)
+          res.json({iRet: 0})
+        else
+          res.json({iRet: -1, msg: '插入landinfo失败'})
+      } else {
+        res.json({iRet: 0, msg: '记录已存在'})
+      }
     } else {
       let msg = !bar ? `没有找到barid:${barid}` : `没有找到userid:${userid}`
       res.json({iRet: -1, msg: msg})
     }
+  }).catch((err) => {
+    res.json({iRet: -1, msg: err})
   })
 })
 
@@ -183,7 +203,7 @@ router.get('/getBapingStatus', (req, res, next) => {
 
   let _s = global._bapingStatus[barid] || "close"
 
-  res.json({iRet:0, data:{bp:_s}})
+  res.json({iRet: 0, data: {bp: _s}})
 })
 
 
@@ -348,7 +368,7 @@ const createPayMiddware = (req, res, next) => {
     })
   }).catch(err => {
     console.log('baping error', err)
-    res.json({ iRet: -1, msg : err})
+    res.json({iRet: -1, msg: err})
   })
 }
 
