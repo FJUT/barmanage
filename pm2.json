@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "bartest",
+      "name": "bar",
       "script": "./bin/www",
       "watch": [
         "routes"
