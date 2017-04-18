@@ -36,13 +36,25 @@ pm2 stop all
 
 npm run build
 
-启动命令 
+启动命令 start.sh
 
 pm2 start pm2.json --env production
 
-测试版本启动命令：
+测试版本启动命令 starttest.sh：
 
+pm2 start pm2test.json --env test
 pm2 start pm2.json --env test --port 9000
+
+停止命令，可以先使用pm2 list 查看id
+
+pm2 stop all           # Stop all processes
+
+pm2 stop 0             # Stop specific process id
+
+向node传递参数
+
+pm2 start app.js --node-args="--debug=7001" # --node-args to pass options to node V8
+
 
 #数据库备份
 1，每天8点备份mysql数据；
