@@ -184,6 +184,24 @@ router.get('/getAllMessages', (req, res, next) => {
   DataApi.getAllMessages(id).then(messages => res.send(messages))
 })
 
+// 获取酒吧消息列表-分页
+router.get('/getPageMessages', (req, res, next) => {
+  let id = req.query.id
+  let limit = req.query.limit || 10
+  let offset = req.query.offset || 0
+  if (!/\d+/.test(id) || !/\d+/.test(limit) || !/\d+/.test(offset)
+    || limit > 50 || limit < 0 || offset < 0) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
+
+  DataApi.getPageMessages(id, limit, offset).then(
+    (data) => {
+      res.send(data)
+    }
+  )
+})
+
 // 获取最新消息
 router.get('/getLatestMessages', (req, res, next) => {
   var {barId, lastUpdated} = req.query
