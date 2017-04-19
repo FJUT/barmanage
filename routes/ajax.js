@@ -36,9 +36,9 @@ router.get('/getTopRankUsers', (req, res, next) => {
 
     let _sql_ = ""
     if (type == 1 || type == 3) {
-      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.consume DESC"
+      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.gender, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, u.gender, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.consume DESC"
     } else if (type == 2) {
-      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.bpcount DESC"
+      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.gender, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, u.gender, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.bpcount DESC"
     } else {
       res.json({iRet: -1, msg: `type字段类型为定义${type}`})
       return
@@ -53,6 +53,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
         _tmp['name'] = qobj['name']
         _tmp['avatar'] = qobj['avatar']
         _tmp['bpcount'] = qobj['bpcount']
+        _tmp['gender'] = qobj['gender']
 
         let _lv = DataApi.getLv(_tmp['consume'] * DataApi.m2exp)
         _tmp['lv'] = _lv['lv']
@@ -110,6 +111,9 @@ router.get('/getLevel', (req, res, next) => {
 })
 
 // 进入酒吧
+// 在这里仅判断用户是否大于5级，如果大于5级且没有记录，就插一条记录进入
+// 如果有记录那么就也不做
+// 上屏更新的工作由show:getNewLamp来完成
 router.get('/landbar', (req, res, next) => {
 
   let barid = req.query.barid
@@ -141,14 +145,25 @@ router.get('/landbar', (req, res, next) => {
       })
 
       //没有就直接插入
-      if (_record && _record.length > 0) {
+      if (_record.length < 1) {
         let landInfo = yield models.LandInfo.create({userid: userid, barid: barid})
         if (landInfo)
-          res.json({iRet: 0})
+          res.json({iRet: 0, msg: '插入记录成功'})
         else
           res.json({iRet: -1, msg: '插入landinfo失败'})
       } else {
         res.json({iRet: 0, msg: '记录已存在'})
+        // 记录存在 如果当前时间与displayAt相差1小时，就更新updatedAt值
+        // let _display = _record[0].get('displayAt')
+        // let _landSpan = 60 * 60 * 1000
+        // if (_display - new Date() > _landSpan) {
+        //   models.LandInfo.update({updatedAt: new Date()}, {
+        //     where: {userid: userid, barid: barid}
+        //   })
+        //   res.json({iRet: 0, msg: '记录已存在，更新updatedAt'})
+        // } else {
+        //   res.json({iRet: 0, msg: '记录已存在，但不更新'})
+        // }
       }
     } else {
       let msg = !bar ? `没有找到barid:${barid}` : `没有找到userid:${userid}`
