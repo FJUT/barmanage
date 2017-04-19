@@ -155,10 +155,25 @@ router.get('/getNewLamp', (req, res, next) => {
 
   let barId = 1
   co(function *() {
+
+    //登录上次显示时间和目前大于1小时就显示
     let _sql = `SELECT id, name, avatar, exp, gender FROM Users u WHERE u.id IN (SELECT userid FROM LandInfos l WHERE \
     l.BarId = ${barId} AND (l.displayAt IS NULL \
     OR l.displayAt < DATE_SUB(NOW(), INTERVAL 1 HOUR))) \
     GROUP BY u.id;`
+
+    // let _secondspan = 3600
+    // let _sql = `SELECT u.id, u.name, u.avatar, u.exp, u.gender\
+    //   FROM Users u WHERE\
+    //     u.id IN (SELECT DISTINCT userid\
+    //       FROM weizhong.landinfos l\
+    //       WHERE\
+    //         l.barid = ${barId}\
+    //           AND TIMESTAMPDIFF(SECOND,\
+    //           l.displayAt,\
+    //           l.updatedAt) > ${_secondspan})\
+    //   GROUP BY u.id;`
+
     let _result = yield sequelize.query(_sql)
 
     if (_result && _result[0] && _result[0].length > 0) {
