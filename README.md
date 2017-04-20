@@ -43,6 +43,7 @@ pm2 start pm2.json --env production
 测试版本启动命令 starttest.sh：
 
 pm2 start pm2test.json --env test
+pm2 start pm2.json --env test --port 9000
 
 停止命令，可以先使用pm2 list 查看id
 
@@ -53,4 +54,12 @@ pm2 stop 0             # Stop specific process id
 向node传递参数
 
 pm2 start app.js --node-args="--debug=7001" # --node-args to pass options to node V8
+
+
+#数据库备份
+1，每天8点备份mysql数据；
+2，为节省空间，删除超过3个月的所有备份数据；
+3，删除超过7天的备份数据，保留3个月里的 10号 20号 30号的备份数据；
+crontab -e
+0 8 * * * /data/dbdata/backup_mysql.sh
 
