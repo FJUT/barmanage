@@ -36,9 +36,9 @@ router.get('/getTopRankUsers', (req, res, next) => {
 
     let _sql_ = ""
     if (type == 1 || type == 3) {
-      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.gender, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, u.gender, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.consume DESC"
+      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.gender, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, u.gender, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.consume DESC LIMIT 100"
     } else if (type == 2) {
-      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.gender, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, u.gender, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.bpcount DESC"
+      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.gender, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, u.gender, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.bpcount DESC LIMIT 100"
     } else {
       res.json({iRet: -1, msg: `type字段类型为定义${type}`})
       return
