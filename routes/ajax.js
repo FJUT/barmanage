@@ -184,7 +184,7 @@ router.get('/getAllMessages', (req, res, next) => {
   DataApi.getAllMessages(id).then(messages => res.send(messages))
 })
 
-// 获取酒吧消息列表-分页
+// 获取酒吧消息列表-分页 --小程序
 router.get('/getPageMessages', (req, res, next) => {
   let id = req.query.id
   let limit = req.query.limit || 10
