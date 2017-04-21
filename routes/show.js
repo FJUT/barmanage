@@ -12,6 +12,7 @@ const moment = require('moment')
 const router = express.Router();
 const {Message, User, LandInfo, sequelize} = models
 const DataApi = require('../lib/DataApi')
+const _ = require('underscore')
 
 global._bapingStatus = global._bapingStatus || {}
 
@@ -23,17 +24,17 @@ router.get('/', auth, (req, res, next) => {
     //messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
 
     //打开大屏幕的时候
-    let _sql_users_info = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.msgType \
+    let _sql_users_info = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.msgType, m.id \
         FROM Messages m, Users u WHERE \
         u.id = m.UserId AND m.BarId = ${barId} \
-        ORDER BY m.createdAt DESC limit 10`
+        ORDER BY m.id DESC limit 10`
 
     let messages = yield sequelize.query(_sql_users_info)
 
     global._bapingStatus[barId] = 'open'
 
     //消息之后少数几条的时候 默认消息
-    if(messages[0].length < 3) {
+    if (messages[0].length < 3) {
       let defaultMsgs = [
         {
           "UserAvatar": "http://jufoinfo.com/images/logo-default.png",
@@ -44,6 +45,7 @@ router.get('/', auth, (req, res, next) => {
           "msgImage": null,
           "msgVideo": null,
           "msgType": 0,
+          "id": 0,
           "lv": 20
         },
         {
@@ -55,6 +57,7 @@ router.get('/', auth, (req, res, next) => {
           "msgImage": null,
           "msgVideo": null,
           "msgType": 0,
+          "id": 0,
           "lv": 20
         }
       ]
@@ -116,23 +119,47 @@ router.post('/setMessageDisplay', (req, res, next) => {
 // 获取最新消息
 router.get('/getNewMessages', (req, res, next) => {
   const barId = req.session.barInfo.id
-  const lastMessageId = req.query.lastMessageId
+  const lastMessageId = req.query.lastMessageId || 0
+  let me = this
+  co(function *() {
+    // 找用户信息
+    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.id, m.msgType, m.createdAt, m.updatedAt \
+          FROM Messages m, Users u WHERE \
+          u.id = m.UserId AND m.BarId = ${barId} \
+          AND m.id > ${lastMessageId} \
+          ORDER BY m.id ASC`
 
-  DataApi.getLatestMessages({
-    barId,
-    lastMessageId
-  }).then(messages => {
-    messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
+    let _users_result = yield sequelize.query(_sql_users)
 
-    res.json({
-      iRet: 0,
-      data: messages
+    let messages = _users_result[0].map((obj) => {
+      let tmp = _.extend({}, obj)
+      let _lv = DataApi.getLv(obj['exp'] * me.m2exp)
+      tmp['lv'] = _lv['lv']
+      return tmp
     })
-  }).catch(err => {
-    res.json({
-      iRet: -1
-    })
+
+    res.json({iRet: 0, data: messages})
+
+  }).catch((err) => {
+    console.log('[error]@getNewMessages:', err)
+    res.json({iRet: -1, msg: err})
   })
+
+  // DataApi.getLatestMessages({
+  //   barId,
+  //   lastMessageId
+  // }).then(messages => {
+  //   messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
+  //
+  //   res.json({
+  //     iRet: 0,
+  //     data: messages
+  //   })
+  // }).catch(err => {
+  //   res.json({
+  //     iRet: -1
+  //   })
+  // })
 })
 
 router.get('/getNewLamp', (req, res, next) => {

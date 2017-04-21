@@ -9,6 +9,7 @@ var {Bar, User, Message, BarPrice, Order, LandInfo, sequelize, Sequelize} = mode
 var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
+const _ = require('underscore')
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
@@ -175,14 +176,14 @@ router.get('/landbar', (req, res, next) => {
 })
 
 // 获取酒吧消息列表
-router.get('/getAllMessages', (req, res, next) => {
-  let id = req.query.id
-  if (!/\d+/.test(id)) {
-    res.json({iRet: -1, msg: "参数错误"})
-    return
-  }
-  DataApi.getAllMessages(id).then(messages => res.send(messages))
-})
+// router.get('/getAllMessages', (req, res, next) => {
+//   let id = req.query.id
+//   if (!/\d+/.test(id)) {
+//     res.json({iRet: -1, msg: "参数错误"})
+//     return
+//   }
+//   DataApi.getAllMessages(id).then(messages => res.send(messages))
+// })
 
 // 获取酒吧消息列表-分页 --小程序
 router.get('/getPageMessages', (req, res, next) => {
@@ -202,13 +203,48 @@ router.get('/getPageMessages', (req, res, next) => {
   )
 })
 
-// 获取最新消息
+// 小程序获取最新消息 -- 根据updatedAt时间比updatedAt大的消息 正序
 router.get('/getLatestMessages', (req, res, next) => {
-  var {barId, lastUpdated} = req.query
-  DataApi.getLatestMessages({
-    barId,
-    lastUpdated
-  }).then(messages => res.send(messages))
+  let {barId, lastUpdated} = req.query
+
+  if (!/\d+/.test(barId)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
+
+  let me = this
+
+  co(function *() {
+    // 找用户信息
+    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.id, m.msgType, m.createdAt, m.updatedAt \
+        FROM Messages m, Users u WHERE \
+        u.id = m.UserId AND m.BarId = ${barId} \
+        AND unix_timestamp(m.updatedAt) > ${(new Date(lastUpdated)).getTime() / 1000} \
+        ORDER BY m.updatedAt ASC`
+
+    let _users_result = yield sequelize.query(_sql_users)
+
+    let messages = _users_result[0].map((obj) => {
+      let tmp = _.extend({}, obj)
+      let _lv = DataApi.getLv(obj['exp'] * me.m2exp)
+      tmp['lv'] = _lv['lv']
+      return tmp
+    })
+
+    console.log(JSON.stringify(messages))
+
+    //res.json({iRet: 0, data: messages})
+    res.send(messages)
+
+  }).catch((err) => {
+    console.log('[error]@getLatestMessages:', err)
+    res.json({iRet: -1, msg: err})
+  })
+
+  // DataApi.getLatestMessages({
+  //   barId,
+  //   lastUpdated
+  // }).then(messages => res.send(messages))
 })
 
 // 发送消息

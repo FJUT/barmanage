@@ -46,15 +46,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    createdAt: {
-      type: DataTypes.DATE
-    },
-    updatedAt: {
-      type: DataTypes.DATE
-    },
-    deletedAt: {
-      type: DataTypes.DATE
-    },
+    // createdAt: {
+    //   type: DataTypes.DATE
+    // },
+    // updatedAt: {
+    //   type: DataTypes.DATE
+    // },
+    // deletedAt: {
+    //   type: DataTypes.DATE
+    // },
     BarId: {
       type: DataTypes.INTEGER,
     },
