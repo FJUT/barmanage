@@ -23,7 +23,7 @@ router.get('/', auth, (req, res, next) => {
     res.render('occupy', {
       rows: data,
       barInfo: res.locals.barInfo,
-      screeStatus: global._bapingStatus[BarId] || "close"
+      screenStatus: global._bapingStatus[BarId] || "close"
     })
   })
 })

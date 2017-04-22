@@ -14,7 +14,7 @@ var vm = new Vue({
   mounted: function () {
     this.rows = window.rows
     this.barInfo = window.barInfo
-    this.screenStatus = window.screeStatus
+    this.screenStatus = window.screenStatus
   },
   computed: {
     isScreenOpen:function() {
