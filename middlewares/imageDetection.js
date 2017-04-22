@@ -21,62 +21,58 @@ const DETECION_FAILED = '图片检测失败'
 const HOST = 'https://jufoinfo.com/'
 
 const imageDetection = (urls) => {
-  const scenes = ['porn', 'ocr', 'illegal']
+  const scenes = ['porn', 'illegal']
 
   return new Promise((resolve, reject) => {
     green.imageDetection({
-      Async: true,
+      Async: false,
       ImageUrl: JSON.stringify(urls),
       Scene: JSON.stringify(scenes)
     }, function(err, data) {
-      if (err) {
-        console.log('error:', err)
-        reject(err)
-        return
+      if(err) {
+        console.log('error:', err);
+        return;
       }
+      console.log('success:', JSON.stringify(data));
+      //判断是否成功
+      if(data.Code === 'Success' && data.ImageResults.ImageResult.length > 0) {
+        var imageResult = data.ImageResults.ImageResult[0];
+        var imageUrl = imageResult.ImageName;
+        var taskId = imageResult.TaskId;
+        //获取结果
+        var pornResult = imageResult.PornResult;
+        var ocrResult = imageResult.OcrResult;
+        var illegalResult = imageResult.IllegalResult;
+        var sensitiveFaceResult = imageResult.SensitiveFaceResult;
+        var adResult = imageResult.AdResult;
+        var qrcodeResult = imageResult.QrcodeResult;
+        /**
+         * 黄图检测结果
+         */
+        /**
+         * 绿网给出的建议值, 0表示正常，1表示色情，2表示需要review
+         */
+        console.log(pornResult.Label);
 
-      var imageResults = data.ImageResults.ImageResult
-      var taskIds = imageResults.map(item => item.TaskId)
 
-      resolve(taskIds)
-    })
-  })
-}
+        /**
+         * 暴恐敏感识别结果
+         */
+        /**
+         * 绿网给出的建议值, 0表示正常，1表示命中暴恐渉政，2表示需要review
+         */
+        console.log(illegalResult.Label);
 
-const imageResults = (taskIds) => {
-  return new Promise((resolve, reject) => {
-    green.imageResults({
-      TaskId: JSON.stringify(taskIds)
-    }, (err, data) => {
-      if (err) {
-        reject(new Error(DETECION_FAILED))
-      }
-
-      if (data.Code !== 'Success') {
-        reject(new Error(DETECION_FAILED))
-      }
-
-      var imageDetectResults = data.ImageDetectResults.ImageDetectResult;
-      var imageDetectResultItem = imageDetectResults[0] // 只有一张图
-
-      var imageResult = imageDetectResultItem.ImageResult;
-      var status = imageDetectResultItem.Status;
-
-      if ("TaskProcessSuccess" != status) {
-        reject(new Error(DETECION_FAILED))
-        return
-      }
-
-      var imageUrl = imageResult.ImageName;
-      var taskId = imageResult.TaskId;
-      //获取结果
-      var pornResult = imageResult.PornResult;
-      var illegalResult = imageResult.IllegalResult;
-
-      if (pornResult.Label == 0 && illegalResult.Label == 0) {
-        resolve(true)
-      } else {
-        reject(new Error(DETECION_FAILED))
+        if (pornResult.Label != 1 && illegalResult.Label != 1) {
+          resolve(true)
+        } else {
+          reject(new Error('图片违规'))
+        }
+      }else{
+        //出错情况下打印出结果
+        console.log(data.Code);
+        console.log(data.Msg);
+        reject(new Error(data.Msg))
       }
     })
   })
@@ -86,8 +82,7 @@ module.exports = (req, res, next) => {
   co(function*() {
     var url = HOST + req.file.filename
     var urls = [url]
-    var taskIds = yield imageDetection(urls)
-    var result = yield imageResults(taskIds)
+    var result = yield imageDetection(urls)
 
     if (result) {
       next()
