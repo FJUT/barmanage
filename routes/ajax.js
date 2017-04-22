@@ -10,6 +10,7 @@ var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
 var imageDecMdw = require('../middlewares/imageDetection')
+const _ = require('underscore')
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
@@ -37,9 +38,9 @@ router.get('/getTopRankUsers', (req, res, next) => {
 
     let _sql_ = ""
     if (type == 1 || type == 3) {
-      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.consume DESC"
+      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.gender, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, u.gender, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.consume DESC LIMIT 100"
     } else if (type == 2) {
-      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.bpcount DESC"
+      _sql_ = "SELECT tmp.UserId, tmp.avatar, tmp.name, tmp.consume, tmp.gender, tmp.bpcount FROM (SELECT u.id UserId, u.avatar, u.name name, u.gender, SUM(o.amount) consume, count(o.amount) bpcount FROM Users u, Orders o WHERE o.status = 1 AND o.UserId = u.id GROUP BY u.id) tmp ORDER BY tmp.bpcount DESC LIMIT 100"
     } else {
       res.json({iRet: -1, msg: `type字段类型为定义${type}`})
       return
@@ -54,6 +55,7 @@ router.get('/getTopRankUsers', (req, res, next) => {
         _tmp['name'] = qobj['name']
         _tmp['avatar'] = qobj['avatar']
         _tmp['bpcount'] = qobj['bpcount']
+        _tmp['gender'] = qobj['gender']
 
         let _lv = DataApi.getLv(_tmp['consume'] * DataApi.m2exp)
         _tmp['lv'] = _lv['lv']
@@ -111,6 +113,9 @@ router.get('/getLevel', (req, res, next) => {
 })
 
 // 进入酒吧
+// 在这里仅判断用户是否大于5级，如果大于5级且没有记录，就插一条记录进入
+// 如果有记录那么就也不做
+// 上屏更新的工作由show:getNewLamp来完成
 router.get('/landbar', (req, res, next) => {
 
   let barid = req.query.barid
@@ -123,40 +128,124 @@ router.get('/landbar', (req, res, next) => {
   }
 
   co(function *() {
-    let bar = yield Bar.find({where: {id: barid}})
-
     let user = yield User.find({where: {id: userid}})
 
+    //暂时只记录5级及以上用户的登录信息
+    let _lv = DataApi.getLv(parseInt(user.exp) * DataApi.m2exp)
+    if (_lv['lv'] < 5) {
+      res.json({iRet: -1, msg: "暂不记录小于5级用户的登录请求"})
+      return
+    }
+
+    let bar = yield Bar.find({where: {id: barid}})
+
     if (bar && user) {
-      let landInfo = yield models.LandInfo.create({userid: userid, barid: barid})
-      if (landInfo)
-        res.json({iRet: 0})
-      else
-        res.json({iRet: -1, msg: '插入landinfo失败'})
+      //找到用户登录当前酒吧的记录
+      let _record = yield models.LandInfo.findAll({
+        where: {userid: userid, barid: barid},
+        order: [['displayAt', 'DESC']]
+      })
+
+      //没有就直接插入
+      if (_record.length < 1) {
+        let landInfo = yield models.LandInfo.create({userid: userid, barid: barid})
+        if (landInfo)
+          res.json({iRet: 0, msg: '插入记录成功'})
+        else
+          res.json({iRet: -1, msg: '插入landinfo失败'})
+      } else {
+        res.json({iRet: 0, msg: '记录已存在'})
+        // 记录存在 如果当前时间与displayAt相差1小时，就更新updatedAt值
+        // let _display = _record[0].get('displayAt')
+        // let _landSpan = 60 * 60 * 1000
+        // if (_display - new Date() > _landSpan) {
+        //   models.LandInfo.update({updatedAt: new Date()}, {
+        //     where: {userid: userid, barid: barid}
+        //   })
+        //   res.json({iRet: 0, msg: '记录已存在，更新updatedAt'})
+        // } else {
+        //   res.json({iRet: 0, msg: '记录已存在，但不更新'})
+        // }
+      }
     } else {
       let msg = !bar ? `没有找到barid:${barid}` : `没有找到userid:${userid}`
       res.json({iRet: -1, msg: msg})
     }
+  }).catch((err) => {
+    res.json({iRet: -1, msg: err})
   })
 })
 
 // 获取酒吧消息列表
-router.get('/getAllMessages', (req, res, next) => {
+// router.get('/getAllMessages', (req, res, next) => {
+//   let id = req.query.id
+//   if (!/\d+/.test(id)) {
+//     res.json({iRet: -1, msg: "参数错误"})
+//     return
+//   }
+//   DataApi.getAllMessages(id).then(messages => res.send(messages))
+// })
+
+// 获取酒吧消息列表-分页 --小程序
+router.get('/getPageMessages', (req, res, next) => {
   let id = req.query.id
-  if (!/\d+/.test(id)) {
+  let limit = req.query.limit || 10
+  let offset = req.query.offset || 0
+  if (!/\d+/.test(id) || !/\d+/.test(limit) || !/\d+/.test(offset)
+    || limit > 50 || limit < 0 || offset < 0) {
     res.json({iRet: -1, msg: "参数错误"})
     return
   }
-  DataApi.getAllMessages(id).then(messages => res.send(messages))
+
+  DataApi.getPageMessages(id, limit, offset).then(
+    (data) => {
+      res.send(data)
+    }
+  )
 })
 
-// 获取最新消息
+// 小程序获取最新消息 -- 根据updatedAt时间比updatedAt大的消息 正序
 router.get('/getLatestMessages', (req, res, next) => {
-  var {barId, lastUpdated} = req.query
-  DataApi.getLatestMessages({
-    barId,
-    lastUpdated
-  }).then(messages => res.send(messages))
+  let {barId, lastUpdated} = req.query
+
+  if (!/\d+/.test(barId)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
+
+  let me = this
+
+  co(function *() {
+    // 找用户信息
+    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.id, m.msgType, m.createdAt, m.updatedAt \
+        FROM Messages m, Users u WHERE \
+        u.id = m.UserId AND m.BarId = ${barId} \
+        AND unix_timestamp(m.updatedAt) > ${(new Date(lastUpdated)).getTime() / 1000} \
+        ORDER BY m.updatedAt ASC`
+
+    let _users_result = yield sequelize.query(_sql_users)
+
+    let messages = _users_result[0].map((obj) => {
+      let tmp = _.extend({}, obj)
+      let _lv = DataApi.getLv(obj['exp'] * me.m2exp)
+      tmp['lv'] = _lv['lv']
+      return tmp
+    })
+
+    console.log(JSON.stringify(messages))
+
+    //res.json({iRet: 0, data: messages})
+    res.send(messages)
+
+  }).catch((err) => {
+    console.log('[error]@getLatestMessages:', err)
+    res.json({iRet: -1, msg: err})
+  })
+
+  // DataApi.getLatestMessages({
+  //   barId,
+  //   lastUpdated
+  // }).then(messages => res.send(messages))
 })
 
 // 发送消息
@@ -184,7 +273,7 @@ router.get('/getBapingStatus', (req, res, next) => {
 
   let _s = global._bapingStatus[barid] || "close"
 
-  res.json({iRet:0, data:{bp:_s}})
+  res.json({iRet: 0, data: {bp: _s}})
 })
 
 
@@ -352,7 +441,7 @@ const createPayMiddware = (req, res, next) => {
     })
   }).catch(err => {
     console.log('baping error', err)
-    res.json({ iRet: -1, msg : err})
+    res.json({iRet: -1, msg: err})
   })
 }
 

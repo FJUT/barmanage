@@ -30,9 +30,7 @@
       </div>
       <div class="images">
         <div class="carousel-wrap">
-          <carousel-3d
-            :autoplay="true"
-            :border="0">
+          <carousel-3d :autoplay="true" :border="0">
             <slide v-for="(item, index) in images" :index="index"><img :src="item.msgImage" alt=""></slide>
           </carousel-3d>
         </div>
