@@ -71,15 +71,21 @@
                     <h4 class="modal-title">营收详情</h4>
                   </div>
                   <div class="modal-body">
-                    <el-table :data="orderCurShow" style="width: 100%">
+                    <el-table :data="order" v-loading="orderloading" style="width: 100%">
                       <el-table-column prop="createdAt" label="消费时间" width="180"
                                        :formatter="timeformatterOrder"></el-table-column>
                       <el-table-column prop="name" label="客户昵称" width="180"></el-table-column>
-                      <el-table-column prop="gender" label="性别"></el-table-column>
+                      <el-table-column prop="gender" label="性别" :formatter="genderFormat"></el-table-column>
                       <el-table-column prop="amount" label="消费金额"></el-table-column>
+                      <el-table-column label="分配描述"  width="320">
+                        <template scope="scope">
+                          <p>微信手续费：{{scope.row.amount*0.01}} 酒吧：{{scope.row.amount*0.99*0.5}} <%= svrconf.svrname %>
+                            ：{{scope.row.amount*0.99*0.5}}</p>
+                        </template>
+                      </el-table-column>
                     </el-table>
                     <div style="height: 34px;">
-                      <el-pagination :total="order.length" :page-size="orderPerPageCount"
+                      <el-pagination :total="orderCount" :page-size="orderPerPageCount"
                                      @current-change="onOrderPageChange"
                                      style="position: absolute;right: 10px;" layout="prev, pager, next">
                       </el-pagination>
@@ -152,6 +158,8 @@
   window._jiufu_user_count = <%- JSON.stringify(userCount) %>;
   window._jiufu_wall_count = <%- JSON.stringify(wallCount) %>;
   window._jiufu_baping_count = <%- JSON.stringify(bapingCount) %>;
+  window._jiufu_total_money = <%- totalMoney%>;
+  window._jiufu_order_count = <%- orderCount%>;
 </script>
 <script src="https://map.qq.com/api/js?v=2.exp&key=77SBZ-PTGWU-7CQVS-2ECL2-Y4DWT-CMFZB"></script>
 <script src="<%= url('init.js') %>"></script>

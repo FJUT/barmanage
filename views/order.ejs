@@ -19,12 +19,12 @@
             <el-table :data="orderCurShow" style="width: 100%">
               <el-table-column prop="id" label="订单ID" width="80"></el-table-column>
               <el-table-column prop="amount" label="订单支付"  width="120"></el-table-column>
-              <el-table-column label="分配描述"  width="320">
-                <template scope="scope">
-                  <p>微信手续费：{{scope.row.amount*0.01}} 酒吧：{{scope.row.amount*0.99*0.5}} <%= svrconf.svrname %>
-                    ：{{scope.row.amount*0.99*0.5}}</p>
-                </template>
-              </el-table-column>
+              <!--<el-table-column label="分配描述"  width="320">-->
+                <!--<template scope="scope">-->
+                  <!--<p>微信手续费：{{scope.row.amount*0.01}} 酒吧：{{scope.row.amount*0.99*0.5}} <%= svrconf.svrname %>-->
+                    <!--：{{scope.row.amount*0.99*0.5}}</p>-->
+                <!--</template>-->
+              <!--</el-table-column>-->
               <el-table-column prop="MessageId" label="消息ID"></el-table-column>
               <el-table-column label="状态" class-name="" width="110">
                 <template scope="scope">

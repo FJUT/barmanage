@@ -36,14 +36,14 @@ const vm = new Vue({
 
       //订单
       order: [],
+      orderCount: 0,
       //订单每页显示数
-      orderPerPageCount: 8,
+      orderPerPageCount: 15,
       //订单总页数
       orderPages: 0,
       //订单当前显示页数
       orderPageIndex: 1,
-      //当前显示的订单
-      orderCurShow: [],
+      orderloading: false,
 
       //收入总额
       totalMoney: 0,
@@ -63,6 +63,10 @@ const vm = new Vue({
     this.wallCount = window._jiufu_wall_count
 
     this.bapingCount = window._jiufu_baping_count
+
+    this.totalMoney = window._jiufu_total_money
+
+    this.orderCount = window._jiufu_order_count
   },
   watch: {
     news: function (val) {
@@ -91,23 +95,33 @@ const vm = new Vue({
       this.$data['newsCurShow'] = this.getCurShow(this.$data['news'], val, this.$data['newsPerPageCount'])
     },
 
-    order: function (val) {
+    // order: function (val) {
+    //   //计算页数
+    //   this.$data['orderPages'] = Math.ceil(val.length % this.$data['orderPerPageCount'])
+    //
+    //   //当前展示的订单
+    //   this.$data['orderCurShow'] = this.getCurShow(this.order, this.$data['orderPageIndex'], this.$data['orderPerPageCount'])
+    // },
+
+    orderCount: function (val) {
       //计算页数
-      this.$data['orderPages'] = Math.ceil(val.length % this.$data['orderPerPageCount'])
-
-      let _total = 0.0
-      val.forEach(function (obj, i, arr) {
-        _total = _total + parseFloat(obj['amount']) * 0.99 * 0.5
-      })
-      this.totalMoney = _total.toFixed(2)
-
-      //当前展示的订单
-      this.$data['orderCurShow'] = this.getCurShow(this.order, this.$data['orderPageIndex'], this.$data['orderPerPageCount'])
+      this.orderPages = Math.ceil(val.length % this.orderPerPageCount)
     },
 
     orderPageIndex: function (val) {
-      //当前展示的新闻
-      this.$data['orderCurShow'] = this.getCurShow(this.order, val, this.$data['orderPerPageCount'])
+      let url = `/mainview/querybill?limit=${this.orderPerPageCount}&offset=${this.orderPerPageCount * ( val - 1 )}`
+      this.orderloading = true
+      $.ajax({
+        url: url,
+        success: function (json) {
+          vm.orderCount = parseInt(json['count'])
+          vm.order = json['order']
+          vm.orderloading = false
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      })
     }
   },
   methods: {
@@ -155,11 +169,11 @@ const vm = new Vue({
     },
 
     onNewsPageChange: function (val) {
-      this.$data['newsPageIndex'] = val
+      this.newsPageIndex = val
     },
 
     onOrderPageChange: function (val) {
-      this.$data['orderPageIndex'] = val
+      this.orderPageIndex = val
     },
 
     timeformatter1: function (data, target) {
@@ -177,6 +191,13 @@ const vm = new Vue({
     timeformatterOrder: function (data, target) {
       if (target['property'] == "createdAt") {
         return this.Format(new Date(data['createdAt']), 'yyyy-MM-dd hh:mm')
+      }
+    },
+
+    genderFormat: function (row, column) {
+      if (column.property == "gender") {
+        let _gender = row.gender == 2 ? "女" : "男"
+        return _gender
       }
     },
 
