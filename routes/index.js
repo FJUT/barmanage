@@ -121,7 +121,11 @@ router.post('/saveForm', (req, res) => {
   })
 })
 
-router.post('/upload', upload.single('logo'), (req, res, next) => {
+// 鉴黄接口测试
+
+const imageDecMdw = require('../middlewares/imageDetection')
+
+router.post('/upload', upload.single('logo'), imageDecMdw, (req, res, next) => {
   // console.log(req.body.address)
   // console.log(req.file)
 

@@ -2,9 +2,10 @@
  * Created by Administrator on 2017/4/15.
  */
 const ALY = require('aliyun-sdk')
+const co = require('co')
 /*
-* 参考 https://help.aliyun.com/document_detail/28428.html?spm=5176.doc50199.6.553.Dg1qil 创建key和secret
-* */
+ * 参考 https://help.aliyun.com/document_detail/28428.html?spm=5176.doc50199.6.553.Dg1qil 创建key和secret
+ * */
 const accessKeyId = 'LTAIBnvDolNCwnuw'
 const AccessKeySevcret = 'lAvBOp5JoFeb5NjhxVshbrOC3xXXlg'
 
@@ -14,6 +15,8 @@ const green = new ALY.GREEN({
   endpoint: 'http://green.cn-hangzhou.aliyuncs.com',
   apiVersion: '2016-12-16'
 })
+
+const DETECION_FAILED = '图片检测失败'
 
 const HOST = 'https://jufoinfo.com/'
 
@@ -46,15 +49,11 @@ const imageResults = (taskIds) => {
       TaskId: JSON.stringify(taskIds)
     }, (err, data) => {
       if (err) {
-        console.log('error:', err)
-        reject(err)
+        reject(new Error(DETECION_FAILED))
       }
 
       if (data.Code !== 'Success') {
-        console.log(data.Code)
-        console.log(data.Msg)
-
-        reject(new Error(data.Msg))
+        reject(new Error(DETECION_FAILED))
       }
 
       var imageDetectResults = data.ImageDetectResults.ImageDetectResult;
@@ -64,7 +63,7 @@ const imageResults = (taskIds) => {
       var status = imageDetectResultItem.Status;
 
       if ("TaskProcessSuccess" != status) {
-        reject()
+        reject(new Error(DETECION_FAILED))
         return
       }
 
@@ -75,29 +74,32 @@ const imageResults = (taskIds) => {
       var illegalResult = imageResult.IllegalResult;
 
       if (pornResult.Label == 0 && illegalResult.Label == 0) {
-        resolve()
-
-        return
+        resolve(true)
+      } else {
+        reject(new Error(DETECION_FAILED))
       }
-
-      reject()
     })
   })
 }
 
 module.exports = (req, res, next) => {
-  var url = HOST + req.file.filename
-  var urls = [url]
+  co(function*() {
+    var url = HOST + req.file.filename
+    var urls = [url]
+    var taskIds = yield imageDetection(urls)
+    var result = yield imageResults(taskIds)
 
-  imageDetection(urls)
-    .then(taskIds => {
-      return imageResults(taskIds)
-    })
-    .then(next)
+    if (result) {
+      next()
+    } else {
+      res.json({
+        iRet: -1
+      })
+    }
+  })
     .catch(err => {
       res.json({
-        iRet: -1,
-        data: '非法内容'
+        iRet: -1
       })
     })
 }
