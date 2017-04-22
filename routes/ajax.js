@@ -9,6 +9,7 @@ var {Bar, User, Message, BarPrice, Order, LandInfo, sequelize, Sequelize} = mode
 var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
+var imageDecMdw = require('../middlewares/imageDetection')
 
 // 获取酒吧列表
 router.get('/getBarList', (req, res, next) => {
@@ -206,7 +207,7 @@ router.get('/newBapingMessage', (req, res, next) => {
 })
 
 // 发送图片
-router.post('/sendImage', upload.single('file'), (req, res, next) => {
+router.post('/sendImage', upload.single('file'), imageDecMdw, (req, res, next) => {
   var {BarId, UserId} = req.body
   if (!/\d+/.test(BarId) || !/\d+/.test(UserId)) {
     res.json({iRet: -1, msg: "参数错误"})
@@ -219,7 +220,10 @@ router.post('/sendImage', upload.single('file'), (req, res, next) => {
     BarId,
     UserId
   }).then(created => {
-    res.json(created.get({plain: true}))
+    res.json({
+      iRet: 0,
+      msg: created.get({plain: true})
+    })
   })
 })
 
@@ -356,7 +360,7 @@ const createPayMiddware = (req, res, next) => {
 router.post('/sendBapingText', createPayMiddware)
 
 // 发送霸屏图片和文字
-router.post('/sendBaping', upload.single('file'), createPayMiddware)
+router.post('/sendBaping', upload.single('file'), imageDecMdw, createPayMiddware)
 
 // 接收微信回调中间件
 const responseWeixinNotifyMiddware = notifyMiddleware.getNotify().done((message, req, res, next) => {

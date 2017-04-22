@@ -88,13 +88,13 @@ module.exports = (req, res, next) => {
       next()
     } else {
       res.json({
-        iRet: -1
+        iRet: -2
       })
     }
   })
     .catch(err => {
       res.json({
-        iRet: -1
+        iRet: -2
       })
     })
 }
