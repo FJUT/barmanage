@@ -177,7 +177,7 @@ router.get('/landbar', (req, res, next) => {
   })
 })
 
-// 获取酒吧消息列表 -- 兼容API-需要在下一个版本删除
+// 获取酒吧消息列表 -- 兼容API-需要在下一个版本删除  -- 是需要根据createdAt正序
 router.get('/getAllMessages', (req, res, next) => {
   let id = req.query.id
   if (!/\d+/.test(id)) {
@@ -191,7 +191,7 @@ router.get('/getAllMessages', (req, res, next) => {
     createdAt: {
       $gt: moment().subtract('24', 'hours')
     }
-  }).then(messages => res.send(messages))
+  }, {}).then(messages => res.send(messages))
 })
 
 // 获取酒吧消息列表-分页 --小程序

@@ -55,7 +55,7 @@ router.get('/', auth, (req, res, next) => {
     let _sql_users_info = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.createdAt, m.updatedAt, m.msgVideo, m.msgType, m.id \
         FROM Messages m, Users u WHERE \
         u.id = m.UserId AND m.BarId = ${barId} \
-        ORDER BY m.id DESC limit 10`
+        ORDER BY m.createdAt ASC limit 10`
 
     let messages = yield sequelize.query(_sql_users_info)
 
@@ -165,7 +165,7 @@ router.get('/getNewMessages', (req, res, next) => {
           FROM Messages m, Users u WHERE \
           u.id = m.UserId AND m.BarId = ${barId} \
           AND m.id > ${lastMessageId} \
-          ORDER BY m.id ASC`
+          ORDER BY m.createdAt ASC`
 
     let _users_result = yield sequelize.query(_sql_users)
 
