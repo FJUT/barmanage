@@ -52,10 +52,8 @@ router.get('/', auth, (req, res, next) => {
     //messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
 
     //打开大屏幕的时候
-    let _sql_users_info = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.createdAt, m.updatedAt, m.msgVideo, m.msgType, m.id \
-        FROM Messages m, Users u WHERE \
-        u.id = m.UserId AND m.BarId = ${barId} \
-        ORDER BY m.createdAt ASC limit 10`
+    let _sql_users_info = `select u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.createdAt, m.updatedAt, m.msgVideo, m.msgType, m.id \
+      from Messages m inner join Users u on m.UserId = u.id where m.BarId = ${barId} order by m.createdAt DESC limit 10`
 
     let messages = yield sequelize.query(_sql_users_info)
 
@@ -155,6 +153,7 @@ router.post('/setMessageDisplay', (req, res, next) => {
 })
 
 // 获取最新消息
+// -大屏幕和小程序： 删除的消息不显示
 router.get('/getNewMessages', (req, res, next) => {
   const barId = req.session.barInfo.id
   const lastMessageId = req.query.lastMessageId || 0
