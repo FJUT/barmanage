@@ -177,7 +177,9 @@ router.get('/landbar', (req, res, next) => {
   })
 })
 
-// 获取酒吧消息列表 -- 兼容API-需要在下一个版本删除  -- 是需要根据createdAt正序
+// 获取酒吧消息列表 -- 兼容API-需要在下一个版本删除
+// 是需要根据createdAt正序
+// -大屏幕和小程序： 删除的消息不显示
 router.get('/getAllMessages', (req, res, next) => {
   let id = req.query.id
   if (!/\d+/.test(id)) {
