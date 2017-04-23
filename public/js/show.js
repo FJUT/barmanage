@@ -82,7 +82,7 @@ const LocalPage = {
           getDeletedMessage(ids)
             .done(res => {
               if (res.iRet == 0 && res.data.length > 0) {
-                location.reload()
+                console.log(res.data)
               }
             })
             .always(xhr => {
