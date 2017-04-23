@@ -39,7 +39,7 @@ const LocalPage = {
     let app = new Vue({
       el: '#app',
       data() {
-        var images = window.messages.filter(o => o.msgImage)
+        var images = allMessages.filter(o => o.msgImage)
         var messages = allMessages.slice(0, LIMIT)
 
         return {
@@ -105,7 +105,7 @@ const LocalPage = {
         // 获取最新消息
         pollNormalMessages() {
           const poll = () => {
-            var lastMessageId = allMessages.length > 0 ? allMessages[allMessages.length - 1].id : ''
+            var lastMessageId = Math.max.apply(Math, allMessages.map(msg => msg.id))
 
             $.ajax({
               url: '/show/getNewMessages',
@@ -131,6 +131,7 @@ const LocalPage = {
 
               // 否则初始化滚屏
               this.messages = allMessages.slice(0, LIMIT)
+              this.images = allMessages.filter(o => o.msgImage)
               if (this.messages.length > 2) {
                 this.initAutoScroll()
               }
