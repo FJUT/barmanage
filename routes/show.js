@@ -209,6 +209,7 @@ router.get('/getNewMessages', (req, res, next) => {
 //检查消息ids中包含已删除消息的id
 router.get('/getDeletedMessage', (req, res, next) => {
   const barId = req.session.barInfo.id
+  //const barId = 1
   const inArrStr = req.query['ids']
   try{
     var inArr = JSON.parse(inArrStr)
@@ -225,7 +226,9 @@ router.get('/getDeletedMessage', (req, res, next) => {
         id: {
           $in: inArr
         },
-        deletedAt: null
+        deletedAt: {
+          $ne: null
+        }
       },
       paranoid: false
     })
