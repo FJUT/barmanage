@@ -8,7 +8,7 @@ const getDeletedMessage = (ids) => {
   return $.ajax({
     url: GET_DELETED_MESSAGE,
     data: {
-      ids
+      ids: JSON.stringify(ids)
     }
   })
 }
