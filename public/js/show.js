@@ -1,7 +1,8 @@
 /**
  * Created by shinan on 2017/1/24.
  */
-var $ = window.$
+const $ = window.$
+const getDeletedMessage = require('./getDeletedMessage')
 import Vue from 'vue'
 import Carousel3d from 'vue-carousel-3d'
 
@@ -59,6 +60,35 @@ const LocalPage = {
 
         // 轮询普通消息
         this.pollNormalMessages()
+
+        // 检查删除消息
+        var ids = this.messages.map(msg => msg.id)
+        getDeletedMessage(ids)
+          .done(res => {
+            if (res.iRet == 0 && res.data.length > 0) {
+              location.reload()
+            }
+          })
+          .always(xhr => {
+            var ids = this.messages.map(msg => msg.id)
+
+            getDeletedMessage(ids)
+          });
+
+        var vm = this
+        (function checkDeletedMessage() {
+          var ids = vm.messages.map(msg => msg.id)
+
+          getDeletedMessage(ids)
+            .done(res => {
+              if (res.iRet == 0 && res.data.length > 0) {
+                location.reload()
+              }
+            })
+            .always(xhr => {
+              setTimeout(checkDeletedMessage, 5000)
+            });
+        }())
       },
       methods: {
         // 霸屏图片动画特效
