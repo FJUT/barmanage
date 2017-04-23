@@ -16,6 +16,7 @@ const _ = require('underscore')
 
 global._bapingStatus = global._bapingStatus || {}
 
+const toPlain = o => o.get({plain: true})
 
 function transDate(date) {
   var tt = new Date(date)
@@ -51,9 +52,9 @@ router.get('/', auth, (req, res, next) => {
     //var messages = yield DataApi.getAllMessages(barId)
     //messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
 
-    //打开大屏幕的时候
+    //打开大屏幕的时候： 删除的消息不显示
     let _sql_users_info = `select u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.createdAt, m.updatedAt, m.msgVideo, m.msgType, m.id \
-      from Messages m inner join Users u on m.UserId = u.id where m.BarId = ${barId} order by m.createdAt DESC limit 10`
+      from Messages m inner join Users u on m.UserId = u.id where m.BarId = ${barId} AND m.deletedAt IS NULL order by m.createdAt DESC limit 10`
 
     let messages = yield sequelize.query(_sql_users_info)
 
@@ -160,10 +161,10 @@ router.get('/getNewMessages', (req, res, next) => {
   let me = this
   co(function *() {
     // 找用户信息
-    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.createdAt, m.updatedAt, m.id, m.msgType, m.createdAt, m.updatedAt \
+    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.createdAt, m.updatedAt, m.id, m.msgType, m.createdAt \
           FROM Messages m, Users u WHERE \
           u.id = m.UserId AND m.BarId = ${barId} \
-          AND m.id > ${lastMessageId} \
+          AND m.id > ${lastMessageId} AND m.deletedAt IS NULL \
           ORDER BY m.createdAt ASC`
 
     let _users_result = yield sequelize.query(_sql_users)
@@ -200,6 +201,40 @@ router.get('/getNewMessages', (req, res, next) => {
   //     iRet: -1
   //   })
   // })
+})
+
+//检查消息ids中包含已删除消息的id
+router.get('/getDeletedMessage', (req, res, next) => {
+  const barId = req.session.barInfo.id
+  const inArrStr = req.query['ids']
+  try{
+    var inArr = JSON.parse(inArrStr)
+  } catch(e) {
+    res.json({iRet: -1, msg: e.message || e})
+    return
+  }
+
+  co(function *() {
+    let arr = yield models.Message.findAll({
+      attributes: ["id"],
+      where: {
+        BarId: barId,
+        id: {
+          $in: inArr
+        },
+        deletedAt: null
+      },
+      paranoid: false
+    })
+
+    arr = arr.map((obj)=>{
+      let _t = obj.get({plain:true})
+      return _t["id"]
+    })
+    res.json({iRet: 0, data: arr})
+  }).catch((err) => {
+    res.json({iRet: -1, msg: err.message})
+  })
 })
 
 router.get('/getNewLamp', (req, res, next) => {
