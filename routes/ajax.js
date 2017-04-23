@@ -225,7 +225,7 @@ router.get('/getLatestMessages', (req, res, next) => {
 
   co(function *() {
     // 找用户信息
-    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.id, m.msgType, m.createdAt, m.updatedAt \
+    let _sql_users = `SELECT u.avatar UserAvatar, u.id UserId, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.id, m.msgType, m.createdAt, m.updatedAt \
         FROM Messages m, Users u WHERE \
         u.id = m.UserId AND m.BarId = ${barId} \
         AND unix_timestamp(m.updatedAt) > ${(new Date(lastUpdated)).getTime() / 1000} \

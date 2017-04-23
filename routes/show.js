@@ -16,6 +16,34 @@ const _ = require('underscore')
 
 global._bapingStatus = global._bapingStatus || {}
 
+
+function transDate(date) {
+  var tt = new Date(date)
+  var days = parseInt((new Date().getTime() - date) / 86400000);
+  var today = new Date().getDate();
+  var year = tt.getFullYear();
+  var mouth = tt.getMonth() + 1;
+  var day = tt.getDate();
+  var time = tt.getHours() < 10 ? "0" + tt.getHours() : tt.getHours();
+  var min = tt.getMinutes() < 10 ? "0" + tt.getMinutes() : tt.getMinutes();
+  var result, offset;
+  offset = Math.abs(today - day);
+  if (days < 4 && offset < 4) {
+    if (offset === 0) {
+      result = "今天 " + time + ":" + min;
+    } else if (offset === 1) {
+      result = "昨天 " + time + ":" + min;
+    } else if (offset === 2) {
+      result = "前天 " + time + ":" + min;
+    }
+  } else {
+    result = year + "-" + mouth + "-" + day + " " + time + ":" + min;
+  }
+
+  return result
+}
+
+
 router.get('/', auth, (req, res, next) => {
   let barId = req.session.barInfo.id
   co(function*() {
@@ -24,7 +52,7 @@ router.get('/', auth, (req, res, next) => {
     //messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
 
     //打开大屏幕的时候
-    let _sql_users_info = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.msgType, m.id \
+    let _sql_users_info = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.createdAt, m.updatedAt, m.msgVideo, m.msgType, m.id \
         FROM Messages m, Users u WHERE \
         u.id = m.UserId AND m.BarId = ${barId} \
         ORDER BY m.id DESC limit 10`
@@ -46,6 +74,8 @@ router.get('/', auth, (req, res, next) => {
           "msgVideo": null,
           "msgType": 0,
           "id": 0,
+          "createdAt": new Date.now(),
+          "updatedAt": new Date.now(),
           "lv": 20
         },
         {
@@ -58,6 +88,8 @@ router.get('/', auth, (req, res, next) => {
           "msgVideo": null,
           "msgType": 0,
           "id": 0,
+          "createdAt": new Date.now(),
+          "updatedAt": new Date.now(),
           "lv": 20
         }
       ]
@@ -65,8 +97,14 @@ router.get('/', auth, (req, res, next) => {
       messages.unshift(defaultMsgs)
     }
 
+    let tmsg = messages[0].map(function (obj) {
+      let tmp = _.extend({}, obj)
+      tmp['createdAt'] = transDate(new Date(tmp['createdAt']))
+      return tmp
+    })
+
     res.render('show', {
-      messages: messages[0]
+      messages: tmsg
     })
   }).catch(next)
 })
@@ -123,7 +161,7 @@ router.get('/getNewMessages', (req, res, next) => {
   let me = this
   co(function *() {
     // 找用户信息
-    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.id, m.msgType, m.createdAt, m.updatedAt \
+    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.createdAt, m.updatedAt, m.id, m.msgType, m.createdAt, m.updatedAt \
           FROM Messages m, Users u WHERE \
           u.id = m.UserId AND m.BarId = ${barId} \
           AND m.id > ${lastMessageId} \
@@ -131,10 +169,13 @@ router.get('/getNewMessages', (req, res, next) => {
 
     let _users_result = yield sequelize.query(_sql_users)
 
+    moment.locale("zh")
+
     let messages = _users_result[0].map((obj) => {
       let tmp = _.extend({}, obj)
       let _lv = DataApi.getLv(obj['exp'] * me.m2exp)
       tmp['lv'] = _lv['lv']
+      tmp['createdAt'] = transDate(new Date(tmp['createdAt']))
       return tmp
     })
 
