@@ -62,19 +62,6 @@ const LocalPage = {
         this.pollNormalMessages()
 
         // 检查删除消息
-        var ids = this.messages.map(msg => msg.id)
-        getDeletedMessage(ids)
-          .done(res => {
-            if (res.iRet == 0 && res.data.length > 0) {
-              location.reload()
-            }
-          })
-          .always(xhr => {
-            var ids = this.messages.map(msg => msg.id)
-
-            getDeletedMessage(ids)
-          });
-
         var vm = this
         (function checkDeletedMessage() {
           var ids = vm.messages.map(msg => msg.id)
