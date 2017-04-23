@@ -69,6 +69,8 @@ const LocalPage = {
             .done(res => {
               if (res.iRet == 0 && res.data.length > 0) {
                 console.log(res.data)
+
+                location.reload()
               }
             })
             .always(xhr => {
