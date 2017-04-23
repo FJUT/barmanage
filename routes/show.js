@@ -52,9 +52,12 @@ router.get('/', auth, (req, res, next) => {
     //var messages = yield DataApi.getAllMessages(barId)
     //messages.forEach(msg => msg.createdAt = moment(msg.createdAt).format('HH:mm'))
 
-    //打开大屏幕的时候： 删除的消息不显示
-    let _sql_users_info = `select u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.createdAt, m.updatedAt, m.msgVideo, m.msgType, m.id \
-      from Messages m inner join Users u on m.UserId = u.id where m.BarId = ${barId} AND m.deletedAt IS NULL order by m.createdAt DESC limit 10`
+    // 打开大屏幕的时候
+    // 删除的消息不显示
+    // 显示历史消息10条
+    let _sql_users_info = `select m.id, m.msgText, u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgImage, m.createdAt, m.updatedAt, m.msgVideo, m.msgType \
+      from Messages m inner join Users u on m.UserId = u.id \
+      where m.BarId = ${barId} AND m.deletedAt IS NULL order by m.createdAt DESC limit 10`
 
     let messages = yield sequelize.query(_sql_users_info)
 
@@ -162,8 +165,8 @@ router.get('/getNewMessages', (req, res, next) => {
   co(function *() {
     // 找用户信息
     let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.createdAt, m.updatedAt, m.id, m.msgType, m.createdAt \
-          FROM Messages m, Users u WHERE \
-          u.id = m.UserId AND m.BarId = ${barId} \
+          FROM Messages m, INNER JOIN Users u ON m.UserId = u.id  \
+          WHERE u.id = m.UserId AND m.BarId = ${barId} \
           AND m.id > ${lastMessageId} AND m.deletedAt IS NULL \
           ORDER BY m.createdAt ASC`
 
