@@ -189,7 +189,7 @@ router.get('/getAllMessages', (req, res, next) => {
     BarId: id,
     isPayed: true,
     createdAt: {
-      $gt: moment().subtract('1', 'hours')
+      $gt: moment().subtract('24', 'hours')
     }
   }).then(messages => res.send(messages))
 })
