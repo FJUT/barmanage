@@ -105,7 +105,7 @@ const LocalPage = {
         // 获取最新消息
         pollNormalMessages() {
           const poll = () => {
-            var lastMessageId = allMessages.length > 0 ? allMessages[allMessages.length - 1].id : ''
+            var lastMessageId = Math.max.apply(Math, allMessages.map(msg => msg.id))
 
             $.ajax({
               url: '/show/getNewMessages',
