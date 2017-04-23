@@ -10,6 +10,7 @@ var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
 var imageDecMdw = require('../middlewares/imageDetection')
+const moment = require('moment')
 const _ = require('underscore')
 
 // 获取酒吧列表
@@ -176,15 +177,22 @@ router.get('/landbar', (req, res, next) => {
   })
 })
 
-// 获取酒吧消息列表
-// router.get('/getAllMessages', (req, res, next) => {
-//   let id = req.query.id
-//   if (!/\d+/.test(id)) {
-//     res.json({iRet: -1, msg: "参数错误"})
-//     return
-//   }
-//   DataApi.getAllMessages(id).then(messages => res.send(messages))
-// })
+// 获取酒吧消息列表 -- 兼容API-需要在下一个版本删除
+router.get('/getAllMessages', (req, res, next) => {
+  let id = req.query.id
+  if (!/\d+/.test(id)) {
+    res.json({iRet: -1, msg: "参数错误"})
+    return
+  }
+
+  DataApi.getMessages({
+    BarId: id,
+    isPayed: true,
+    createdAt: {
+      $gt: moment().subtract('1', 'hours')
+    }
+  }).then(messages => res.send(messages))
+})
 
 // 获取酒吧消息列表-分页 --小程序
 router.get('/getPageMessages', (req, res, next) => {
