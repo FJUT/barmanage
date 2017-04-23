@@ -197,6 +197,8 @@ router.get('/getAllMessages', (req, res, next) => {
 })
 
 // 获取酒吧消息列表-分页 --小程序
+// 是需要根据createdAt正序
+// -大屏幕和小程序： 删除的消息不显示
 router.get('/getPageMessages', (req, res, next) => {
   let id = req.query.id
   let limit = req.query.limit || 10
