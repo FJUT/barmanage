@@ -1,0 +1,29 @@
+1，正式环境更新：
+正式服使用的数据库是：weizhong
+
+地址在：/www
+使用 pm2 list 查看服务器上只有两个pm2进程，一个是bar（正式），一个是bar-test（这个是测试）
+bar的id是0
+
+首先使用命令：pm2 stop 0 停止服务
+在目录:/www下运行 git pull拉取代码
+
+如果需要，请运行npm run build
+
+然后启动:pm2 start 0  启动正式服务
+
+
+2，测试服务更新：
+
+测试服使用的数据库是：database_url
+
+地址在：/var/www/node/test/barmanage
+使用 pm2 list 查看服务器上只有两个pm2进程，一个是bar（正式），一个是bar-test（这个是测试）
+bar-test的id是2
+
+使用命令：pm2 stop 2 停止test服务
+在目录:/var/www/node/test/barmanage下运行 git pull拉取代码
+
+如果需要，请运行npm run build
+
+然后启动:pm2 start 2  启动test服务
