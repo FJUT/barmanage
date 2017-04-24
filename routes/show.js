@@ -164,15 +164,12 @@ router.get('/getNewMessages', (req, res, next) => {
   let me = this
   co(function *() {
     // 找用户信息
-    let _sql_users = `SELECT u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgText, m.msgImage, m.msgVideo, m.createdAt, m.updatedAt, m.id, m.msgType, m.createdAt \
-          FROM Messages m, INNER JOIN Users u ON m.UserId = u.id  \
-          WHERE u.id = m.UserId AND m.BarId = ${barId} \
-          AND m.id > ${lastMessageId} AND m.deletedAt IS NULL \
+    let _sql_users = `SELECT m.id, m.msgText, m.UserId, u.avatar UserAvatar, u.name UserName, u.gender, u.exp, m.msgImage, m.msgVideo, m.createdAt, m.updatedAt, m.msgType, m.createdAt \
+          FROM Messages m INNER JOIN Users u ON m.UserId = u.id  \
+          WHERE m.BarId = ${barId} AND m.id > ${lastMessageId} AND m.deletedAt IS NULL \
           ORDER BY m.createdAt ASC`
 
     let _users_result = yield sequelize.query(_sql_users)
-
-    moment.locale("zh")
 
     let messages = _users_result[0].map((obj) => {
       let tmp = _.extend({}, obj)
