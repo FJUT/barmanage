@@ -240,7 +240,7 @@ router.get('/getLatestMessages', (req, res, next) => {
 
     let messages = _users_result[0].map((obj) => {
       let tmp = _.extend({}, obj)
-      let _lv = DataApi.getLv(obj['exp'] * me.m2exp)
+      let _lv = DataApi.getLv(obj['exp'] * DataApi.m2exp)
       tmp['lv'] = _lv['lv']
       return tmp
     })
