@@ -1,7 +1,7 @@
 .idea/
 .vscode/
 cers/
-/config/dbconf.json
+config/dbconf.json
 node_modules/
 uploads/
 release/
