@@ -76,8 +76,8 @@ router.get('/', auth, (req, res, next) => {
           "msgVideo": null,
           "msgType": 0,
           "id": 0,
-          "createdAt": new Date.now(),
-          "updatedAt": new Date.now(),
+          "createdAt": Date.now(),
+          "updatedAt": Date.now(),
           "lv": 20
         },
         {
@@ -90,8 +90,8 @@ router.get('/', auth, (req, res, next) => {
           "msgVideo": null,
           "msgType": 0,
           "id": 0,
-          "createdAt": new Date.now(),
-          "updatedAt": new Date.now(),
+          "createdAt": Date.now(),
+          "updatedAt": Date.now(),
           "lv": 20
         }
       ]

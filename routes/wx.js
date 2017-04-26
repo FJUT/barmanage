@@ -1,6 +1,7 @@
 /**
  * Created by shinan on 2017/2/26.
  */
+const fs = require("fs");
 const express = require("express");
 const randomstring = require("randomstring");
 const router = express.Router();
@@ -76,24 +77,35 @@ router.post("/saveUserToDb", (req, res, next) => {
 });
 
 // 获取二维码
-router.get("qrcode", (req, res, next) => {
+router.get("/qrcode", (req, res, next) => {
   const expressRes = res;
+  const barId = req.session.barInfo.id;
   const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${APP_ID}&secret=${APP_SECRET}`;
   fetch(url)
     .then(res => res.json())
     .then(json => {
       let { access_token, expires_in } = json;
       let url = `https://api.weixin.qq.com/wxa/getwxacode?access_token=${access_token}`;
+      let query = JSON.stringify({
+        path: "pages/index/index?barId=" + barId,
+        width: 344
+      });
+
       return fetch(url, {
         method: "POST",
-        data: {
-          path: "pages/index?barId=" + req.session.barInfo.id,
-          width: 220
-        }
+        body: query
       });
     })
-    .then(res => {
-      expressRes.end(res);
+    .then(res => res.buffer())
+    .then(buff => {
+      // expressRes.end(buff);
+
+      fs.writeFile(`./uploads/qrs/qrcode_${barId}.jpg`, buff, err => {
+        expressRes.end(buff);
+      });
+    })
+    .catch(err => {
+      console.log(err);
     });
 });
 

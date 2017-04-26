@@ -1,40 +1,43 @@
-const fs = require('fs');
-const express = require('express');
+const fs = require("fs");
+const express = require("express");
 const router = express.Router();
-const models = require('../models')
-const sha1 = require('../lib/sha1')
-const upload = require('../middlewares/upload')
-const auth = require('../middlewares/auth')
-const Token = require('../lib/Token')
-const co = require('co')
+const models = require("../models");
+const sha1 = require("../lib/sha1");
+const upload = require("../middlewares/upload");
+const auth = require("../middlewares/auth");
+const Token = require("../lib/Token");
+const co = require("co");
+
+// 获取二维码
+const getQrCode = require("../lib/weixinQrcode");
 
 /* GET home page. */
-router.get('/', (req, res, next) => {
-  res.redirect('/mainview')
-})
+router.get("/", (req, res, next) => {
+  res.redirect("/mainview");
+});
 
-router.post('/register', (req, res, next) => {
+router.post("/register", (req, res, next) => {
   if (!req.xhr) {
-    next(new Error('404'))
-    return
+    next(new Error("404"));
+    return;
   }
 
   co(function*() {
-    let {phonenumber, password} = req.body
-    let Bar = models.Bar
+    let { phonenumber, password } = req.body;
+    let Bar = models.Bar;
     let result = yield Bar.findAndCount({
       where: {
         phonenumber: phonenumber
       }
-    })
+    });
 
     if (result.count > 0) {
       res.json({
         iRet: -1,
-        message: '该手机号已经注册过'
-      })
+        message: "该手机号已经注册过"
+      });
 
-      return
+      return;
     }
 
     let created = yield models.Bar.findOrCreate({
@@ -42,20 +45,27 @@ router.post('/register', (req, res, next) => {
         phonenumber,
         password: sha1(password)
       }
-    })
+    });
 
-    res.json({
-      iRet: 0,
-      message: '注册成功'
-    })
-  }).catch(next)
-})
+    getQrCode(created.id)
+      .then(() => {
+        res.json({
+          iRet: 0,
+          message: "注册成功"
+        });
+      })
+      .catch(err => {
+        res.json({
+          iRet: -1,
+          message: "二维码生成失败"
+        });
+      });
+  }).catch(next);
+});
 
-router.get('/form', auth, (req, res, next) => {
-
-  res.render('form', {barInfo: res.locals.barInfo})
-
-})
+router.get("/form", auth, (req, res, next) => {
+  res.render("form", { barInfo: res.locals.barInfo });
+});
 
 // router.get('/mainview', auth, (req, res, next) => {
 //
@@ -102,65 +112,72 @@ router.get('/form', auth, (req, res, next) => {
 //   })
 // })
 
-router.post('/saveForm', (req, res) => {
-  var {barInfo} = req.body
+router.post("/saveForm", (req, res) => {
+  var { barInfo } = req.body;
 
-  models.Bar.update(Object.assign({}, barInfo), {
-    where: {
-      id: barInfo.id
-    }
-  }).then(count => {
-    return models.Bar.findOne({where: {id: barInfo.id}})
-  }).then(row => {
-    // 更新session
-    req.session.barInfo = row.get({plain: true})
-
-    res.json({
-      iRet: 0
+  models.Bar
+    .update(Object.assign({}, barInfo), {
+      where: {
+        id: barInfo.id
+      }
     })
-  })
-})
+    .then(count => {
+      return models.Bar.findOne({ where: { id: barInfo.id } });
+    })
+    .then(row => {
+      // 更新session
+      req.session.barInfo = row.get({ plain: true });
+
+      res.json({
+        iRet: 0
+      });
+    });
+});
 
 // 鉴黄接口测试
 
-const imageDecMdw = require('../middlewares/imageDetection')
+const imageDecMdw = require("../middlewares/imageDetection");
 
-router.post('/upload', upload.single('logo'), imageDecMdw, (req, res, next) => {
+router.post("/upload", upload.single("logo"), imageDecMdw, (req, res, next) => {
   // console.log(req.body.address)
   // console.log(req.file)
 
   res.json({
     iRet: 0,
     url: req.file.filename,
-    message: 'upload ready'
-  })
-})
+    message: "upload ready"
+  });
+});
 
-router.post('/uploadMulti', upload.array('photos'), (req, res, next) => {
+router.post("/uploadMulti", upload.array("photos"), (req, res, next) => {
   // console.log(req.files)
   res.json({
     iRet: 0,
     photos: req.files.map(file => file.filename),
-    message: 'upload ready'
-  })
-})
+    message: "upload ready"
+  });
+});
 
-router.get('/logout', (req, res, next) => {
-  res.clearCookie('token')
-  delete req.session.barInfo
-  res.redirect('/')
-})
+router.get("/logout", (req, res, next) => {
+  res.clearCookie("token");
+  delete req.session.barInfo;
+  res.redirect("/");
+});
 
-router.post('/feedback', auth, (req, res) => {
-  let barId = req.session.barInfo.id
-  let {content} = req.body
-  models.Feedback.create({
-    content: content, BarId: barId
-  }).then(function () {
-    res.json({iRet: 0})
-  }).catch(function (err) {
-    res.json({iRet: -1, err: err})
-  })
-})
+router.post("/feedback", auth, (req, res) => {
+  let barId = req.session.barInfo.id;
+  let { content } = req.body;
+  models.Feedback
+    .create({
+      content: content,
+      BarId: barId
+    })
+    .then(function() {
+      res.json({ iRet: 0 });
+    })
+    .catch(function(err) {
+      res.json({ iRet: -1, err: err });
+    });
+});
 
 module.exports = router;
