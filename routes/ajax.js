@@ -233,7 +233,7 @@ router.get('/getLatestMessages', (req, res, next) => {
         FROM Messages m, Users u WHERE \
         u.id = m.UserId AND m.BarId = ${barId} \
         and m.deletedAt is null \
-        and m.isPayed = 1 \
+        and m.isPayed = 1 and m.isDisplay = 0 \
         AND unix_timestamp(m.updatedAt) > ${(new Date(lastUpdated)).getTime() / 1000} \
         ORDER BY m.updatedAt ASC`
 
