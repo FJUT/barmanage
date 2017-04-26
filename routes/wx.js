@@ -1,18 +1,18 @@
 /**
  * Created by shinan on 2017/2/26.
  */
-const express = require('express')
-const randomstring = require('randomstring')
-const router = express.Router()
-const models = require('../models')
-const {User} = models
-const querystring = require('querystring')
-const fetch = require('node-fetch')
-const APP_ID = 'wx06a1ff0e6eb6505a'
-const MCH_ID = '1454040702'
-const APP_SECRET = '70603dba83c47f0700b9107a630f49cb'
-const WX_SESSION_KEY_URL = 'https://api.weixin.qq.com/sns/jscode2session'
-const WXBizDataCrypt = require('../lib/WXBizDataCrypt')
+const express = require("express");
+const randomstring = require("randomstring");
+const router = express.Router();
+const models = require("../models");
+const { User } = models;
+const querystring = require("querystring");
+const fetch = require("node-fetch");
+const APP_ID = "wx06a1ff0e6eb6505a";
+const MCH_ID = "1454040702";
+const APP_SECRET = "70603dba83c47f0700b9107a630f49cb";
+const WX_SESSION_KEY_URL = "https://api.weixin.qq.com/sns/jscode2session";
+const WXBizDataCrypt = require("../lib/WXBizDataCrypt");
 
 /*
  // 测试代码
@@ -25,30 +25,28 @@ const WXBizDataCrypt = require('../lib/WXBizDataCrypt')
  */
 
 // 通过code换取openid和session_key
-router.get('/getOpenidAndSessionKey', (req, res) => {
-  var JSCODE = req.query.JSCODE
+router.get("/getOpenidAndSessionKey", (req, res) => {
+  var JSCODE = req.query.JSCODE;
 
   var str = querystring.stringify({
     appid: APP_ID,
     secret: APP_SECRET,
     js_code: JSCODE,
-    grant_type: 'authorization_code'
-  })
+    grant_type: "authorization_code"
+  });
 
-  var url = WX_SESSION_KEY_URL + '?' + str
+  var url = WX_SESSION_KEY_URL + "?" + str;
 
-  fetch(url)
-    .then(res => res.json())
-    .then(json => {
-      res.json(json)
-    })
-})
+  fetch(url).then(res => res.json()).then(json => {
+    res.json(json);
+  });
+});
 
 // 检查用户是否在数据库中，如不存在则强行入库
-router.post('/saveUserToDb', (req, res, next) => {
-  var {encryptedData, iv, session_key} = req.body
-  var pc = new WXBizDataCrypt(APP_ID, session_key)
-  var data = pc.decryptData(encryptedData, iv)
+router.post("/saveUserToDb", (req, res, next) => {
+  var { encryptedData, iv, session_key } = req.body;
+  var pc = new WXBizDataCrypt(APP_ID, session_key);
+  var data = pc.decryptData(encryptedData, iv);
 
   User.findOrCreate({
     where: {
@@ -63,16 +61,40 @@ router.post('/saveUserToDb', (req, res, next) => {
       province: data.province,
       wx: JSON.stringify(data)
     }
-  }).then(ret => {
-    res.json({
-      iRet: 0,
-      userInfo: ret[0].get({plain: true})
-    })
-  }).catch(err => {
-    res.json({
-      iRet: -1
-    })
   })
-})
+    .then(ret => {
+      res.json({
+        iRet: 0,
+        userInfo: ret[0].get({ plain: true })
+      });
+    })
+    .catch(err => {
+      res.json({
+        iRet: -1
+      });
+    });
+});
 
-module.exports = router
+// 获取二维码
+router.get("qrcode", (req, res, next) => {
+  const expressRes = res;
+  const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${APP_ID}&secret=${APP_SECRET}`;
+  fetch(url)
+    .then(res => res.json())
+    .then(json => {
+      let { access_token, expires_in } = json;
+      let url = `https://api.weixin.qq.com/wxa/getwxacode?access_token=${access_token}`;
+      return fetch(url, {
+        method: "POST",
+        data: {
+          path: "pages/index?barId=" + req.session.barInfo.id,
+          width: 220
+        }
+      });
+    })
+    .then(res => {
+      expressRes.end(res);
+    });
+});
+
+module.exports = router;
