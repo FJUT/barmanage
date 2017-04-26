@@ -19,10 +19,17 @@
                   <img class="msg-avatar" :src="item.UserAvatar" alt="">
                   <div class="msg-content">
                       <span class="msg-user-name">{{item.UserName}}</span>
+                      <img v-if="item.gender == 1" src="images/male.png">
+                      <img v-else-if="item.gender == 2" src="images/female.png">
+                      <span class="msg-user-level">LV {{item.lv}}</span>
                       <span class="msg-created">{{item.createdAt}}</span>
-                      <div class="msg-text">
-                          <p v-if="item.msgType == 0">{{item.msgText}}</p>
-                          <img v-else :src="item.msgImage">
+
+
+                    <div class="msg-text">
+                          <span v-if="item.msgType == 2" class="msg-text-bp" >重金霸屏{{item.seconds}}秒：{{item.msgText}}</span>
+                          <br v-if="item.msgType == 2" />
+                          <p v-else-if="item.msgType == 0">{{item.msgText}}</p>
+                          <img v-if="item.msgImage" :src="item.msgImage">
                       </div>
                   </div>
               </div>

@@ -96,7 +96,25 @@ body {
   color: #FFF;
   margin-top: 10px;
 }
-
+.msg-user-level {
+  background: #d14580;
+  padding: 0 10px;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 24px;
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  top: -20px;
+  left: 10px;
+  margin-left: 10px;
+}
+.msg-text-bp{
+  font-weight: bold;
+  font-size: 38px;
+  line-height: 48px;
+  color: #ff8c00;
+}
 /*用户等级*/
 .bp-user-level {
   background: #d14580;
