@@ -31,7 +31,7 @@ function transDate(date) {
   offset = Math.abs(today - day);
   if (days < 4 && offset < 4) {
     if (offset === 0) {
-      result = "今天 " + time + ":" + min;
+      result = time + ":" + min;
     } else if (offset === 1) {
       result = "昨天 " + time + ":" + min;
     } else if (offset === 2) {
