@@ -1,11 +1,11 @@
 /**
  * Created by Administrator on 2017/2/19.
  */
-var express = require('express')
+var express = require("express")
 var router = express.Router()
-var co = require('co')
-var models = require('../models')
-var {Bar, User, Message, BarPrice, Order, LandInfo, sequelize, Sequelize} = models
+var co = require("co")
+var models = require("../models")
+var {Bar, User, Message, BarPrice, Order,BlackList, LandInfo, sequelize, Sequelize} = models
 var upload = require('../middlewares/upload')
 var DataApi = require('../lib/DataApi')
 var {paymentInstance, notifyMiddleware} = require('../lib/pay')
@@ -119,6 +119,7 @@ router.get('/getLevel', (req, res, next) => {
 // 上屏更新的工作由show:getNewLamp来完成
 router.get('/landbar', (req, res, next) => {
 
+
   let barid = req.query.barid
 
   let userid = req.query.userid
@@ -142,6 +143,7 @@ router.get('/landbar', (req, res, next) => {
 
     if (bar && user) {
       //找到用户登录当前酒吧的记录
+
       let _record = yield models.LandInfo.findAll({
         where: {userid: userid, barid: barid},
         order: [['displayAt', 'DESC']]
@@ -264,16 +266,33 @@ router.get('/getLatestMessages', (req, res, next) => {
 
 // 发送消息
 router.post('/sendMessage', (req, res, next) => {
-  var {BarId, msgText, UserId} = req.body
+  var {BarId, msgText, UserId} = req.body;
 
-  Message.create({
-    msgType: 0,
-    msgText: msgText,
-    isPayed: true,
-    BarId: BarId,
-    UserId: UserId
-  }).then(created => {
-    res.json(created.get({plain: true}))
+  co(function*() {
+    // 判断是否在黑名单
+    var blackCount = yield models.BlackList.count({
+      where: {
+        BarId: BarId,
+        UserId: UserId
+      }
+    });
+
+    if (blackCount > 0)
+    {
+      res.json({iRet:-3, msg:`您已被该酒吧列为黑名单`});
+      return
+    }
+
+    Message.create({
+      msgType: 0,
+      msgText: msgText,
+      isPayed: true,
+      BarId: BarId,
+      UserId: UserId
+    }).then(created => {
+      res.json(created.get({plain: true}))
+    })
+
   })
 })
 
@@ -312,22 +331,41 @@ router.get('/newBapingMessage', (req, res, next) => {
 // 发送图片
 router.post('/sendImage', upload.single('file'), imageDecMdw, (req, res, next) => {
   var {BarId, UserId} = req.body
+
   if (!/\d+/.test(BarId) || !/\d+/.test(UserId)) {
     res.json({iRet: -1, msg: "参数错误"})
     return
   }
-  Message.create({
-    msgType: 1,
-    msgImage: req.file.filename,
-    isPayed: true,
-    BarId,
-    UserId
-  }).then(created => {
-    res.json({
-      iRet: 0,
-      msg: created.get({plain: true})
+
+  co(function*() {
+    // 判断是否在黑名单
+    var blackCount = yield models.BlackList.count({
+      where: {
+        BarId: BarId,
+        UserId: UserId
+      }
+    });
+
+    if (blackCount > 0) {
+      res.json({iRet: -3, msg: `您已被该酒吧列为黑名单`});
+      return
+    }
+
+    Message.create({
+      msgType: 1,
+      msgImage: req.file.filename,
+      isPayed: true,
+      BarId,
+      UserId
+    }).then(created => {
+      res.json({
+        iRet: 0,
+        msg: created.get({plain: true})
+      })
     })
+
   })
+
 })
 
 // 获取霸屏价格
@@ -401,6 +439,21 @@ const createPayMiddware = (req, res, next) => {
   })
 
   co(function*() {
+
+    // 判断是否在黑名单
+    var blackCount = yield models.BlackList.count({
+      where: {
+        BarId: BarId,
+        UserId: UserId
+      }
+    });
+
+    if (blackCount > 0)
+    {
+      res.json({iRet:-3, msg:`您已被该酒吧列为黑名单`});
+      return
+    }
+
     // 插入消息表
     var createdMessage = yield Message.create({
       msgType: 2,
