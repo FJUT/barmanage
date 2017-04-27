@@ -1,11 +1,11 @@
 /**
  * Created by 99171 on 2017/1/19.
  */
-const NAME_DEFAULT = '酒吧名称'
-const LOGO_DEFAULT = 'logo-default.png'
+const NAME_DEFAULT = "酒吧名称";
+const LOGO_DEFAULT = "logo-default.png";
 
 module.exports = (sequelize, DataTypes) => {
-  var Bar = sequelize.define('Bar', {
+  var Bar = sequelize.define("Bar", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     address: {
       type: DataTypes.STRING,
-      defaultValue: ''
+      defaultValue: ""
     },
     bussinesshours: {
       type: DataTypes.STRING
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER
     },
     photos: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
     summary: {
       type: DataTypes.STRING
@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
     screenBackImage: {
       type: DataTypes.STRING
     }
-  })
+  });
 
-  return Bar
-}
+  return Bar;
+};
