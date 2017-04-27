@@ -2,15 +2,15 @@
  * Created by dengdongdong on 2017/4/5.
  */
 
-const Vue = require('vue')
-const $ = require('jquery')
+const Vue = require("vue");
+const $ = require("jquery");
 
-import Element from 'element-ui'
+import Element from "element-ui";
 
-Vue.use(Element)
+Vue.use(Element);
 
 const vm = new Vue({
-  el: '#app',
+  el: "#app",
   data: function() {
     return {
       err: window.error_message,
@@ -24,59 +24,87 @@ const vm = new Vue({
       //user当前显示页数
       userPageIndex: 1,
       //当前显示的订单
-      userCurShow: [],
-    }
+      userCurShow: []
+    };
   },
-  mounted: function () {
+  mounted: function() {
     this.user = window._jiufu_user;
   },
   watch: {
-    user:function (val) {
+    user: function(val) {
       //计算页数
-      this.userPages = Math.ceil(val.length % this.userPerPageCount)
+      this.userPages = Math.ceil(val.length % this.userPerPageCount);
 
       //当前展示的用户
-      this.userCurShow = this.getCurShow(val, this.userPageIndex, this.userPerPageCount)
+      this.userCurShow = this.getCurShow(
+        val,
+        this.userPageIndex,
+        this.userPerPageCount
+      );
     },
 
-    userPageIndex: function (val) {
+    userPageIndex: function(val) {
       //当前展示的用户
-      this.userCurShow = this.getCurShow(this.user, this.userPageIndex, this.userPerPageCount)
+      this.userCurShow = this.getCurShow(
+        this.user,
+        this.userPageIndex,
+        this.userPerPageCount
+      );
     }
   },
   methods: {
-    userClick:function () {
-    },
+    userClick: function() {},
 
-    genderformatter: function (data, target) {
-      if (target['property'] == "gender") {
-        return data['gender'] == 2 ? "女": "男"
+    genderformatter: function(data, target) {
+      if (target["property"] == "gender") {
+        return data["gender"] == 2 ? "女" : "男";
       }
     },
 
-    getCurShow: function (target, curIndex, numPerPage) {
-      let _target = target//this.$data['news']
-      let _curRet = []
-      let _curPageIndex = curIndex //this.$data['newsPageIndex']
-      let _numPerPage = numPerPage //this.$data['newsPerPageCount']
+    getCurShow: function(target, curIndex, numPerPage) {
+      let _target = target; //this.$data['news']
+      let _curRet = [];
+      let _curPageIndex = curIndex; //this.$data['newsPageIndex']
+      let _numPerPage = numPerPage; //this.$data['newsPerPageCount']
       if (_target.length < _numPerPage) {
-        $.extend(true, _curRet, _target)
+        $.extend(true, _curRet, _target);
       } else {
         for (let _it in _target) {
-          if (_it >= (_curPageIndex - 1) * _numPerPage && _it < _curPageIndex * _numPerPage) {
-            _curRet.push(_target[_it])
+          if (
+            _it >= (_curPageIndex - 1) * _numPerPage &&
+            _it < _curPageIndex * _numPerPage
+          ) {
+            _curRet.push(_target[_it]);
           }
         }
       }
-      return _curRet
+      return _curRet;
     },
 
-    onUserPageChange: function (val) {
-      this.$data['userPageIndex'] = val
+    onUserPageChange: function(val) {
+      this.$data["userPageIndex"] = val;
     },
 
-    handleDelete: function (index, rowData) {
-      console.log(rowData)
+    handleDelete: function(index, rowData) {
+      console.log(rowData);
+    },
+
+    addBlack(row) {
+      let isAdd = row.isBlack ? 0 : 1;
+
+      $.ajax({
+        url: "/blacklist/updateBlackList",
+        type: "post",
+        dataType: "json",
+        data: {
+          isAdd,
+          userId: row.id
+        }
+      }).done(res => {
+        if (res.iRet == 0) {
+          location.reload();
+        }
+      });
     }
   }
-})
+});
