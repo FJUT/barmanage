@@ -58,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     screenBackImage: {
       type: DataTypes.STRING
+    },
+    visable: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
     }
   });
 
