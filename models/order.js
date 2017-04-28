@@ -3,7 +3,7 @@
 //由于有多种订单类型，添加tpye字段
 
 module.exports = (sequelize, DataTypes) => {
-  var Order = sequelize.define('Order', {
+  var Order = sequelize.define("Order", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -17,20 +17,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    type: { //0：霸屏消息
+    type: {
+      //0：霸屏消息
       type: DataTypes.INTEGER,
-      defaultValue: '0'
+      defaultValue: "0"
     },
     BarId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER
     },
     UserId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER
     },
     MessageId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER
+    },
+    transaction_id: {
+      type: DataTypes.STRING
     }
-  })
+  });
 
-  return Order
-}
+  return Order;
+};
