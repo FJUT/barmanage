@@ -574,7 +574,10 @@ const responseWeixinNotifyMiddware = notifyMiddleware
     co(function*() {
       //更新订单状态
       var updateOrderResult = yield Order.update(
-        { status: true },
+        {
+          status: true,
+          transaction_id: message.transaction_id
+        },
         {
           where: {
             id: orderId
@@ -585,8 +588,7 @@ const responseWeixinNotifyMiddware = notifyMiddleware
       //更新消息支付状态
       var updateMessageResult = yield Message.update(
         {
-          isPayed: true,
-          transaction_id: message.transaction_id
+          isPayed: true
         },
         {
           where: {
