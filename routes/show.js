@@ -108,7 +108,8 @@ router.get('/', auth, (req, res, next) => {
     })
 
     res.render('show', {
-      messages: tmsg
+      messages: tmsg,
+      barInfo: req.session.barInfo
     })
   }).catch(next)
 })

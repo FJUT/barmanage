@@ -23,6 +23,8 @@ var imageDecMdw = require("../middlewares/imageDetection");
 const moment = require("moment");
 const _ = require("underscore");
 
+const blacklistCheck = require('../middlewares/blacklistCheck')
+
 // 获取酒吧列表
 router.get("/getBarList", (req, res, next) => {
   DataApi.getAllBars()
@@ -210,16 +212,65 @@ router.get("/getAllMessages", (req, res, next) => {
     return;
   }
 
-  DataApi.getMessages(
-    {
+  co(function*() {
+    // 获取最近一天的消息
+    let messages = yield DataApi.getMessages({
       BarId: id,
       isPayed: true,
       createdAt: {
-        $gt: moment().subtract("24", "hours")
+        $gt: moment().subtract("1", "days")
       }
-    },
-    {}
-  ).then(messages => res.send(messages));
+    });
+
+    res.send(messages);
+  })
+});
+
+// 新增：新版的获取最近一天的消息，不兼容老的
+router.get("/getAllMessagesFix", (req, res, next) => {
+  let id = req.query.id;
+  if (!/\d+/.test(id)) {
+    res.json({ iRet: -1, msg: "参数错误" });
+    return;
+  }
+
+  co(function*() {
+    // 获取最近一天的消息
+    let messages = yield DataApi.getMessages({
+      BarId: id,
+      isPayed: true,
+      createdAt: {
+        $gt: moment().subtract("1", "days")
+      }
+    })
+
+    // 如果没有，返回最后一条消息的创建时间
+    if (messages.length < 1) {
+      let lastMessage = yield models.Message.findAll({
+        where: {
+          BarId: id
+        },
+        limit: 1,
+        order: [ [ 'createdAt', 'DESC' ]]
+      })
+
+      let lastUpdated = 0
+      if (lastMessage.length > 0) {
+        lastUpdated = lastMessage[0].updatedAt
+      }
+
+      res.send({
+        iRet: 0,
+        data: [],
+        lastUpdated: lastUpdated
+      })
+    } else {
+      res.send({
+        iRet: 0,
+        data: messages
+      })
+    }
+  })
 });
 
 // 获取酒吧消息列表-分页 --小程序
@@ -295,7 +346,7 @@ router.get("/getLatestMessages", (req, res, next) => {
 });
 
 // 发送消息
-router.post("/sendMessage", (req, res, next) => {
+router.post("/sendMessage", blacklistCheck, (req, res, next) => {
   var { BarId, msgText, UserId } = req.body;
 
   co(function*() {
@@ -319,7 +370,7 @@ router.post("/sendMessage", (req, res, next) => {
       BarId: BarId,
       UserId: UserId
     }).then(created => {
-      res.json(created.get({ plain: true }));
+      res.json({iRet:0, data: created.get({ plain: true })});
     });
   });
 });

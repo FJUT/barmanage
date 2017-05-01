@@ -31,6 +31,7 @@ const imageDetection = (urls) => {
     }, function(err, data) {
       if(err) {
         console.log('error:', err);
+        reject(err);
         return;
       }
       console.log('success:', JSON.stringify(data));
@@ -88,13 +89,15 @@ module.exports = (req, res, next) => {
       next()
     } else {
       res.json({
-        iRet: -2
+        iRet: -2,
+        msg: '图片违规'
       })
     }
   })
     .catch(err => {
       res.json({
-        iRet: -2
+        iRet: -2,
+        msg: '图片违规'
       })
     })
 }
