@@ -1,9 +1,0 @@
-.idea/
-.vscode/
-cers/
-node_modules/
-uploads/
-release/
-seeders/
-test/
-config/config.json
